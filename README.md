@@ -48,6 +48,11 @@ The result is a human-like opponent that mirrors the user’s strengths, habits,
 
 ---
 
+## 📄 Our Document
+
+➡️ **[Project Living Document]([docs/living-document.md](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?pli=1&tab=t.0))**
+
+---
 
 ## 🗂️ Repository Structure
 

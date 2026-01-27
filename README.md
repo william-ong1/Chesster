@@ -1,22 +1,8 @@
-# Personalized Chess Bot Platform
-
-Train a chess bot that plays **exactly like you**.
-
-This project builds personalized chess bots by learning from a user’s past games.  
-Each bot mimics the user’s unique playstyle, allowing players to compete against themselves, analyze weaknesses, and explore how their style performs against different strategies.
-
----
+# Chesster
 
 ## Overview
 
-This platform allows users to upload their historical chess games, which are then used to train a machine learning–based chess bot that replicates their decision-making.
-
-The bot learns which moves a user most commonly makes in specific board positions.  
-When encountering unfamiliar positions, it extrapolates the most probable move based on similar game states and patterns in the user’s play.
-
-The result is a human-like opponent that mirrors the user’s strengths, habits, and mistakes.
-
----
+Allows users to upload their past chess data and then trains a chess bot with this data such that it learns to mimic their playstyle. The user can then play against this bot when they want. 
 
 ## Goals
 
@@ -44,13 +30,13 @@ The result is a human-like opponent that mirrors the user’s strengths, habits,
    - Unknown positions → bot extrapolates using similar board states
 
 5. **Gameplay**  
-   Users play against their personalized bot.
+   Users play against their trained bot.
 
 ---
 
 ## 📄 Our Document
 
-➡️ **[Project Living Document]([docs/living-document.md](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?pli=1&tab=t.0))**
+➡️ **[Chesster Document]([docs/living-document.md](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?pli=1&tab=t.0))**
 
 ---
 

@@ -34,7 +34,7 @@ Allows users to upload their past chess data and then trains a chess bot with th
 
 ## Our Document
 
-**[Chesster Document]([docs/living-document.md](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?pli=1&tab=t.0))**
+**[Chesster Document](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?tab=t.0#heading=h.1ruhqhxj255p)**
 
 ---
 

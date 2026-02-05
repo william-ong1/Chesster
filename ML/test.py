@@ -5,9 +5,9 @@
 import torch
 import torch.nn as nn
 import chess
+import torch.utils.data as DataLoader
 
 class Testing:
     def __init__(self, model_id: str, dataloader: DataLoader):
         self.model = torch.load(model_id)
-        self.player = player_id
         self.data = self.get_data()

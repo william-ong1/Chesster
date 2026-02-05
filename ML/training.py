@@ -11,14 +11,18 @@ import torch.utils.data as DataLoader
 class Training:
     # architecture is the architecture of the model to train from the model_architecture folder
 
-    def __init__(self, architecture: str, dataloader: DataLoader):
+    def __init__(self, architecture: str, dataloader: DataLoader, ):
+
+        self.architecture = architecture
+        self.dataloader = dataloader
+
+
+
+    def train_model(self):
         #TODO
         pass
 
-    def train(self):
-        #TODO
-        pass
 
-
-
-    
+    def save_model(self, model_id: str):
+        
+        # make an API call to the backend to save the model

@@ -8,7 +8,7 @@ import chess
 import torch.utils.data as DataLoader
 import pymongo
 
-class Testing:
+class EvaluateModel:
     def __init__(self, model: nn.Module, dataloader: DataLoader):
 
         self.model = model

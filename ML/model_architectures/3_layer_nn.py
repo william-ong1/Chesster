@@ -1,3 +1,4 @@
+# (C) Chesster. Written by Shreyan Mitra, William Ong, Mason Tepper, Lebam Amare, Raghav Ramesh, and Danyuan Wang
 # basic 3 layer neural network architecture
 
 import torch

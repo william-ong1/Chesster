@@ -1,3 +1,4 @@
+# (C) Chesster. Written by Shreyan Mitra, William Ong, Mason Tepper, Lebam Amare, Raghav Ramesh, and Danyuan Wang
 # evaluate the model on player data to see how well it matches the player
 # pull data from mongoDB and use it to test the model.
 # after testing, save the results to mongoDB

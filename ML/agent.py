@@ -1,3 +1,4 @@
+# (C) Chesster. Written by Shreyan Mitra, William Ong, Mason Tepper, Lebam Amare, Raghav Ramesh, and Danyuan Wang
 # code to take a model from ML\models and wrap it in a class that can be used to play chess. 
 # this class should take a model for initaliztion and take a board state as input and return a move.
 # the class should also be able to take a move as input and update the board state.

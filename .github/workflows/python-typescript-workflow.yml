@@ -1,0 +1,76 @@
+name: Chesster CI
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    # This ensures that all systems use the same syntax for
+    # shell commands when running the workflow.
+    shell: bash
+
+permissions:
+  contents: read
+
+jobs:
+  test-python:
+    name: Python Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        python-version: ["3.10"]
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black pylint pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Reformat Python files with Black
+      run: |
+        black $(find . -type f -name "*.py")
+
+    - name: Lint Python files with pylint
+      run: |
+        pylint --rcfile=pylintrc $(find . -type f -name "*.py")
+
+    - name: Run unit tests on Python files
+      run: |
+        # Run python unit tests
+        pytest
+
+  test-typescript:
+    name: TypeScript Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Reformat TypeScript files with gts
+        run: npm run fix
+      
+      - name: Lint TypeScript files with gts
+        run: npm run lint
+
+      # TODO: set up to work with Vitest
+      # - name: Test
+      #   run: npm run test

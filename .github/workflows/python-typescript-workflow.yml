@@ -71,6 +71,5 @@ jobs:
       - name: Lint TypeScript files with gts
         run: npm run lint
 
-      # TODO: set up to work with Vitest
-      # - name: Test
-      #   run: npm run test
+      - name: Test
+        run: npm run test

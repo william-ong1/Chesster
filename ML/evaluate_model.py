@@ -8,7 +8,7 @@ import chess
 import torch.utils.data as DataLoader
 import pymongo
 
-class Testing:
+class EvaluateModel:
     def __init__(self, model: nn.Module, dataloader: DataLoader):
         '''
         model is the model to test
@@ -16,8 +16,8 @@ class Testing:
         '''
         self.model = model
         self.data = dataloader
-        self.X = []
-        self.y = []
+        self.X = torch.tensor(self.data.X)
+        self.y = torch.tensor(self.data.y)
         
 
     def MSE(self) -> float:
@@ -32,8 +32,8 @@ class Testing:
         
         self.model.eval()
         with torch.no_grad():
-            outputs = self.model(X)
-            mse = nn.MSELoss()(outputs, y)
+            outputs = self.model(self.X)
+            mse = nn.MSELoss()(outputs, self.y)
         
         return mse
 
@@ -44,19 +44,10 @@ class Testing:
         test the model on the dataloader
         return the R2 of the model
         '''
-        self.data = self.collection.find()
-        X = []
-        y = []
-        for game in self.data:
-            X.append(game["extracted_board_state"])
-            y.append(game["value"])
-        X = torch.tensor(X)
-        y = torch.tensor(y)
-        self.data = DataLoader(X, y, batch_size=100, shuffle=True)
         self.model.eval()
         with torch.no_grad():
-            outputs = self.model(X)
-            r2 = nn.R2Loss()(outputs, y)
+            outputs = self.model(self.X)
+            r2 = nn.R2Loss()(outputs, self.y)
         return r2
     
     def MAE(self) -> float:
@@ -66,19 +57,10 @@ class Testing:
         test the model on the dataloader
         return the MAE of the model
         '''
-        self.data = self.collection.find()
-        X = []
-        y = []
-        for game in self.data:
-            X.append(game["extracted_board_state"])
-            y.append(game["value"])
-        X = torch.tensor(X)
-        y = torch.tensor(y)
-        self.data = DataLoader(X, y, batch_size=100, shuffle=True)
         self.model.eval()
         with torch.no_grad():
-            outputs = self.model(X)
-            mae = nn.MAELoss()(outputs, y) 
+            outputs = self.model(self.X)
+            mae = nn.MAELoss()(outputs, self.y) 
 
         return mae
 

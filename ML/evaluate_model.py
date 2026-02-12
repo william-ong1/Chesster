@@ -9,15 +9,14 @@ from torch.utils.data import DataLoader
 import pymongo
 
 class EvaluateModel:
-    def __init__(self, model: nn.Module, dataloader: DataLoader):
+    def __init__(self, model: nn.Module, test_x: torch.Tensor, test_y: torch.Tensor):
         '''
         model is the model to test
         dataloader is the dataloader to test the model on
         '''
         self.model = model
-        self.data = dataloader
-        self.X = torch.tensor(self.data.X)
-        self.y = torch.tensor(self.data.y)
+        self.X = test_x
+        self.y = test_y
         
 
     def MSE(self) -> float:

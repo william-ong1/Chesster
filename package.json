@@ -1,0 +1,41 @@
+{
+  "name": "testci_vitest",
+  "version": "1.0.0",
+  "description": "Allows users to upload their past chess data and then trains a chess bot with this data such that it learns to mimic their playstyle. The user can then play against this bot when they want.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npx vitest run",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run lint",
+    "unit-test": "npx vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masont7/testCI_Vitest.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/masont7/testCI_Vitest/issues"
+  },
+  "homepage": "https://github.com/masont7/testCI_Vitest#readme",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@vitejs/plugin-react": "^5.1.3",
+    "@vitest/ui": "^4.0.18",
+    "gts": "^7.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

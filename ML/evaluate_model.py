@@ -5,7 +5,7 @@
 import torch
 import torch.nn as nn
 import chess
-import torch.utils.data as DataLoader
+from torch.utils.data import DataLoader
 import pymongo
 
 class EvaluateModel:
@@ -28,7 +28,6 @@ class EvaluateModel:
         return the MSE of the model
 
         '''
-        self.data = self.collection.find()
         
         self.model.eval()
         with torch.no_grad():

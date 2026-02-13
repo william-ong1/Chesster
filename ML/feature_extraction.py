@@ -38,7 +38,25 @@ class FeatureExtraction:
         squares_controlled_black = self._squares_controlled_count(chess.BLACK)
         material_count_white = self.material_count(chess.WHITE)
         material_count_black = self.material_count(chess.BLACK)
-        features = torch.tensor([check_white, check_black, queen_threatened_white, queen_threatened_black, rook_threatened_white, rook_threatened_black, bishop_threatened_white, bishop_threatened_black, knight_threatened_white, knight_threatened_black, pawn_threatened_white, pawn_threatened_black, pawn_board_white, pawn_board_black, squares_controlled_white, squares_controlled_black, material_count_white, material_count_black])
+        features = torch.tensor([
+            check_white, 
+            check_black, 
+            queen_threatened_white, 
+            queen_threatened_black, 
+            rook_threatened_white, 
+            rook_threatened_black, 
+            bishop_threatened_white, 
+            bishop_threatened_black, 
+            knight_threatened_white, 
+            knight_threatened_black, 
+            pawn_threatened_white, 
+            pawn_threatened_black, 
+            pawn_board_white, 
+            pawn_board_black, 
+            squares_controlled_white, 
+            squares_controlled_black, 
+            material_count_white, 
+            material_count_black]).flatten()
         return features
     
     def _squares_controlled_count(self, color: chess.Color) -> int:

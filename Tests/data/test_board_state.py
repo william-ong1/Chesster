@@ -21,7 +21,7 @@ class TestBoardState:
             True if the pieces have equal color and type. False otherwise.
         """
         return (
-            actual.color == expected.color
+            actual.piece_color == expected.piece_color
             and actual.piece_type == expected.piece_type
         )
 
@@ -108,3 +108,10 @@ class TestBoardState:
             assert self.correct_piece(
                 piece, Piece(PieceColor.EMPTY, PieceType.EMPTY)
             )
+
+    def test_str(self):
+        """Tests the overridden str() method."""
+
+        fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        state = BoardState(fen, "e4")
+        assert str(state) == f"({fen}, e4)"

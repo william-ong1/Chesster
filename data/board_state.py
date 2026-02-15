@@ -45,7 +45,6 @@ class BoardState:
         # only use the FEN that represents the board state
         board = self.fen.split()[0]
         for char in board:
-            # print("curr char: ", char)
             if char.isdigit():
                 for _ in range(0, int(char)):
                     piece_list.append(Piece(PieceColor.EMPTY, PieceType.EMPTY))
@@ -53,7 +52,6 @@ class BoardState:
                 piece = self.get_piece(char)
                 if piece is not None:
                     piece_list.append(piece)
-            # print("curr len: ", len(piece_list))
 
         if len(piece_list) != 64:
             raise ValueError(
@@ -104,3 +102,6 @@ class BoardState:
         }.get(char.lower())
 
         return Piece(color, piece_type)
+
+    def __str__(self):
+        return f"({self.fen}, {self.move})"

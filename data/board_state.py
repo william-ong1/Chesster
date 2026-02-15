@@ -10,8 +10,9 @@ class BoardState:
     Fields:
         _valid_pieces: the list of valid pieces in FEN notation.
         fen: the FEN representation of the board state.
-        move: the move that resulted in this board state.
+        move: the next move that will be played in SAN notation.
         pieces: the board state represented as a length-64 array.
+        Each element represents one square on the board.
         features: the features of the board state.
     """
 
@@ -27,8 +28,8 @@ class BoardState:
         self.move = move
         self.fen = fen
         self.pieces = self._fen_to_list()
-        # TODO: update this based on Feature Extraction code
-        self.features = {}
+        # TODO: update this based on Feature Extraction code from ML team
+        self.features = self._get_features()
 
     def _fen_to_list(self) -> list[Piece]:
         """
@@ -102,6 +103,11 @@ class BoardState:
         }.get(char.lower())
 
         return Piece(color, piece_type)
+
+    def _get_features(self) -> dict:
+        """Gets the features of the board state."""
+        # TODO: Implement this with the Feature Extraction code from ML
+        return {}
 
     def __str__(self):
         return f"({self.fen}, {self.move})"

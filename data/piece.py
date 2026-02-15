@@ -6,21 +6,21 @@ from enum import Enum
 class PieceColor(Enum):
     """The color of a Piece."""
 
-    WHITE = "white"
-    BLACK = "black"
-    EMPTY = "empty"
+    WHITE = "White"
+    BLACK = "Black"
+    EMPTY = "Empty"
 
 
 class PieceType(Enum):
     """The type of a Piece."""
 
-    PAWN = "pawn"
-    KNIGHT = "knight"
-    BISHOP = "bishop"
-    ROOK = "rook"
-    QUEEN = "queen"
-    KING = "king"
-    EMPTY = "empty"
+    PAWN = "Pawn"
+    KNIGHT = "Knight"
+    BISHOP = "Bishop"
+    ROOK = "Rook"
+    QUEEN = "Queen"
+    KING = "King"
+    EMPTY = "Empty"
 
 
 class Piece:
@@ -42,3 +42,12 @@ class Piece:
         """
         self.piece_color = color
         self.piece_type = piece_type
+
+    def __str__(self):
+        if (
+            self.piece_color == PieceColor.EMPTY
+            or self.piece_type == PieceType.EMPTY
+        ):
+            return str(PieceColor.EMPTY.value)
+        else:
+            return f"{self.piece_color.value} {self.piece_type.value}"

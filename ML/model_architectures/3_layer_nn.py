@@ -1,6 +1,7 @@
-# basic 3 layer neural network architecture
+# Basic 3 layer neural network architecture
 
 import torch
+import torch.nn as nn
 
 class ThreeLayerNN(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, output_size: int):

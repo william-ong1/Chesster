@@ -1,0 +1,8 @@
+[project]
+name = "chesster"
+dynamic = ["version"]
+requires-python = ">=3.10"
+readme = "README.md"
+
+[tool.black]
+line-length = 80

@@ -3,13 +3,15 @@
 # this class should take a model for initaliztion and take a board state as input and return a move.
 # the class should also be able to take a move as input and update the board state.
 import chess
+from feature_extraction import FeatureExtraction
 
 
 class Agent:
     # model_id is the model id in mongoDB to the model file
     def __init__(self, model_id: str):
-        self.model = model_id  # TODO update this to retreive model from database
-        self.board = chess.Board()
+        self.model = (
+            model_id  # TODO update this to retreive model from database
+        )
 
         if self.model is None:
             raise ValueError(f"User does not have a model with id {model_id}")
@@ -35,19 +37,11 @@ class Agent:
 
         for move in legal_moves:
             board.push(move)
-            value = self.model(
-                board
-            ).item()  # TODO update this to transform board states to features for model input
+            features = FeatureExtraction(board).extract_features()
+            value = self.model(features).item()
             board.pop()
             if value > best_value:
                 best_move = move
                 best_value = value
 
         return best_move
-
-    def make_move(self, move: chess.Move):
-        if move in self.board.legal_moves:
-            self.board.push(move)
-
-    def get_board(self):
-        return self.board

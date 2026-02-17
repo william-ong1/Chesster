@@ -81,7 +81,18 @@ class FeatureExtraction:
 
     def material_count(self, color: chess.Color) -> int:
         """Return the material count for the given color."""
-        return self.board.material_count(color)
+        PIECE_VALUES = {
+            chess.PAWN: 1,
+            chess.KNIGHT: 3,
+            chess.BISHOP: 3,
+            chess.ROOK: 5,
+            chess.QUEEN: 9,
+        }
+        total = 0
+        for piece_type, value in PIECE_VALUES.items():
+            total += len(self.board.pieces(piece_type, color)) * value
+        return total
+
 
     def pawn_board(self, color: chess.Color) -> torch.Tensor:
         """Return the pawn board for the given color."""

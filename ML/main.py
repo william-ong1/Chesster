@@ -14,17 +14,20 @@ def main(user_id: str):
     # connect to mongoDB
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["chesster"]
-    game_data = db["game_data"]
-    models = db["models"]
+    user_data = db["user_data"]
+    models = db["chess_models"]
+    boards = db["board_states"]
 
     # get the game data
-    game_data = game_data.find({"user_id": user_id})
+    user = user_data.find({"user_id": user_id})
+    user_game_boards = user["game_boards"]
+
     # grab x and y from the game data
     features = []
     y = []
-    for board in game_data:
-        features.append(board["features"])
-        y.append(board["y"])
+    for board_id, number_appearances, y_value in user_game_boards:
+        features = boards.find({"board_id": board_id})
+        y.append(y_value)
     
     features = torch.tensor(features)
     y = torch.tensor(y)
@@ -48,8 +51,13 @@ def main(user_id: str):
     training.train()
     model = training.model
     evaluation = EvaluateModel(model, features_test, y_test)
-    evaluation.evaluate()
-    evaluation.save_results()
+    mse = evaluation.MSE()
+    mae = evaluation.MAE()
+    evaluation.save_results(mse, mae)
+    if models.find_one({"user_id": user_id}) != None:
+        models.update_one({"user_id": user_id}, {"$set": {"model": model.state_dict()}})
+    else:
+        models.insert_one({"user_id": user_id, "model": model.state_dict(),})
 
 if __name__ == "__main__":
     main("123")

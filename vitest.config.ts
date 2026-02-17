@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {defineConfig} from 'vitest/config';
 
 export default defineConfig({

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 let customConfig = [];
 let hasIgnoresFile = false;
 try {

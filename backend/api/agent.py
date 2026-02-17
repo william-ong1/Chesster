@@ -1,6 +1,6 @@
 # (C) Chesster. Written by Shreyan Mitra, William Ong, Mason Tepper, Lebam Amare, Raghav Ramesh, and Danyuan Wang
 # API endpoints for chess agent gameplay
-# Handles move generation and position evaluation using trained models
+# Handles move generation for chess bot
 
 import chess
 import os
@@ -15,44 +15,49 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 agent_bp = Blueprint("agent", __name__)
 
 
-@agent_bp.route("/get-move", methods=["POST"])
+@agent_bp.route("/make-move", methods=["POST"])
 @jwt_required()
-def get_move():
+def make_move():
     """
-    Get the bot's next move for a given board state
+    Takes a player move and saves it
+    Gets the bot's move, makes it, and saves it
+    Return the next board state
 
     Request body:
         {
             "fen": str (required),
-            "model_id": str (optional, uses active model if not provided),
+            "move": str (required, UCI format, e.g., "e2e4", "e7e8q")
         }
 
     Returns:
         200: {
-            "move": str (UCI format, e.g., "e2e4"),
-            "move_san": str (SAN format, e.g., "e4"),
+            "new_fen": str,
+            "is_game_over": bool,
+            "is_checkmate": bool,
+            "is_stalemate": bool,
+            "is_check": bool,
+            "game_result": str | null
         }
 
-        400: {"error": str} - Validation error
-        401: {"error": str} - Unauthorized
-        404: {"error": str} - No model found
-        500: {"error": str} - Server error
+        400: {"error": str}
+        401: {"error": str}
+        500: {"error": str}
     """
     try:
-        # Get user_id from JWT
-        user_id = get_jwt_identity()
+        get_jwt_identity()  # Validate JWT
 
-        # Parse request
         data = request.get_json()
         if not data:
             return jsonify({"error": "Request body is required"}), 400
 
         fen = data.get("fen", "").strip()
-        model_id = data.get("model_id")
+        move_str = data.get("move", "").strip()
 
-        # Validation
         if not fen:
             return jsonify({"error": "fen is required"}), 400
+
+        if not move_str:
+            return jsonify({"error": "move is required"}), 400
 
         try:
             board = chess.Board(fen)
@@ -62,37 +67,44 @@ def get_move():
         if board.is_game_over():
             return jsonify({"error": "Game is already over"}), 400
 
-        if not model_id:
-            model_id = db.get_active_model_id(user_id)
-            if not model_id:
-                return (
-                    jsonify({"error": "No active model found. Train a model first."}),
-                    404,
-                )
+        try:
+            player_move = chess.Move.from_uci(move_str)
+        except ValueError:
+            return (
+                jsonify({"error": f"Invalid UCI move format: {move_str}"}),
+                400,
+            )
 
-        model_data = model_cache.get(model_id)
-        if not model_data:
-            return jsonify({"error": "Failed to load model"}), 500
+        # TODO save the player move to database
 
-        agent = Agent(model=model_data["model"])
+        agent = Agent(
+            "model_id"
+        )  # TODO update this to retreive model from database
+        agent_move = agent.get_move(board)
 
-        move = agent.get_move(board)
+        # save the agent move to database
+        board.push(agent_move)
 
-        if not move:
-            return jsonify({"error": "Failed to generate move"}), 500
+        new_fen = board.fen()
 
-        move_san = board.san(move)
+        is_game_over = board.is_game_over()
+        is_checkmate = board.is_checkmate()
+        is_stalemate = board.is_stalemate()
+        is_check = board.is_check()
 
         return (
             jsonify(
                 {
-                    "move": move.uci(),
-                    "move_san": move_san,
+                    "new_fen": new_fen,
+                    "is_game_over": is_game_over,
+                    "is_checkmate": is_checkmate,
+                    "is_stalemate": is_stalemate,
+                    "is_check": is_check,
                 }
             ),
             200,
         )
 
     except Exception as e:
-        print(f"❌ Get move error: {e}")
+        print(f"❌ Make move error: {e}")
         return jsonify({"error": "Internal server error"}), 500

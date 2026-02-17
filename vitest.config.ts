@@ -9,7 +9,7 @@ export default defineConfig({
       provider: 'v8',
       include: ['./**/*.{ts,tsx}'],
       exclude: [
-        // files/patterns to ignore (e.g., test setup files, type declarations)
+        // files/patterns to ignore
         './**/index.tsx',
         './**/setupTests.ts',
         './**/*.d.{ts,tsx}',

@@ -32,21 +32,17 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black pylint pytest
+        pip install pylint pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: Reformat Python files with Black
-      run: |
-        black $(find . -type f -name "*.py")
-
-    - name: Lint Python files with pylint
-      run: |
-        pylint --rcfile=pylintrc $(find . -type f -name "*.py")
 
     - name: Run unit tests on Python files
       run: |
         # Run python unit tests
         pytest
+    
+    - name: Lint Python files with pylint
+      run: |
+        pylint --rcfile=pylintrc $(find . -type f -name "*.py")
 
   test-typescript:
     name: TypeScript Tests
@@ -64,12 +60,9 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-      
-      - name: Reformat TypeScript files with gts
-        run: npm run fix
-      
-      - name: Lint TypeScript files with gts
-        run: npm run lint
-
+        
       - name: Test
         run: npm run test
+
+      - name: Lint TypeScript files with gts
+        run: npm run lint

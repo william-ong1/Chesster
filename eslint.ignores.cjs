@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 module.exports = [
   'build/',
   'dist/',
@@ -10,4 +11,8 @@ module.exports = [
   '*.d.ts.map',
   '*.js',
   '*.js.map',
+  'eslint.config.cjs',
+  'eslint.ignores.cjs',
+  'vitest.config.ts',
+  '.pretterrc.cjs'
 ];

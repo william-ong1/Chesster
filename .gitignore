@@ -208,3 +208,6 @@ __marimo__/
 
 # NodeJS
 node_modules/
+
+# Vitest + v8 coverage
+coverage/

@@ -57,5 +57,6 @@ Allows users to upload their past chess data and then trains a chess bot with th
 ├── backend/      # APIs, authentication, data upload/storage
 ├── data/         # Data preprocessing
 ├── ML/           # Chess bot logic and training
+├── Tests/        # Tests for application components
 ├── docs/         # Technical documentation
 └── README.md     # Project overview

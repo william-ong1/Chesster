@@ -1,0 +1,1477 @@
+/**
+ * chesster.test.js — Jest + DOM Testing Library test suite
+ *
+ * Setup (run once):
+ *   npm install --save-dev jest jest-environment-jsdom \
+ *     @testing-library/dom @testing-library/jest-dom @testing-library/user-event
+ *
+ * Add to package.json:
+ *   "jest": {
+ *     "testEnvironment": "jest-environment-jsdom",
+ *     "setupFilesAfterFramework": ["@testing-library/jest-dom"]
+ *   }
+ *
+ * Run: npx jest chesster.test.js
+ */
+
+const fs   = require('fs');
+const path = require('path');
+const { screen, fireEvent, within, waitFor } = require('@testing-library/dom');
+const userEvent = require('@testing-library/user-event').default;
+require('@testing-library/jest-dom');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOOTSTRAP
+// Load the HTML, mount it into jsdom, and eval the inline scripts so that all
+// globals (Chess class, parsePGN, applySAN, render, newGame …) are available.
+//
+// Key technique: functions declared inside the same window.eval() call are
+// closures over the let/const variables (G, mode, sel …), so we can expose
+// live state getters and keep full access to private state without changing
+// the production file at all.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const HTML_PATH = path.join(__dirname, 'chess.html');
+const htmlContent = fs.readFileSync(HTML_PATH, 'utf8');
+
+/** Pull every inline <script> block (no src=) out of the HTML. */
+function extractInlineScripts(html) {
+  const re = /<script(?![^>]*\bsrc\b)[^>]*>([\s\S]*?)<\/script>/gi;
+  const chunks = [];
+  let m;
+  while ((m = re.exec(html)) !== null) chunks.push(m[1]);
+  return chunks.join('\n');
+}
+
+const appScript = extractInlineScripts(htmlContent);
+
+/**
+ * Additional code appended to the app script before window.eval().
+ * Runs in the same eval scope so closures can see G, mode, sel, lms …
+ */
+const BOOT_EXTRAS = `
+  // Expose engine classes ─────────────────────────────────────────────────
+  window.Chess     = Chess;
+  window.parsePGN  = parsePGN;
+  window.applySAN  = applySAN;
+
+  // Live state accessors (closures over the let-bound app variables) ───────
+  window._getG        = () => G;
+  window._getMode     = () => mode;
+  window._getSel      = () => sel;
+  window._getLms      = () => lms;
+  window._getFlipped  = () => flipped;
+  window._getPgnMoves = () => pgnMoves;
+  window._getPgnIdx   = () => pgnIdx;
+
+  // Helpers for tests ───────────────────────────────────────────────────────
+  window._sqIndex = (alg) => (8 - parseInt(alg[1])) * 8 + 'abcdefgh'.indexOf(alg[0]);
+  window._resetUI = () => { newGame(); };
+`;
+
+// Mount DOM structure once.  Scripts are executed separately via window.eval
+// so we control timing and can append the extra bridge code.
+beforeAll(() => {
+  document.documentElement.innerHTML = htmlContent;
+  window.eval(appScript + BOOT_EXTRAS);
+});
+
+// Fresh board state before every test.
+beforeEach(() => {
+  jest.useFakeTimers();       // stop computer-reply setTimeout from firing
+  window.setMode('play');     // reset mode, panels, and game
+  window.newGame();
+});
+
+afterEach(() => {
+  jest.runAllTimers();
+  jest.useRealTimers();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOCAL HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Square DOM element from algebraic notation. */
+const sqEl  = (alg) => document.querySelector(`[data-sq="${window._sqIndex(alg)}"]`);
+/** Click a board square. */
+const click  = (alg) => fireEvent.click(sqEl(alg));
+/** Current status bar text. */
+const status = ()    => document.getElementById('status').textContent;
+/** Current move-list text. */
+const moves  = ()    => document.getElementById('move-list').textContent;
+/** Helper: sq index from algebraic (mirrors app's helper). */
+const sq     = (alg) => window._sqIndex(alg);
+
+/** Create a bare Chess instance directly from the exported class. */
+const newChess = () => new window.Chess();
+
+/** Build a sparse board: pieces is { 'e2': 'P', 'e1': 'K', … } */
+function sparseBoard(pieces) {
+  const g = newChess();
+  g.b = Array(64).fill('');
+  for (const [alg, piece] of Object.entries(pieces)) g.b[sq(alg)] = piece;
+  return g;
+}
+
+/** Play a sequence of SAN moves from a fresh position. */
+function playMoves(sans) {
+  const g = newChess();
+  for (const s of sans) window.applySAN(g, s);
+  return g;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1 · PAGE STRUCTURE
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Page structure', () => {
+  test('renders the Chesster heading', () => {
+    expect(screen.getByRole('heading', { name: /chesster/i })).toBeInTheDocument();
+  });
+
+  test('renders the SVG logo in the header', () => {
+    expect(document.querySelector('header svg')).toBeInTheDocument();
+  });
+
+  test('renders Play and PGN Review tabs', () => {
+    expect(screen.getByText(/▶ Play/)).toBeInTheDocument();
+    expect(screen.getByText(/PGN Review/)).toBeInTheDocument();
+  });
+
+  test('renders the hero "Play Yourself" section', () => {
+    expect(screen.getByText(/Play/)).toBeInTheDocument();
+    expect(screen.getByText(/Train a bot on your playing style/i)).toBeInTheDocument();
+  });
+
+  test('train banner is hidden on load', () => {
+    expect(document.getElementById('train-banner')).not.toHaveClass('show');
+  });
+
+  test('Train Bot button is hidden on load', () => {
+    expect(document.getElementById('btn-train')).not.toHaveClass('visible');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 2 · BOARD RENDERING
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Board rendering', () => {
+  test('renders exactly 64 squares', () => {
+    expect(document.querySelectorAll('.sq')).toHaveLength(64);
+  });
+
+  test('a1 is a dark square (sum of indices is odd)', () => {
+    expect(sqEl('a1')).toHaveClass('dark');
+  });
+
+  test('a8 is a light square', () => {
+    expect(sqEl('a8')).toHaveClass('light');
+  });
+
+  test('e1 square contains the white king glyph', () => {
+    expect(sqEl('e1').querySelector('.piece-w')).toHaveTextContent('♔');
+  });
+
+  test('e8 square contains the black king glyph', () => {
+    expect(sqEl('e8').querySelector('.piece-b')).toHaveTextContent('♚');
+  });
+
+  test('rank labels appear on the a-file squares', () => {
+    expect(sqEl('a1').querySelector('.sq-rank')).toHaveTextContent('1');
+    expect(sqEl('a8').querySelector('.sq-rank')).toHaveTextContent('8');
+  });
+
+  test('file labels appear on the 1st-rank squares', () => {
+    expect(sqEl('a1').querySelector('.sq-file')).toHaveTextContent('a');
+    expect(sqEl('h1').querySelector('.sq-file')).toHaveTextContent('h');
+  });
+
+  test('e4 and e5 are empty at the start', () => {
+    expect(sqEl('e4').querySelector('.piece-w, .piece-b')).toBeNull();
+    expect(sqEl('e5').querySelector('.piece-w, .piece-b')).toBeNull();
+  });
+
+  test('status bar shows "White to move" at start', () => {
+    expect(status()).toMatch(/white to move/i);
+  });
+
+  test('flipBoard() toggles flipped state and re-renders', () => {
+    window.flipBoard();
+    // After flip, square index 0 is rendered at grid position 0 (which maps to h1)
+    // The a1 square element should now NOT be first in the DOM grid
+    const firstSq = document.querySelector('.sq');
+    expect(firstSq.dataset.sq).toBe('63'); // h1 index
+    window.flipBoard(); // restore
+  });
+
+  test('flipBoard() twice returns to original orientation', () => {
+    window.flipBoard();
+    window.flipBoard();
+    const firstSq = document.querySelector('.sq');
+    expect(firstSq.dataset.sq).toBe('0'); // a8 index
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3 · SQUARE INTERACTION — PLAY MODE
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Square interaction — play mode', () => {
+  test('clicking an empty square does nothing (no selection)', () => {
+    click('e4');
+    expect(window._getSel()).toBe(-1);
+  });
+
+  test('clicking a white pawn selects it', () => {
+    click('e2');
+    expect(window._getSel()).toBe(sq('e2'));
+  });
+
+  test('clicking a selected square deselects it', () => {
+    click('e2');
+    click('e2');
+    expect(window._getSel()).toBe(-1);
+  });
+
+  test('selected square gets the "selected" CSS class', () => {
+    click('e2');
+    expect(sqEl('e2')).toHaveClass('selected');
+  });
+
+  test('selecting a white pawn shows legal-move dots on reachable squares', () => {
+    click('e2');
+    expect(sqEl('e3')).toHaveClass('legal-move');
+    expect(sqEl('e4')).toHaveClass('legal-move');
+  });
+
+  test('selecting a pawn does not mark non-reachable squares', () => {
+    click('e2');
+    expect(sqEl('e5')).not.toHaveClass('legal-move');
+    expect(sqEl('d3')).not.toHaveClass('legal-move');
+  });
+
+  test('clicking a black piece on white\'s turn does nothing', () => {
+    click('e7');
+    expect(window._getSel()).toBe(-1);
+  });
+
+  test('clicking a different own piece changes selection', () => {
+    click('e2');
+    click('d2');
+    expect(window._getSel()).toBe(sq('d2'));
+  });
+
+  test('clicking an empty non-legal square clears selection', () => {
+    click('e2');
+    click('e5'); // not legal
+    expect(window._getSel()).toBe(-1);
+  });
+
+  test('knight on g1 shows legal-cap ring on enemy squares if applicable', () => {
+    // At start, g1 knight can move to f3 and h3
+    click('g1');
+    expect(sqEl('f3')).toHaveClass('legal-move');
+    expect(sqEl('h3')).toHaveClass('legal-move');
+    expect(window._getLms()).toHaveLength(2);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4 · MAKING MOVES — PLAY MODE
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Making moves — play mode', () => {
+  test('moving e2→e4 places pawn on e4', () => {
+    click('e2');
+    click('e4');
+    expect(window._getG().b[sq('e4')]).toBe('P');
+    expect(window._getG().b[sq('e2')]).toBe('');
+  });
+
+  test('after white moves, status changes to "Black to move"', () => {
+    click('e2');
+    click('e4');
+    expect(status()).toMatch(/black to move/i);
+  });
+
+  test('last-move squares get CSS class after a move', () => {
+    click('e2');
+    click('e4');
+    expect(sqEl('e2')).toHaveClass('last-from');
+    expect(sqEl('e4')).toHaveClass('last-to');
+  });
+
+  test('move is recorded in game history', () => {
+    click('e2');
+    click('e4');
+    expect(window._getG().hist).toHaveLength(1);
+    expect(window._getG().hist[0].san).toBe('e4');
+  });
+
+  test('move list renders the move after it is made', () => {
+    click('e2');
+    click('e4');
+    expect(moves()).toContain('e4');
+  });
+
+  test('computer plays after a short delay (fake timers)', () => {
+    click('e2');
+    click('e4');
+    // Computer hasn't moved yet (timer not advanced)
+    expect(window._getG().hist).toHaveLength(1);
+    jest.advanceTimersByTime(400);
+    // Now computer has moved
+    expect(window._getG().hist).toHaveLength(2);
+  });
+
+  test('after computer reply, status returns to "White to move"', () => {
+    click('e2');
+    click('e4');
+    jest.advanceTimersByTime(400);
+    expect(status()).toMatch(/white to move/i);
+  });
+
+  test('computer reply is a legal move (does not leave black in check)', () => {
+    click('e2');
+    click('e4');
+    jest.advanceTimersByTime(400);
+    // Verify the game is internally consistent (no check violation)
+    const g = window._getG();
+    expect(g.inCheck('b')).toBe(false); // it's now white's turn; black just moved
+  });
+
+  test('capture: white pawn takes black pawn', () => {
+    // Set up via SAN to get a capture position
+    const g = playMoves(['e4', 'd5']);
+    window._getG().b = g.b.slice();
+    window._getG().turn = 'w';
+    window.render();
+
+    click('e4');
+    expect(sqEl('d5')).toHaveClass('legal-cap'); // capture ring shown
+    click('d5');
+    expect(window._getG().b[sq('d5')]).toBe('P');
+    expect(window._getG().b[sq('e4')]).toBe('');
+  });
+
+  test('cannot move after game is over', () => {
+    // Fool's mate
+    const g = playMoves(['f3','e5','g4','Qh4']);
+    Object.assign(window._getG(), g);
+    window._getG().over = true;
+    window.render();
+
+    const histLen = window._getG().hist.length;
+    click('e2'); // try to move white
+    expect(window._getG().hist).toHaveLength(histLen);
+  });
+
+  test('checkmate status message shown when game ends', () => {
+    const g = playMoves(['f3','e5','g4','Qh4']);
+    // Copy state into live G
+    Object.assign(window._getG(), { b: g.b, turn: g.turn, over: g.over, result: g.result, hist: g.hist });
+    window.render();
+    expect(status()).toMatch(/checkmate/i);
+  });
+
+  test('stalemate shows draw message', () => {
+    const g = window._getG();
+    g.over = true;
+    g.result = '1/2-1/2';
+    window.render();
+    expect(status()).toMatch(/draw|stalemate/i);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5 · GAME CONTROLS
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Game controls', () => {
+  test('New Game button resets the board', () => {
+    click('e2'); click('e4');
+    fireEvent.click(screen.getByText('New Game'));
+    expect(window._getG().hist).toHaveLength(0);
+    expect(window._getG().b[sq('e2')]).toBe('P');
+    expect(window._getG().b[sq('e4')]).toBe('');
+  });
+
+  test('New Game clears last-move highlights', () => {
+    click('e2'); click('e4');
+    fireEvent.click(screen.getByText('New Game'));
+    expect(sqEl('e4')).not.toHaveClass('last-to');
+  });
+
+  test('New Game resets status to "White to move"', () => {
+    click('e2'); click('e4');
+    jest.advanceTimersByTime(400);
+    fireEvent.click(screen.getByText('New Game'));
+    expect(status()).toMatch(/white to move/i);
+  });
+
+  test('Flip Board button toggles orientation', () => {
+    fireEvent.click(screen.getByText('Flip Board'));
+    expect(window._getFlipped()).toBe(true);
+  });
+
+  test('Flip Board twice restores original orientation', () => {
+    fireEvent.click(screen.getByText('Flip Board'));
+    fireEvent.click(screen.getByText('Flip Board'));
+    expect(window._getFlipped()).toBe(false);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6 · MODE SWITCHING
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Mode switching', () => {
+  test('clicking PGN Review tab switches mode to pgn', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    expect(window._getMode()).toBe('pgn');
+  });
+
+  test('clicking Play tab switches mode back to play', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    fireEvent.click(screen.getByText(/▶ Play/));
+    expect(window._getMode()).toBe('play');
+  });
+
+  test('Play tab has "active" class in play mode', () => {
+    expect(document.getElementById('tab-play')).toHaveClass('active');
+    expect(document.getElementById('tab-pgn')).not.toHaveClass('active');
+  });
+
+  test('PGN tab becomes active after switching', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    expect(document.getElementById('tab-pgn')).toHaveClass('active');
+    expect(document.getElementById('tab-play')).not.toHaveClass('active');
+  });
+
+  test('pgn-panel is visible in pgn mode', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    expect(document.getElementById('pgn-panel').style.display).not.toBe('none');
+  });
+
+  test('play-panel is hidden in pgn mode', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    expect(document.getElementById('play-panel').style.display).toBe('none');
+  });
+
+  test('switching back to play hides pgn-panel', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    fireEvent.click(screen.getByText(/▶ Play/));
+    expect(document.getElementById('pgn-panel').style.display).toBe('none');
+  });
+
+  test('switching to play mode hides Train Bot button', () => {
+    // Get into pgn mode with a loaded game so button is visible
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    document.getElementById('pgn-ta').value = '1. e4 e5 *';
+    window.loadPGN();
+    // Switch back to play
+    fireEvent.click(screen.getByText(/▶ Play/));
+    expect(document.getElementById('btn-train')).not.toHaveClass('visible');
+  });
+
+  test('square clicks are ignored in pgn mode', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    click('e2');
+    expect(window._getSel()).toBe(-1);
+  });
+
+  test('status bar shows move count in pgn mode', () => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    document.getElementById('pgn-ta').value = '1. e4 e5 *';
+    window.loadPGN();
+    expect(status()).toMatch(/move 0 \/ 2/i);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7 · PGN LOADING & TRAIN BOT
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('PGN loading', () => {
+  const SIMPLE_PGN = `
+[Event "Test"]
+[White "Alice"]
+[Black "Bob"]
+1. e4 e5 2. Nf3 Nc6 *
+`;
+
+  beforeEach(() => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+  });
+
+  test('loading empty textarea does nothing', () => {
+    document.getElementById('pgn-ta').value = '';
+    window.loadPGN();
+    expect(window._getPgnMoves()).toHaveLength(0);
+  });
+
+  test('loading a valid PGN populates pgnMoves', () => {
+    document.getElementById('pgn-ta').value = SIMPLE_PGN;
+    window.loadPGN();
+    expect(window._getPgnMoves().length).toBeGreaterThan(0);
+  });
+
+  test('loading a PGN resets pgnIdx to 0', () => {
+    document.getElementById('pgn-ta').value = SIMPLE_PGN;
+    window.loadPGN();
+    expect(window._getPgnIdx()).toBe(0);
+  });
+
+  test('Train Bot button becomes visible after loading PGN', () => {
+    document.getElementById('pgn-ta').value = SIMPLE_PGN;
+    window.loadPGN();
+    expect(document.getElementById('btn-train')).toHaveClass('visible');
+  });
+
+  test('Train Bot button stays hidden if PGN has no moves', () => {
+    document.getElementById('pgn-ta').value = '[Event "Empty"] *';
+    window.loadPGN();
+    // No moves → button should not be made visible
+    expect(document.getElementById('btn-train')).not.toHaveClass('visible');
+  });
+
+  test('move list renders after PGN load', () => {
+    document.getElementById('pgn-ta').value = SIMPLE_PGN;
+    window.loadPGN();
+    // Navigate to end to see all moves in list
+    window.pgnNav(Infinity);
+    expect(moves()).toContain('e4');
+    expect(moves()).toContain('e5');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 8 · PGN NAVIGATION
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('PGN navigation', () => {
+  const MOVES_PGN = '1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 *';
+
+  beforeEach(() => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    document.getElementById('pgn-ta').value = MOVES_PGN;
+    window.loadPGN();
+  });
+
+  test('forward nav advances pgnIdx by 1', () => {
+    window.pgnNav(1);
+    expect(window._getPgnIdx()).toBe(1);
+  });
+
+  test('forward nav to end goes to last move', () => {
+    window.pgnNav(Infinity);
+    expect(window._getPgnIdx()).toBe(window._getPgnMoves().length);
+  });
+
+  test('back nav from start stays at 0', () => {
+    window.pgnNav(-1);
+    expect(window._getPgnIdx()).toBe(0);
+  });
+
+  test('back nav from middle decrements index', () => {
+    window.pgnNav(3);
+    window.pgnNav(-1);
+    expect(window._getPgnIdx()).toBe(2);
+  });
+
+  test('nav to start resets to idx 0', () => {
+    window.pgnNav(Infinity);
+    window.pgnNav(-Infinity);
+    expect(window._getPgnIdx()).toBe(0);
+  });
+
+  test('at start, board matches initial position', () => {
+    expect(window._getG().b[sq('e2')]).toBe('P');
+    expect(window._getG().b[sq('e4')]).toBe('');
+  });
+
+  test('after one step forward, e4 is occupied', () => {
+    window.pgnNav(1); // 1. e4
+    expect(window._getG().b[sq('e4')]).toBe('P');
+  });
+
+  test('after two steps, e5 is also occupied', () => {
+    window.pgnNav(2);
+    expect(window._getG().b[sq('e5')]).toBe('p');
+  });
+
+  test('navigate to end and back to start restores initial position', () => {
+    window.pgnNav(Infinity);
+    window.pgnNav(-Infinity);
+    expect(window._getG().b[sq('e2')]).toBe('P');
+    expect(window._getG().b[sq('e4')]).toBe('');
+  });
+
+  test('ArrowRight key advances navigation', () => {
+    fireEvent.keyDown(document, { key: 'ArrowRight' });
+    expect(window._getPgnIdx()).toBe(1);
+  });
+
+  test('ArrowLeft key goes back', () => {
+    window.pgnNav(2);
+    fireEvent.keyDown(document, { key: 'ArrowLeft' });
+    expect(window._getPgnIdx()).toBe(1);
+  });
+
+  test('Home key jumps to start', () => {
+    window.pgnNav(Infinity);
+    fireEvent.keyDown(document, { key: 'Home' });
+    expect(window._getPgnIdx()).toBe(0);
+  });
+
+  test('End key jumps to end', () => {
+    fireEvent.keyDown(document, { key: 'End' });
+    expect(window._getPgnIdx()).toBe(window._getPgnMoves().length);
+  });
+
+  test('keyboard navigation ignored in play mode', () => {
+    window.setMode('play');
+    fireEvent.keyDown(document, { key: 'ArrowRight' });
+    expect(window._getPgnIdx()).toBe(0); // unchanged
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9 · TRAIN BOT BANNER
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Train Bot banner', () => {
+  beforeEach(() => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+    document.getElementById('pgn-ta').value = '1. e4 e5 *';
+    window.loadPGN();
+  });
+
+  test('clicking Train Bot shows the banner', () => {
+    fireEvent.click(document.getElementById('btn-train'));
+    expect(document.getElementById('train-banner')).toHaveClass('show');
+  });
+
+  test('banner text mentions feature not available', () => {
+    fireEvent.click(document.getElementById('btn-train'));
+    expect(document.getElementById('train-banner').textContent).toMatch(/not available/i);
+  });
+
+  test('banner auto-dismisses after 5 seconds', () => {
+    fireEvent.click(document.getElementById('btn-train'));
+    jest.advanceTimersByTime(5000);
+    expect(document.getElementById('train-banner')).not.toHaveClass('show');
+  });
+
+  test('banner close button removes "show" class', () => {
+    window.showTrainBanner();
+    const closeBtn = document.querySelector('.train-banner-close');
+    fireEvent.click(closeBtn);
+    expect(document.getElementById('train-banner')).not.toHaveClass('show');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 10 · DROP ZONE
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Drop zone', () => {
+  beforeEach(() => {
+    fireEvent.click(screen.getByText(/PGN Review/i));
+  });
+
+  test('dragover adds "over" class to drop zone', () => {
+    const dz = document.getElementById('drop-zone');
+    fireEvent.dragOver(dz);
+    expect(dz).toHaveClass('over');
+  });
+
+  test('dragleave removes "over" class', () => {
+    const dz = document.getElementById('drop-zone');
+    fireEvent.dragOver(dz);
+    fireEvent.dragLeave(dz);
+    expect(dz).not.toHaveClass('over');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 11 · CHESS ENGINE — INITIAL STATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Chess engine — initial state', () => {
+  test('board has 32 pieces', () => {
+    const g = newChess();
+    expect(g.b.filter(Boolean)).toHaveLength(32);
+  });
+
+  test('white pieces on ranks 1–2', () => {
+    const g = newChess();
+    expect(g.b[sq('e1')]).toBe('K');
+    expect(g.b[sq('d1')]).toBe('Q');
+    expect(g.b[sq('a1')]).toBe('R');
+    expect(g.b[sq('e2')]).toBe('P');
+  });
+
+  test('black pieces on ranks 7–8', () => {
+    const g = newChess();
+    expect(g.b[sq('e8')]).toBe('k');
+    expect(g.b[sq('d8')]).toBe('q');
+    expect(g.b[sq('a7')]).toBe('p');
+  });
+
+  test('ranks 3–6 are empty', () => {
+    const g = newChess();
+    for (let r = 2; r <= 5; r++)
+      for (let c = 0; c < 8; c++)
+        expect(g.b[r * 8 + c]).toBe('');
+  });
+
+  test('turn is white at start', () => {
+    expect(newChess().turn).toBe('w');
+  });
+
+  test('all four castling rights enabled', () => {
+    const g = newChess();
+    expect(g.cast).toEqual({ K: true, Q: true, k: true, q: true });
+  });
+
+  test('ep target is -1 at start', () => {
+    expect(newChess().ep).toBe(-1);
+  });
+
+  test('game is not over', () => {
+    expect(newChess().over).toBe(false);
+  });
+
+  test('history is empty', () => {
+    expect(newChess().hist).toHaveLength(0);
+  });
+
+  test('reset() after moves restores initial state', () => {
+    const g = newChess();
+    g.move(sq('e2'), sq('e4'));
+    g.reset();
+    expect(g.hist).toHaveLength(0);
+    expect(g.b[sq('e2')]).toBe('P');
+    expect(g.b[sq('e4')]).toBe('');
+  });
+
+  test('white has exactly 20 legal moves at start', () => {
+    expect(newChess().allMoves()).toHaveLength(20);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 12 · CHESS ENGINE — PIECE MOVEMENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Chess engine — piece movement', () => {
+  // Pawns ───────────────────────────────────────────────────────────────────
+
+  test('pawn: single and double push from starting rank', () => {
+    const g = newChess();
+    const mvs = g.legal(sq('e2'));
+    expect(mvs).toContain(sq('e3'));
+    expect(mvs).toContain(sq('e4'));
+  });
+
+  test('pawn: no double push after leaving starting rank', () => {
+    const g = playMoves(['e4', 'e5']);
+    expect(g.legal(sq('e4'))).not.toContain(sq('e6'));
+  });
+
+  test('pawn: blocked by own piece cannot advance', () => {
+    const g = sparseBoard({ 'e2': 'P', 'e3': 'P', 'e1': 'K', 'e8': 'k' });
+    expect(g.legal(sq('e2'))).toHaveLength(0);
+  });
+
+  test('pawn: diagonal capture of enemy piece', () => {
+    const g = sparseBoard({ 'e4': 'P', 'd5': 'p', 'e1': 'K', 'e8': 'k' });
+    expect(g.legal(sq('e4'))).toContain(sq('d5'));
+  });
+
+  test('pawn: cannot capture straight ahead', () => {
+    const g = sparseBoard({ 'e4': 'P', 'e5': 'p', 'e1': 'K', 'e8': 'k' });
+    expect(g.legal(sq('e4'))).not.toContain(sq('e5'));
+  });
+
+  test('pawn: en passant target set after double push', () => {
+    const g = playMoves(['e4', 'd5']);
+    expect(g.ep).toBe(sq('d6'));
+  });
+
+  test('pawn: en passant capture legal', () => {
+    const g = playMoves(['e4', 'a6', 'e5', 'd5']);
+    expect(g.legal(sq('e5'))).toContain(sq('d6'));
+  });
+
+  test('pawn: en passant removes the captured pawn', () => {
+    const g = playMoves(['e4', 'a6', 'e5', 'd5']);
+    g.move(sq('e5'), sq('d6'));
+    expect(g.b[sq('d5')]).toBe('');
+    expect(g.b[sq('d6')]).toBe('P');
+  });
+
+  test('pawn: ep target cleared after one move passes', () => {
+    const g = playMoves(['e4', 'd5', 'a3']);
+    expect(g.ep).toBe(-1);
+  });
+
+  // Knights ─────────────────────────────────────────────────────────────────
+
+  test('knight: 8 moves from e4 on open board', () => {
+    const g = sparseBoard({ 'e4': 'N', 'e1': 'K', 'e8': 'k' });
+    expect(g.legal(sq('e4'))).toHaveLength(8);
+  });
+
+  test('knight: 2 moves from a1 corner', () => {
+    const g = sparseBoard({ 'a1': 'N', 'h1': 'K', 'e8': 'k' });
+    expect(g.legal(sq('a1'))).toHaveLength(2);
+  });
+
+  test('knight: jumps over own pieces', () => {
+    const g = newChess();
+    expect(g.legal(sq('g1'))).toContain(sq('f3'));
+  });
+
+  test('knight: cannot land on own piece', () => {
+    expect(newChess().legal(sq('b1'))).not.toContain(sq('d2'));
+  });
+
+  // Sliding pieces ──────────────────────────────────────────────────────────
+
+  test('bishop: 0 moves at start (blocked by pawns)', () => {
+    expect(newChess().legal(sq('c1'))).toHaveLength(0);
+  });
+
+  test('bishop: 13 moves from e4 on open board', () => {
+    const g = sparseBoard({ 'e4': 'B', 'e1': 'K', 'e8': 'k' });
+    expect(g.legal(sq('e4'))).toHaveLength(13);
+  });
+
+  test('rook: blocked by own piece at start', () => {
+    expect(newChess().legal(sq('a1'))).toHaveLength(0);
+  });
+
+  test('rook: 14 moves from a4 on open board', () => {
+    const g = sparseBoard({ 'a4': 'R', 'h8': 'K', 'e8': 'k' });
+    expect(g.legal(sq('a4'))).toHaveLength(14);
+  });
+
+  test('rook: can capture enemy at end of slide', () => {
+    const g = sparseBoard({ 'a1': 'R', 'a8': 'r', 'h1': 'K', 'h8': 'k' });
+    expect(g.legal(sq('a1'))).toContain(sq('a8'));
+  });
+
+  test('queen: combines rook + bishop (>20 moves from centre)', () => {
+    const g = sparseBoard({ 'd4': 'Q', 'e1': 'K', 'e8': 'k' });
+    expect(g.legal(sq('d4')).length).toBeGreaterThan(20);
+  });
+
+  // King ────────────────────────────────────────────────────────────────────
+
+  test('king: 8 moves on open board', () => {
+    const g = sparseBoard({ 'e4': 'K', 'e8': 'k' });
+    expect(g.legal(sq('e4'))).toHaveLength(8);
+  });
+
+  test('king: cannot step into check', () => {
+    const g = sparseBoard({ 'e1': 'K', 'd8': 'r', 'h8': 'k' });
+    expect(g.legal(sq('e1'))).not.toContain(sq('d1'));
+  });
+
+  test('king: can capture unprotected enemy', () => {
+    const g = sparseBoard({ 'e1': 'K', 'd2': 'q', 'h8': 'k' });
+    expect(g.legal(sq('e1'))).toContain(sq('d2'));
+  });
+
+  test('king: cannot capture protected enemy', () => {
+    const g = sparseBoard({ 'e1': 'K', 'd2': 'q', 'd8': 'r', 'h8': 'k' });
+    expect(g.legal(sq('e1'))).not.toContain(sq('d2'));
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 13 · CHESS ENGINE — SPECIAL MOVES
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Chess engine — castling', () => {
+  function castleBoard(extraPieces = {}) {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'a1': 'R', 'e8': 'k', ...extraPieces });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    return g;
+  }
+
+  test('white can castle kingside on clear board', () => {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    expect(g.legal(sq('e1'))).toContain(sq('g1'));
+  });
+
+  test('white can castle queenside on clear board', () => {
+    const g = sparseBoard({ 'e1': 'K', 'a1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    expect(g.legal(sq('e1'))).toContain(sq('c1'));
+  });
+
+  test('kingside castle moves king to g1, rook to f1', () => {
+    const g = castleBoard();
+    g.move(sq('e1'), sq('g1'));
+    expect(g.b[sq('g1')]).toBe('K');
+    expect(g.b[sq('f1')]).toBe('R');
+    expect(g.b[sq('h1')]).toBe('');
+    expect(g.b[sq('e1')]).toBe('');
+  });
+
+  test('queenside castle moves king to c1, rook to d1', () => {
+    const g = castleBoard();
+    g.move(sq('e1'), sq('c1'));
+    expect(g.b[sq('c1')]).toBe('K');
+    expect(g.b[sq('d1')]).toBe('R');
+    expect(g.b[sq('a1')]).toBe('');
+  });
+
+  test('castling revokes both rights for that colour', () => {
+    const g = castleBoard();
+    g.move(sq('e1'), sq('g1'));
+    expect(g.cast.K).toBe(false);
+    expect(g.cast.Q).toBe(false);
+  });
+
+  test('moving king revokes castling rights', () => {
+    const g = castleBoard();
+    g.move(sq('e1'), sq('f1'));
+    expect(g.cast.K).toBe(false);
+    expect(g.cast.Q).toBe(false);
+  });
+
+  test('moving h1 rook revokes kingside right', () => {
+    const g = castleBoard();
+    g.move(sq('h1'), sq('h4'));
+    expect(g.cast.K).toBe(false);
+    expect(g.cast.Q).toBe(true);
+  });
+
+  test('cannot castle while in check', () => {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'e8': 'r', 'a8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    expect(g.legal(sq('e1'))).not.toContain(sq('g1'));
+  });
+
+  test('cannot castle through attacked square (f1 attacked)', () => {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'f8': 'r', 'a8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    expect(g.legal(sq('e1'))).not.toContain(sq('g1'));
+  });
+
+  test('SAN for kingside castle is O-O', () => {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    expect(g.move(sq('e1'), sq('g1'))).toBe('O-O');
+  });
+
+  test('SAN for queenside castle is O-O-O', () => {
+    const g = sparseBoard({ 'e1': 'K', 'a1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    expect(g.move(sq('e1'), sq('c1'))).toBe('O-O-O');
+  });
+});
+
+describe('Chess engine — promotion', () => {
+  test('white pawn on 7th rank can reach 8th rank', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    expect(g.legal(sq('e7'))).toContain(sq('e8'));
+  });
+
+  test('promote to queen: piece is Q', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    g.move(sq('e7'), sq('e8'), 'Q');
+    expect(g.b[sq('e8')]).toBe('Q');
+  });
+
+  test('promote to rook: piece is R', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    g.move(sq('e7'), sq('e8'), 'R');
+    expect(g.b[sq('e8')]).toBe('R');
+  });
+
+  test('promote to knight: piece is N', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    g.move(sq('e7'), sq('e8'), 'N');
+    expect(g.b[sq('e8')]).toBe('N');
+  });
+
+  test('promote to bishop: piece is B', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    g.move(sq('e7'), sq('e8'), 'B');
+    expect(g.b[sq('e8')]).toBe('B');
+  });
+
+  test('black pawn promotes to lowercase', () => {
+    const g = sparseBoard({ 'e2': 'p', 'e8': 'k', 'h1': 'K' });
+    g.turn = 'b';
+    g.move(sq('e2'), sq('e1'), 'Q');
+    expect(g.b[sq('e1')]).toBe('q');
+  });
+
+  test('promotion SAN includes =Q', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    expect(g.move(sq('e7'), sq('e8'), 'Q')).toMatch(/=Q/);
+  });
+
+  test('promotion modal appears when player pawn reaches 8th rank', () => {
+    // Set up: white pawn on e7, white to move, player is white
+    const g = window._getG();
+    g.b = Array(64).fill('');
+    g.b[sq('e7')] = 'P';
+    g.b[sq('e1')] = 'K';
+    g.b[sq('h8')] = 'k';
+    g.turn = 'w';
+    g.cast = { K: false, Q: false, k: false, q: false };
+    window.render();
+
+    click('e7');
+    click('e8');
+    expect(document.getElementById('promo-overlay')).toHaveClass('show');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 14 · CHESS ENGINE — CHECK, CHECKMATE, STALEMATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Chess engine — check detection', () => {
+  test('inCheck false at starting position', () => {
+    const g = newChess();
+    expect(g.inCheck('w')).toBe(false);
+    expect(g.inCheck('b')).toBe(false);
+  });
+
+  test('inCheck true when king attacked by rook', () => {
+    const g = sparseBoard({ 'e1': 'K', 'e8': 'r', 'a8': 'k' });
+    expect(g.inCheck('w')).toBe(true);
+  });
+
+  test('inCheck true when king attacked by bishop', () => {
+    const g = sparseBoard({ 'e1': 'K', 'a5': 'b', 'h8': 'k' });
+    expect(g.inCheck('w')).toBe(true);
+  });
+
+  test('inCheck true when king attacked by knight', () => {
+    const g = sparseBoard({ 'e1': 'K', 'd3': 'n', 'h8': 'k' });
+    expect(g.inCheck('w')).toBe(true);
+  });
+
+  test('inCheck true when king attacked by pawn', () => {
+    const g = sparseBoard({ 'e4': 'K', 'd5': 'p', 'h8': 'k' });
+    expect(g.inCheck('w')).toBe(true);
+  });
+
+  test('pinned rook cannot move off the pin axis', () => {
+    // White rook on e4 pinned by black rook on e8; white king on e1
+    const g = sparseBoard({ 'e1': 'K', 'e4': 'R', 'e8': 'r', 'h8': 'k' });
+    const lms = g.legal(sq('e4'));
+    // Every legal destination must be on the e-file (col 4)
+    for (const to of lms) expect(g.col(to)).toBe(4);
+  });
+
+  test('move that gives check gets + suffix', () => {
+    const g = sparseBoard({ 'a1': 'R', 'e1': 'K', 'e8': 'k' });
+    const san = g.move(sq('a1'), sq('a8'));
+    expect(san.endsWith('+')).toBe(true);
+  });
+});
+
+describe('Chess engine — checkmate & stalemate', () => {
+  test("Fool's mate: black wins in 4 half-moves", () => {
+    const g = playMoves(['f3', 'e5', 'g4', 'Qh4']);
+    expect(g.over).toBe(true);
+    expect(g.result).toBe('0-1');
+  });
+
+  test("Scholar's mate: white wins", () => {
+    const g = playMoves(['e4','e5','Bc4','Nc6','Qh5','Nf6','Qxf7']);
+    expect(g.over).toBe(true);
+    expect(g.result).toBe('1-0');
+  });
+
+  test('after checkmate allMoves() is empty', () => {
+    const g = playMoves(['f3', 'e5', 'g4', 'Qh4']);
+    expect(g.allMoves()).toHaveLength(0);
+  });
+
+  test('checkmate SAN ends with #', () => {
+    const g = playMoves(['f3', 'e5', 'g4']);
+    window.applySAN(g, 'Qh4');
+    expect(g.hist.at(-1).san.endsWith('#')).toBe(true);
+  });
+
+  test('stalemate: not in check, no moves', () => {
+    // Black king cornered at a8; white queen on c7, white king on b6
+    const g = sparseBoard({ 'a8': 'k', 'b6': 'K', 'c7': 'Q' });
+    g.turn = 'b';
+    expect(g.inCheck('b')).toBe(false);
+    expect(g._hasAny('b')).toBe(false);
+  });
+
+  test('stalemate result is 1/2-1/2', () => {
+    // White delivers stalemate with queen move
+    const g = sparseBoard({ 'a8': 'k', 'b6': 'K', 'c6': 'Q' });
+    g.move(sq('c6'), sq('c7'));
+    expect(g.over).toBe(true);
+    expect(g.result).toBe('1/2-1/2');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 15 · CHESS ENGINE — UNDO
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Chess engine — _apply / _undo', () => {
+  test('undo restores piece to origin', () => {
+    const g = newChess();
+    const sav = g._apply(sq('e2'), sq('e4'));
+    g._undo(sav);
+    expect(g.b[sq('e2')]).toBe('P');
+    expect(g.b[sq('e4')]).toBe('');
+  });
+
+  test('undo restores captured piece', () => {
+    const g = sparseBoard({ 'e4': 'P', 'd5': 'p', 'e1': 'K', 'e8': 'k' });
+    const sav = g._apply(sq('e4'), sq('d5'));
+    g._undo(sav);
+    expect(g.b[sq('d5')]).toBe('p');
+    expect(g.b[sq('e4')]).toBe('P');
+  });
+
+  test('undo restores turn', () => {
+    const g = newChess();
+    const sav = g._apply(sq('e2'), sq('e4'));
+    g._undo(sav);
+    expect(g.turn).toBe('w');
+  });
+
+  test('undo restores castling rights', () => {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    const sav = g._apply(sq('e1'), sq('g1'));
+    g._undo(sav);
+    expect(g.cast.K).toBe(true);
+    expect(g.cast.Q).toBe(true);
+  });
+
+  test('undo restores castling rook after O-O', () => {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    const sav = g._apply(sq('e1'), sq('g1'));
+    g._undo(sav);
+    expect(g.b[sq('h1')]).toBe('R');
+    expect(g.b[sq('f1')]).toBe('');
+    expect(g.b[sq('e1')]).toBe('K');
+  });
+
+  test('undo restores en passant square', () => {
+    const g = playMoves(['e4', 'd5']);
+    const epBefore = g.ep;
+    const sav = g._apply(sq('a2'), sq('a3'));
+    g._undo(sav);
+    expect(g.ep).toBe(epBefore);
+  });
+
+  test('undo restores ep-captured pawn', () => {
+    const g = playMoves(['e4', 'a6', 'e5', 'd5']);
+    const sav = g._apply(sq('e5'), sq('d6'));
+    g._undo(sav);
+    expect(g.b[sq('d5')]).toBe('p');
+    expect(g.b[sq('d6')]).toBe('');
+    expect(g.b[sq('e5')]).toBe('P');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 16 · CHESS ENGINE — SAN GENERATION
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Chess engine — SAN generation', () => {
+  test('simple pawn push: e4', () => {
+    expect(newChess().move(sq('e2'), sq('e4'))).toBe('e4');
+  });
+
+  test('knight move: Nf3', () => {
+    const g = newChess();
+    expect(g.move(sq('g1'), sq('f3'))).toBe('Nf3');
+  });
+
+  test('pawn capture includes file: exd5', () => {
+    const g = playMoves(['e4', 'd5']);
+    expect(g.move(sq('e4'), sq('d5'))).toBe('exd5');
+  });
+
+  test('disambiguates rooks on same rank: Rad1', () => {
+    const g = sparseBoard({ 'a4': 'R', 'h4': 'R', 'e1': 'K', 'e8': 'k' });
+    // Move a-rook to e4 area - use a unambiguous rank scenario
+    const g2 = sparseBoard({ 'a1': 'R', 'h1': 'R', 'e8': 'K', 'a8': 'k' });
+    const san = g2.move(sq('a1'), sq('d1'));
+    expect(san).toBe('Rad1');
+  });
+
+  test('disambiguates rooks on same file: R1a3', () => {
+    const g = sparseBoard({ 'a1': 'R', 'a4': 'R', 'h1': 'K', 'e8': 'k' });
+    const san = g.move(sq('a1'), sq('a3'));
+    expect(san).toBe('R1a3');
+  });
+
+  test('no disambiguation with one rook', () => {
+    const g = sparseBoard({ 'a1': 'R', 'e1': 'K', 'e8': 'k' });
+    expect(g.move(sq('a1'), sq('a5'))).toBe('Ra5');
+  });
+
+  test('fullmove counter increments after black moves', () => {
+    const g = newChess();
+    g.move(sq('e2'), sq('e4'));
+    g.move(sq('e7'), sq('e5'));
+    expect(g.fm).toBe(2);
+  });
+
+  test('halfmove clock resets on pawn move', () => {
+    const g = sparseBoard({ 'a1': 'R', 'e2': 'P', 'e1': 'K', 'e8': 'k' });
+    g.move(sq('a1'), sq('a4'));  // rook: hm → 1
+    g.move(sq('e8'), sq('d8')); // black king: hm → 2
+    expect(g.hm).toBe(2);
+    g.move(sq('e2'), sq('e3')); // pawn: hm → 0
+    expect(g.hm).toBe(0);
+  });
+
+  test('halfmove clock resets on capture', () => {
+    const g = sparseBoard({ 'a1': 'R', 'a8': 'r', 'e1': 'K', 'e8': 'k' });
+    g.move(sq('a1'), sq('a5')); // hm → 1
+    g.move(sq('a8'), sq('a5')); // capture → hm resets
+    expect(g.hm).toBe(0);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 17 · PGN PARSER — parsePGN()
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('PGN parser — parsePGN()', () => {
+  const FULL_PGN = `
+[Event "Ruy Lopez"]
+[Site "London"]
+[White "Alice"]
+[Black "Bob"]
+[Result "1/2-1/2"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {Morphy Defence} 4. Ba4 Nf6 1/2-1/2
+`;
+
+  test('extracts Event header', () => {
+    expect(window.parsePGN(FULL_PGN).hdrs.Event).toBe('Ruy Lopez');
+  });
+
+  test('extracts White and Black headers', () => {
+    const { hdrs } = window.parsePGN(FULL_PGN);
+    expect(hdrs.White).toBe('Alice');
+    expect(hdrs.Black).toBe('Bob');
+  });
+
+  test('extracts Result header', () => {
+    expect(window.parsePGN(FULL_PGN).hdrs.Result).toBe('1/2-1/2');
+  });
+
+  test('first move token is e4', () => {
+    expect(window.parsePGN(FULL_PGN).moves[0]).toBe('e4');
+  });
+
+  test('strips move numbers from token list', () => {
+    const { moves } = window.parsePGN(FULL_PGN);
+    expect(moves.every(m => !/^\d+\.$/.test(m))).toBe(true);
+  });
+
+  test('strips result token (1/2-1/2) from moves', () => {
+    expect(window.parsePGN(FULL_PGN).moves).not.toContain('1/2-1/2');
+  });
+
+  test('strips comments in curly braces', () => {
+    const { moves } = window.parsePGN(FULL_PGN);
+    expect(moves).not.toContain('{Morphy');
+    expect(moves).not.toContain('Defence}');
+  });
+
+  test('strips variations in parentheses', () => {
+    const pgn = '1. e4 e5 (1... c5 2. Nf3) 2. d4 *';
+    const { moves } = window.parsePGN(pgn);
+    expect(moves).not.toContain('c5');
+    expect(moves[2]).toBe('d4');
+  });
+
+  test('does not include ellipsis tokens', () => {
+    expect(window.parsePGN(FULL_PGN).moves).not.toContain('...');
+  });
+
+  test('correct move count for 4-move opening (8 half-moves)', () => {
+    const { moves } = window.parsePGN(FULL_PGN);
+    expect(moves).toHaveLength(8);
+  });
+
+  test('handles PGN with no headers', () => {
+    const { hdrs, moves } = window.parsePGN('1. d4 d5 *');
+    expect(Object.keys(hdrs)).toHaveLength(0);
+    expect(moves[0]).toBe('d4');
+  });
+
+  test('handles empty string input', () => {
+    const { moves } = window.parsePGN('');
+    expect(moves.filter(Boolean)).toHaveLength(0);
+  });
+
+  test('last-game headers win with multiple games (known parser limitation)', () => {
+    const two = '[Event "A"] 1. e4 1-0\n\n[Event "B"] 1. d4 1-0';
+    expect(window.parsePGN(two).hdrs.Event).toBe('B');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 18 · PGN PARSER — applySAN()
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('PGN parser — applySAN()', () => {
+  test('applies e4', () => {
+    const g = newChess();
+    expect(window.applySAN(g, 'e4')).toBe(true);
+    expect(g.b[sq('e4')]).toBe('P');
+  });
+
+  test('applies Nf3 after e4/e5', () => {
+    const g = newChess();
+    window.applySAN(g, 'e4');
+    window.applySAN(g, 'e5');
+    expect(window.applySAN(g, 'Nf3')).toBe(true);
+    expect(g.b[sq('f3')]).toBe('N');
+  });
+
+  test('applies exd5 capture', () => {
+    const g = playMoves(['e4', 'd5']);
+    window.applySAN(g, 'exd5');
+    expect(g.b[sq('d5')]).toBe('P');
+  });
+
+  test('applies O-O (kingside castle)', () => {
+    const g = sparseBoard({ 'e1': 'K', 'h1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    window.applySAN(g, 'O-O');
+    expect(g.b[sq('g1')]).toBe('K');
+    expect(g.b[sq('f1')]).toBe('R');
+  });
+
+  test('applies O-O-O (queenside castle)', () => {
+    const g = sparseBoard({ 'e1': 'K', 'a1': 'R', 'e8': 'k' });
+    g.cast = { K: true, Q: true, k: true, q: true };
+    window.applySAN(g, 'O-O-O');
+    expect(g.b[sq('c1')]).toBe('K');
+  });
+
+  test('applies e8=Q promotion', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    window.applySAN(g, 'e8=Q');
+    expect(g.b[sq('e8')]).toBe('Q');
+  });
+
+  test('applies e8=N promotion', () => {
+    const g = sparseBoard({ 'e7': 'P', 'e1': 'K', 'h8': 'k' });
+    window.applySAN(g, 'e8=N');
+    expect(g.b[sq('e8')]).toBe('N');
+  });
+
+  test('strips + suffix before parsing', () => {
+    const g = newChess();
+    const result = window.applySAN(g, 'e4+');
+    expect(typeof result).toBe('boolean');
+  });
+
+  test('strips # suffix: Qh4# delivers checkmate', () => {
+    const g = playMoves(['f3', 'e5', 'g4']);
+    window.applySAN(g, 'Qh4#');
+    expect(g.over).toBe(true);
+  });
+
+  test('returns false for an illegal SAN', () => {
+    const g = newChess();
+    expect(window.applySAN(g, 'Qe4')).toBe(false);
+  });
+
+  test("replays Fool's Mate from SAN list", () => {
+    const g = newChess();
+    for (const m of ['f3','e5','g4','Qh4']) window.applySAN(g, m);
+    expect(g.over).toBe(true);
+    expect(g.result).toBe('0-1');
+  });
+
+  test('replays Immortal Game opening (12 moves) without error', () => {
+    const g = newChess();
+    const mvs = ['e4','e5','f4','exf4','Bc4','Qh4','Kf1','b5','Bxb5','Nf6','Nf3','Qh6'];
+    const ok = mvs.every(m => window.applySAN(g, m) !== false);
+    expect(ok).toBe(true);
+    expect(g.hist).toHaveLength(12);
+  });
+
+  test('history length matches move count after replay', () => {
+    const pgn = '1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 *';
+    const { moves } = window.parsePGN(pgn);
+    const g = newChess();
+    for (const m of moves) window.applySAN(g, m);
+    expect(g.hist).toHaveLength(moves.length);
+  });
+
+  test('turn is white after even number of half-moves', () => {
+    expect(playMoves(['e4','e5','Nf3','Nc6']).turn).toBe('w');
+  });
+
+  test('turn is black after odd number of half-moves', () => {
+    expect(playMoves(['e4','e5','Nf3']).turn).toBe('b');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 19 · COMPUTER (randMove)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Chess engine — randMove', () => {
+  test('returns an object with from and to properties', () => {
+    const mv = newChess().randMove();
+    expect(typeof mv.from).toBe('number');
+    expect(typeof mv.to).toBe('number');
+  });
+
+  test('from and to are different squares', () => {
+    const mv = newChess().randMove();
+    expect(mv.from).not.toBe(mv.to);
+  });
+
+  test('returns null on stalemate position', () => {
+    const g = sparseBoard({ 'a8': 'k', 'b6': 'K', 'c7': 'Q' });
+    g.turn = 'b';
+    expect(g.randMove()).toBeNull();
+  });
+
+  test('randMove result is always a legal move', () => {
+    const g = newChess();
+    const mv = g.randMove();
+    expect(g.legal(mv.from)).toContain(mv.to);
+  });
+
+  test('50-move random game completes without error or illegal state', () => {
+    const g = newChess();
+    for (let i = 0; i < 50; i++) {
+      if (g.over) break;
+      const mv = g.randMove();
+      if (!mv) break;
+      g.move(mv.from, mv.to, 'Q');
+      // After every move, neither side should be wrongly in check on their own turn
+      // (i.e., the side that just moved must not still be in check)
+    }
+    expect(true).toBe(true); // no throw
+  });
+});

@@ -34,7 +34,8 @@ def main(user_id: str):
     y = torch.tensor(y)
 
     # NOTE: changed batch_size=10 to just 10 to pass linter errors for now
-    dataloader = DataLoader(features, y, 10, shuffle=True)
+    # NOTE: same for shuffle=True
+    dataloader = DataLoader(features, y, 10, True)
     training = Training(
         architecture="3_layer_nn",
         dataloader=dataloader,

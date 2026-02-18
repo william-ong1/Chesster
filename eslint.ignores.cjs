@@ -2,6 +2,7 @@
 module.exports = [
   'build/',
   'dist/',
+  'htmlcov/',
   'coverage/',
   '*.test.js',
   '*.test.js.map',

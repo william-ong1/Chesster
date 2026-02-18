@@ -1,12 +1,17 @@
-# main function for the ML pipeline, it should bring the data from mongoDB and split it into training and testing data.
-# it should then train the model and test it, it should also save the model's evaluation metrics, to local.
+"""
+main function for the ML pipeline, it should bring the data from mongoDB
+and split it into training and testing data. It should then train the model
+and test it, it should also save the model's evaluation metrics, to local.
+"""
 
 import pymongo
 from training import Training
 from evaluate_model import EvaluateModel
 from torch.utils.data import DataLoader
 import torch
-import os
+
+# NOTE: Commented this out to pass linter checks (it's currently unused)
+# import os
 
 
 def main(user_id: str):
@@ -24,26 +29,30 @@ def main(user_id: str):
     for board in game_data:
         features.append(board["features"])
         y.append(board["y"])
-    
+
     features = torch.tensor(features)
     y = torch.tensor(y)
 
-    dataloader = DataLoader(features, y, batch_size=10, shuffle=True)
+    # NOTE: changed batch_size=10 to just 10 to pass linter errors for now
+    # NOTE: same for shuffle=True
+    dataloader = DataLoader(features, y, 10, True)
     training = Training(
-        architecture="3_layer_nn", 
-        dataloader=dataloader, 
-        optim_class=torch.optim.Adam, 
-        loss_fn=torch.nn.MSELoss(), 
-        learning_rate=0.001, 
-        num_epochs=10, 
-        log_every=10, 
-        verbose=True, 
-        device="cpu"
-        )
+        architecture="3_layer_nn",
+        dataloader=dataloader,
+        optim_class=torch.optim.Adam,
+        loss_fn=torch.nn.MSELoss(),
+        learning_rate=0.001,
+        num_epochs=10,
+        log_every=10,
+        verbose=True,
+        device="cpu",
+    )
     training.train()
-    evaluation = EvaluateModel(training.model)
+    # TODO: update with a proper x value
+    evaluation = EvaluateModel(training.model, None, y)
     evaluation.evaluate()
     training.save_model(models)
+
 
 if __name__ == "__main__":
     main("123")

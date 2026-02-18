@@ -1,7 +1,11 @@
 # (C) Chesster. Written by Shreyan Mitra, William Ong,
 # Mason Tepper, Lebam Amare, Raghav Ramesh, and Danyuan Wang
-# Parses PGN text to structured game data using python-chess
-# Extracts metadata (ELO, time control, results)
+
+"""
+Parses PGN text to structured game data using python-chess
+Extracts FEN, next move, and array representation of the board.
+"""
+
 
 import chess.pgn
 import io

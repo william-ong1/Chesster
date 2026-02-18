@@ -9,6 +9,12 @@ The use cases that are functional for our beta release are:
 We are actively working on integrating the training feature into our application. 
 
 ## How to Build and Test the system
+
+1. Open frontend/index.html
+2. Download it to your local computer
+3. Open it with a web browser (ensure Javascript is enabled in that browser)
+4. Play chess!
+
 **Testing the system:**
 - To install all required testing tools (requires Python and NodeJS):
 ```sh
@@ -43,12 +49,6 @@ Allows users to upload their past chess data and then trains a chess bot with th
 - Help users identify weaknesses and mistakes they make
 
 ---
-
-## How to Use the Beta
-1. Open frontend/index.html
-2. Download it to your local computer
-3. Open it with a web browser (ensure Javascript is enabled in that browser)
-4. Play chess!
 
 ## How It Works
 

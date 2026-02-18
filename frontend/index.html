@@ -572,6 +572,8 @@ h1{
 //  CHESS ENGINE
 // ================================================================
 
+// TODO: add a detect draw option, for if the bot or the player runs out of legal moves, also 50 move rule
+
 const GLYPH = {
   K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',
   k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'
@@ -721,6 +723,7 @@ class Chess {
     return ok;
   }
 
+  // TODO: use endpoint and check if game is over before and after hitting endpoint
   // Apply move (for legality testing or actual play). Returns undo token.
   _apply(from,to,promo='Q'){
     const p=this.b[from], c=this.col_of(p), t=p.toLowerCase();

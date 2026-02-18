@@ -1,5 +1,16 @@
 # Chesster
 
+## Beta Release
+The use cases that are functional for our beta release are: 
+1. User can upload their personal chess data for the bot to train on
+2. User can see all legal moves when playing a game
+3. An entire chess game can be played from start to finish with legal moves
+
+We are actively working on integrating the training feature into our application. 
+
+## How to Build and Test the system
+
+
 ## Overview
 
 Allows users to upload their past chess data and then trains a chess bot with this data such that it learns to mimic their playstyle. The user can then play against this bot when they want. 
@@ -43,9 +54,8 @@ Allows users to upload their past chess data and then trains a chess bot with th
 ```text
 /
 ├── frontend/     # Chess GUI and user interaction
-├── backend/      # APIs, authentication, data storage
-├── bots/         # Chess bot logic and training
-├── models/       # trained models and configs
+├── backend/      # APIs, authentication, data upload/storage
 ├── data/         # Data preprocessing
+├── ML/           # Chess bot logic and training
 ├── docs/         # Technical documentation
 └── README.md     # Project overview

@@ -12,6 +12,12 @@ Allows users to upload their past chess data and then trains a chess bot with th
 
 ---
 
+## How to Use the Beta
+1. Open frontend/index.html
+2. Download it to your local computer
+3. Open it with a web browser (ensure Javascript is enabled in that browser)
+4. Play chess!
+
 ## How It Works
 
 1. **Data Upload**  

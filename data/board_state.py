@@ -1,6 +1,6 @@
 """Used to represent a Board State"""
 
-from data.piece import Piece, PieceColor, PieceType
+from .piece import Piece, PieceColor, PieceType
 
 
 class BoardState:

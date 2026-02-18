@@ -6,7 +6,7 @@
 import chess.pgn
 import io
 from typing import List
-from data.board_state import BoardState
+from .board_state import BoardState
 
 
 class ParsePGN:
@@ -113,5 +113,4 @@ class ParsePGN:
         win_move = game.headers["Result"]
         final_board_state = BoardState(board.fen(), win_move)
         moves_to_board_state.append(final_board_state)
-        print(moves_to_board_state)
         return moves_to_board_state

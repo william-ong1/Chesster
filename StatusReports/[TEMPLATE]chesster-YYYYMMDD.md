@@ -6,14 +6,39 @@
 - This section should be an exact copy of the last section from last week (i.e., goals from a week ago). It can be empty for the first week.
 
 ## Progress and Issues
-### Progress
-- Report on progress: what you did, what worked, what you learned.
-
-### Issues
-- Report on issues: where you had trouble, and where you are blocked.
+- Mason
+  - Progress:
+  - Issues/Blockers:
+- Danyuan
+  - Progress:
+  - Issues/Blockers:
+- Lebam
+  - Progress:
+  - Issues/Blockers:
+- Shreyan
+  - Progress:
+  - Issues/Blockers:
+- William
+  - Progress:
+  - Issues/Blockers:
+- Raghav
+  - Progress:
+  - Issues/Blockers:
+- General issues:
 
 ## Questions for the Product Owner 
 - List any questions for your TA to be discussed in your Thursday project meeting.
 
 ## Goals for Next Week 
-- Outline your plans and goals for the following week. Each bullet point should include a measurable task and a time estimate (no longer than a week). We recommend that you label these with the student(s) who is responsible for the item.
+- Mason
+    - 
+- Danyuan
+    - 
+- Lebam
+    - 
+- Shreyan
+    - 
+- William
+    - 
+- Raghav
+    - 

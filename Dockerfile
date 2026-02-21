@@ -1,6 +1,8 @@
-FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
+FROM tensorflow/tensorflow:2.1.0-gpu
 
-RUN apt-get update && apt-get install -y \
+RUN rm -f /etc/apt/sources.list.d/cuda.list \
+          /etc/apt/sources.list.d/nvidia-ml.list && \
+    apt-get update && apt-get install -y \
     wget bzip2 pbzip2 ca-certificates screen \
     && rm -rf /var/lib/apt/lists/*
 

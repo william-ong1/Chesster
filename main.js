@@ -233,8 +233,9 @@ function buildDockerImage(win) {
       'Building Docker training image — 10-20 minutes on first run...');
 
     const proc = spawn('docker', [
-      'build', '-t', IMAGE_NAME, '--progress=plain', '.'
-    ], { cwd: ROOT });
+  'build', '--platform', 'linux/amd64',
+  '-t', IMAGE_NAME, '--progress=plain', '.'
+], { cwd: ROOT });
 
     proc.stdout.on('data', d => {
       d.toString().split('\n').filter(l => l.trim())
@@ -309,7 +310,7 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
 
       const script = path.join(MAIA_DIR, '1-data_generation', '9-pgn_to_training_data.sh');
       const step2 = spawn('docker', [
-  'run', '--rm', '--gpus', 'all',
+  'run', '--rm', '--platform', 'linux/amd64', '--gpus', 'all',
   '-v', `${MAIA_DIR}:/maia-individual`,
   '-v', `${outputDir}:/session`,
   '-w', '/maia-individual/1-data_generation',
@@ -351,7 +352,7 @@ config = config.replace(
         send('train', 'Starting neural network training. This may take a while...');
 
         const step3 = spawn('docker', [
-  'run', '--rm', '--gpus', 'all',
+  'run', '--rm', '--platform', 'linux/amd64', '--gpus', 'all',
   '-v', `${MAIA_DIR}:/maia-individual`,
   '-v', `${outputDir}:/session`,
   '-v', `${MODELS_DIR}:/models`,        // ← add this

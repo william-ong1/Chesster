@@ -23,8 +23,8 @@ def clean_pgn(input_path, output_path):
     fixed = []
     for chunk in games:
         lines = chunk.strip().split('\n')
-        headers = [l for l in lines if l.startswith('[')]
-        moves = ' '.join(l for l in lines if not l.startswith('[') and l.strip())
+        headers = [l for l in lines if l.startswith('[')] #Get all lines that start with brackets - these lines are not moves but contain annotations about the game.
+        moves = ' '.join(l for l in lines if not l.startswith('[') and l.strip()) #Merge all lines containing moves into a single line
         if headers and moves:
             fixed.append('\n'.join(headers) + '\n\n' + moves + '\n')
 

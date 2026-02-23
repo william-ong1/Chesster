@@ -9,8 +9,15 @@ import re
 import sys
 
 def clean_pgn(input_path, output_path):
-    with open(input_path, 'r') as f:
-        content = f.read()
+    try:
+        with open(input_path, 'r') as file:
+            content = file.read()
+    except FileNotFoundError:
+        print(f"Error: The file {input_path} was not found.")
+    except PermissionError:
+        print("Error: Permission denied. Unable to access the file {input_path}.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
     games = content.strip().split('\n\n')
     fixed = []

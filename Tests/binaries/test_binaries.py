@@ -78,4 +78,7 @@ class TestBinaries:
                 num_files += 1
 
         # Test if the correct number of files exist for this directory
-        assert num_files == len(expected_files)
+        assert num_files == len(
+            expected_files
+        ), f"Expected {len(expected_files)} binary files, \
+            but found {num_files} binary files."

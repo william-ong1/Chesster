@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chesster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="setup-overlay" id="setupOverlay">
+  <div class="setup-dialog">
+    <div class="sidebar__crown" style="font-size:48px;text-align:center"><img src="ChessterLogo.png" alt="" /></div>
+    <div class="setup-title">First Time Setup</div>
+    <div class="setup-msg" id="setupMsg">Installing maia-individual backend...</div>
+    <div class="setup-spinner" id="setupSpinner"></div>
+    <a class="setup-link" id="setupDockerLink" style="display:none" href="#">
+      Install Docker Desktop →
+    </a>
+  </div>
+</div>
+
+  <!-- Ambient background -->
+  <div class="ambient">
+    <div class="ambient__orb ambient__orb--1"></div>
+    <div class="ambient__orb ambient__orb--2"></div>
+    <div class="ambient__orb ambient__orb--3"></div>
+  </div>
+  <div class="noise"></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar__logo">
+      <span class="sidebar__crown"><img src="ChessterLogo.png" alt="" /></span>
+      <span class="sidebar__brand">Chesster</span>
+    </div>
+
+    <div class="sidebar__nav">
+      <button class="nav-btn nav-btn--active" data-view="train">
+        <span class="nav-btn__icon">⚗</span>
+        <span class="nav-btn__label">Train</span>
+      </button>
+      <button class="nav-btn" data-view="play">
+        <span class="nav-btn__icon">♟</span>
+        <span class="nav-btn__label">Play</span>
+      </button>
+      <button class="nav-btn" data-view="system">
+        <span class="nav-btn__icon">◈</span>
+        <span class="nav-btn__label">System</span>
+      </button>
+    </div>
+
+    <div class="sidebar__footer">
+      <div class="system-dot" id="systemDot" title="System status"></div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ── TRAIN VIEW ──────────────────────────────────────────────── -->
+    <section class="view view--active" id="view-train">
+      <div class="view__header">
+        <h1 class="view__title">Train Your Own Chess Bot</h1>
+        <p class="view__subtitle">Upload your games and we'll forge an engine that plays like you</p>
+      </div>
+
+      <div class="train-layout">
+        <!-- Left: inputs -->
+        <div class="train-inputs">
+          <!-- PGN Upload -->
+          <div class="card" id="dropZone">
+            <div class="card__inner drop-area" id="dropArea">
+              <div class="drop-icon">⬆</div>
+              <div class="drop-title">Drop PGN file here</div>
+              <div class="drop-sub">or <button class="link-btn" id="browseBtn">browse files</button></div>
+              <input type="file" id="fileInput" accept=".pgn" style="display:none" />
+            </div>
+            <div class="pgn-selected" id="pgnSelected" style="display:none">
+              <span class="pgn-icon">♟</span>
+              <div class="pgn-info">
+                <div class="pgn-name" id="pgnName">—</div>
+                <div class="pgn-path" id="pgnPath">—</div>
+              </div>
+              <button class="icon-btn" id="clearPgnBtn">✕</button>
+            </div>
+          </div>
+
+          <!-- Username -->
+          <div class="field">
+            <label class="field__label" for="usernameInput">Chess Username</label>
+            <input class="field__input" id="usernameInput" type="text"
+              placeholder="e.g. MagnusCarlsen" autocomplete="off" spellcheck="false" />
+            <span class="field__hint">Must match exactly as it appears in your PGN file</span>
+          </div>
+
+          <!-- ELO -->
+          <div class="field">
+            <label class="field__label" for="eloInput">Your Rating</label>
+            <input class="field__input" id="eloInput" type="number"
+              placeholder="e.g. 1450" min="100" max="3000" />
+            <div class="elo-result" id="eloResult"></div>
+          </div>
+
+          <button class="btn btn--primary" id="startTrainBtn" disabled>
+            <span class="btn__icon">⚗</span> Begin Training
+          </button>
+        </div>
+
+        <!-- Right: terminal output -->
+        <div class="card terminal-card">
+          <div class="terminal-header">
+            <span class="terminal-dot terminal-dot--red"></span>
+            <span class="terminal-dot terminal-dot--yellow"></span>
+            <span class="terminal-dot terminal-dot--green"></span>
+            <span class="terminal-title">Training Output</span>
+          </div>
+          <div class="terminal-body" id="terminalBody">
+            <div class="terminal-placeholder">Output will appear here when training begins...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training status banner -->
+      <div class="status-banner" id="trainingBanner" style="display:none">
+        <div class="status-banner__spinner"></div>
+        <div class="status-banner__content">
+          <div class="status-banner__step" id="bannerStep">Preparing...</div>
+          <div class="status-banner__msg" id="bannerMsg">Please wait</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PLAY VIEW ──────────────────────────────────────────────── -->
+    <section class="view" id="view-play">
+      <div class="view__header">
+        <h1 class="view__title">Play Against Your Bot</h1>
+        <p class="view__subtitle">Load a trained model and face yourself</p>
+      </div>
+
+      <div class="play-layout">
+        <!-- Controls -->
+        <div class="play-sidebar">
+          <div class="card">
+            <div class="field">
+              <label class="field__label">Trained Model</label>
+              <select class="field__input" id="modelSelect">
+                <option value="">select a model</option>
+              </select>
+            </div>
+            <br>
+            <div class="field">
+              <label class="field__label">Play As</label>
+              <div class="side-toggle">
+                <button class="side-btn side-btn--active" id="playWhiteBtn" data-side="white">
+                  ♔ White
+                </button>
+                <button class="side-btn" id="playBlackBtn" data-side="black">
+                  ♚ Black
+                </button>
+              </div>
+            </div>
+            <br>
+            <button class="btn btn--primary" id="loadEngineBtn">
+              Load Engine
+            </button>
+            <button class="btn btn--ghost" id="newGameBtn" disabled>
+              New Game
+            </button>
+            <button class="btn btn--ghost" id="flipBoardBtn">
+              ⇅ Flip Board
+            </button>
+          </div>
+
+          <!-- Move log -->
+          <div class="card move-log-card">
+            <div class="move-log-header">Move Log</div>
+            <div class="move-log" id="moveLog"></div>
+          </div>
+
+          <!-- Game status -->
+          <div class="game-status" id="gameStatus"></div>
+        </div>
+
+        <!-- Chess board -->
+        <div class="board-container">
+          <div class="board-wrap">
+            <div class="board-coords board-coords--files" id="fileCoords"></div>
+            <div class="board-coords board-coords--ranks" id="rankCoords"></div>
+            <div class="board" id="chessBoard"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promotion dialog -->
+      <div class="promotion-overlay" id="promotionOverlay" style="display:none">
+        <div class="promotion-dialog">
+          <div class="promotion-title">Choose promotion piece</div>
+          <div class="promotion-pieces" id="promotionPieces"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SYSTEM VIEW ────────────────────────────────────────────── -->
+    <section class="view" id="view-system">
+      <div class="view__header">
+        <h1 class="view__title">System Status</h1>
+        <p class="view__subtitle">Required tools and dependencies</p>
+      </div>
+
+      <div class="system-grid" id="systemGrid">
+        <div class="check-placeholder">Running diagnostics...</div>
+      </div>
+
+      <button class="btn btn--ghost" id="recheckBtn" style="margin-top:24px">
+        Re-run Check
+      </button>
+    </section>
+
+  </main>
+
+  <script src="../node_modules/chess.js/chess.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

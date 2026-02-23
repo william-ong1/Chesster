@@ -31,8 +31,15 @@ def clean_pgn(input_path, output_path):
     result = '\n'.join(fixed)
     result = re.sub(r'\n{2,}', '\n\n', result)
 
-    with open(output_path, 'w') as f:
-        f.write(result)
+    try:
+        with open(output_path, 'w') as f:
+            f.write(result)
+    except FileNotFoundError:
+        print(f"Error: The file {input_path} was not found.")
+    except PermissionError:
+        print("Error: Permission denied. Unable to access the file {input_path}.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
     print(f"Cleaned {len(fixed)} games -> {output_path}")
 

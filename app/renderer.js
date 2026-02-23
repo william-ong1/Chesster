@@ -413,7 +413,6 @@ function onSquareClick(sq) {
   if (!game) { showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`)); return; }
   if (game.game_over()) { showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`)); return; }
   if (engineThinking) return;
-  if (game.game_over()) return;
   const isPlayerTurn =
     (game.turn() === 'w' && playerSide === 'white') ||
     (game.turn() === 'b' && playerSide === 'black');

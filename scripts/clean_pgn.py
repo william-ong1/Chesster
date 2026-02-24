@@ -22,15 +22,16 @@ def clean_pgn(input_path, output_path):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-    games = content.strip().split('\n\n')
+    games = content.strip().split("\n\n")
     fixed = []
     for chunk in games:
-        lines = chunk.strip().split('\n')
+        lines = chunk.strip().split("\n")
         #Get all lines that start with brackets
         #these lines are not moves but contain annotations about the game.
-        headers = [l for l in lines if l.startswith('[')]
+        headers = [l for l in lines if l.startswith("[")]
         #Merge all lines containing moves into a single line
-        moves = ' '.join(l for l in lines if not l.startswith('[') and l.strip()) 
+        moves = " ".join(l for l in lines \ 
+                         if not l.startswith("[") and l.strip())
         if headers and moves:
             fixed.append('\n'.join(headers) + '\n\n' + moves + '\n')
 
@@ -47,7 +48,7 @@ def clean_pgn(input_path, output_path):
             "Error: Permission denied. \
             Unable to access the file {output_path}."
         )
-    except Exception as e:
+    except OSErrror as e:
         print(f"An unexpected error occurred: {e}")
 
     print(f"Cleaned {len(fixed)} games -> {output_path}")

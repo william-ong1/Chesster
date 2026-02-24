@@ -19,7 +19,7 @@ def clean_pgn(input_path, output_path):
             "Error: Permission denied. \
             Unable to access the file {input_path}."
         )
-    except Exception as e:
+    except OSError as e:
         print(f"An unexpected error occurred: {e}")
 
     games = content.strip().split("\n\n")
@@ -33,10 +33,10 @@ def clean_pgn(input_path, output_path):
         moves = " ".join(l for l in lines \
                          if not l.startswith("[") and l.strip())
         if headers and moves:
-            fixed.append('\n'.join(headers) + '\n\n' + moves + '\n')
+            fixed.append("\n".join(headers) + "\n\n" + moves + "\n")
 
-    result = '\n'.join(fixed)
-    result = re.sub(r'\n{2,}', '\n\n', result)
+    result = "\n".join(fixed)
+    result = re.sub(r"\n{2,}", "\n\n", result)
 
     try:
         with open(output_path, "w", encoding="utf-8") as f:
@@ -48,12 +48,12 @@ def clean_pgn(input_path, output_path):
             "Error: Permission denied. \
             Unable to access the file {output_path}."
         )
-    except OSErrror as e:
+    except OSError as e:
         print(f"An unexpected error occurred: {e}")
 
     print(f"Cleaned {len(fixed)} games -> {output_path}")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python clean_pgn.py input.pgn output.pgn")
         sys.exit(1)

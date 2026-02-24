@@ -10,12 +10,15 @@ import sys
 
 def clean_pgn(input_path, output_path):
     try:
-        with open(input_path, 'r') as file:
+        with open(input_path, "r", encoding="utf-8") as file:
             content = file.read()
     except FileNotFoundError:
         print(f"Error: The file {input_path} was not found.")
     except PermissionError:
-        print("Error: Permission denied. Unable to access the file {input_path}.")
+        print(
+            "Error: Permission denied. \
+            Unable to access the file {input_path}."
+        )
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
@@ -23,8 +26,11 @@ def clean_pgn(input_path, output_path):
     fixed = []
     for chunk in games:
         lines = chunk.strip().split('\n')
-        headers = [l for l in lines if l.startswith('[')] #Get all lines that start with brackets - these lines are not moves but contain annotations about the game.
-        moves = ' '.join(l for l in lines if not l.startswith('[') and l.strip()) #Merge all lines containing moves into a single line
+        #Get all lines that start with brackets
+        #these lines are not moves but contain annotations about the game.
+        headers = [l for l in lines if l.startswith('[')]
+        #Merge all lines containing moves into a single line
+        moves = ' '.join(l for l in lines if not l.startswith('[') and l.strip()) 
         if headers and moves:
             fixed.append('\n'.join(headers) + '\n\n' + moves + '\n')
 
@@ -32,12 +38,15 @@ def clean_pgn(input_path, output_path):
     result = re.sub(r'\n{2,}', '\n\n', result)
 
     try:
-        with open(output_path, 'w') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(result)
     except FileNotFoundError:
-        print(f"Error: The file {input_path} was not found.")
+        print(f"Error: The file {output_path} was not found.")
     except PermissionError:
-        print("Error: Permission denied. Unable to access the file {input_path}.")
+        print(
+            "Error: Permission denied. \
+            Unable to access the file {output_path}."
+        )
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 

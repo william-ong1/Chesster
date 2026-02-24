@@ -30,7 +30,7 @@ def clean_pgn(input_path, output_path):
         #these lines are not moves but contain annotations about the game.
         headers = [l for l in lines if l.startswith("[")]
         #Merge all lines containing moves into a single line
-        moves = " ".join(l for l in lines \ 
+        moves = " ".join(l for l in lines \
                          if not l.startswith("[") and l.strip())
         if headers and moves:
             fixed.append('\n'.join(headers) + '\n\n' + moves + '\n')

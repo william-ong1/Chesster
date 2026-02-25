@@ -1,9 +1,17 @@
-Ensure docker is installed. Clone the Chesster Github repository. Currently the project uses a single repository, so this is all you will need.
+
+Ensure docker is installed. 
+Then Clone the Github Repo
+```bash
+git clone https://github.com/william-ong1/Chesster.git
+```
+Currently the project uses a single repository, so this is all you will need.
 cd into the Chesster Github repository
-run 
-npm install && npm run start (make sure node.js is installed).
+Then run (first make sure node.js is installed)
+``` bash
+npm install && npm run start
+```
 The app will run.
-To edit any of the main app functions, edit main.js and the shell scripts in maia-individual. To edit the UI, look into renderer.js, index.html, and styles.css
+To edit the main application logic, edit main.js and the scripts in maia-individual. To edit the UI, look at renderer.js, index.html, and styles.css.
 
 ## Our Repository Structure
 
@@ -46,11 +54,17 @@ vitest run --coverage
 
 Tests should be added to the \Tests folder. 
 
+Naming conventions:
+- Python tests: test_<module_name>
+- JavaScript tests: (however you've been naming test files)
+
 **Building the application**
 To build the application into an executable installer
 run
+``` bash
 npm run build
+```
 
 This command uses Electron to package the app and create an installer executable.
 
-Make sure to run this after running npm install to ensure latest dependencies and up to date. After building, make sure that the installer successfully installs the application and perform manual testing to confirm the app works as expected.
+Make sure to do this after running npm install. After building, make sure that the installer successfully installs the application and perform manual testing to confirm the app works as expected.

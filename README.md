@@ -3,7 +3,7 @@
 ## Gamma Release
 
 ## User Documentation
-
+[User Guide](USER_DOCUMENTATION.md)
 
 ## Developer Documentation
 Obtain the source code by cloning the repo (git clone ...).

@@ -8,6 +8,7 @@
     "build": "electron-builder --linux",
     "build:appimage": "electron-builder --linux AppImage",
     "test": "jest",
+    "test:vitest": "vitest run",
     "test:coverage": "jest --coverage",
     "lint": "gts lint"
   },

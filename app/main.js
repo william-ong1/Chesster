@@ -20,6 +20,8 @@ const {
   buildTrainingConfig,
 } = require('./functions');
 
+const engine = require('./engine');
+
 // ─── Paths ────────────────────────────────────────────────────────────────────
 
 const P = makePaths(path.join(__dirname, '..'));
@@ -318,77 +320,12 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
 
 // ─── Chess engine (UCI) ───────────────────────────────────────────────────────
 
-let engineProc  = null;
-let engineReady = false;
-let engineBuffer = '';
-let engineQueue  = [];
-let engineStderr = '';
-
-function engineSend(cmd) {
-  if (engineProc) engineProc.stdin.write(cmd + '\n');
-}
-
-function engineReadUntil(pred, timeout = 10000) {
-  return new Promise((res, rej) => {
-    const t = setTimeout(() => {
-      rej(new Error(
-        `Engine timeout after ${timeout}ms.\n` +
-        `lc0 stderr: ${engineStderr.slice(-500) || '(empty)'}\n` +
-        `Make sure lc0 v0.23.x is in bin/ and the weights file is a valid .pb.gz`
-      ));
-    }, timeout);
-    const push = () => {
-      engineQueue.push(line => {
-        if (pred(line)) { clearTimeout(t); res(line); } else push();
-      });
-    };
-    push();
-  });
-}
-
-async function loadEngine(weightsPath) {
-  if (engineProc) { engineProc.kill(); engineProc = null; engineReady = false; }
-
-  const lc0 = getBinPath('lc0', BIN_DIR);
-  if (!lc0) throw new Error('lc0 binary not found.');
-
-  engineBuffer = '';
-  engineQueue  = [];
-
-  engineProc = spawn(lc0, ['-w', weightsPath], {
-    stdio: ['pipe', 'pipe', 'pipe']
-  });
-
-  engineProc.stdout.on('data', chunk => {
-    engineBuffer += chunk.toString();
-    const lines = engineBuffer.split('\n');
-    engineBuffer = lines.pop();
-    for (const line of lines) {
-      const t = line.trim();
-      if (t && engineQueue.length) engineQueue.shift()(t);
-    }
-  });
-
-  engineProc.stderr.on('data', d => {
-    engineStderr += d.toString();
-    console.error('[lc0 stderr]', d.toString().trim());
-  });
-  engineProc.on('close', () => { engineProc = null; engineReady = false; });
-
-  engineSend('uci');
-  await engineReadUntil(l => l === 'uciok', 10000);
-  engineSend('setoption name Nodes value 1');
-  engineSend('isready');
-  await engineReadUntil(l => l === 'readyok', 5000);
-  engineReady = true;
+function loadEngine(weightsPath) {
+  return engine.loadEngine(weightsPath, { getBinPath, BIN_DIR, spawn });
 }
 
 async function getEngineMove(fen) {
-  if (!engineReady) throw new Error('Engine not loaded.');
-  engineSend(`position fen ${fen}`);
-  engineSend('go nodes 1');
-  const line = await engineReadUntil(l => l.startsWith('bestmove'), 8000);
-  return line.split(' ')[1];
+  return engine.getEngineMove(fen);
 }
 
 // ─── IPC Handlers ─────────────────────────────────────────────────────────────
@@ -420,7 +357,7 @@ function registerHandlers() {
 
   ipcMain.handle('engine:load', async (_, { weightsPath }) => {
     try {
-      engineStderr = '';
+      engine.resetEngineStderr();
       await loadEngine(weightsPath);
       return { ok: true };
     } catch (err) {
@@ -437,7 +374,7 @@ function registerHandlers() {
   });
 
   ipcMain.handle('engine:unload', async () => {
-    if (engineProc) { engineProc.kill(); engineProc = null; engineReady = false; }
+    engine.unloadEngine();
     return { ok: true };
   });
 

@@ -31,9 +31,7 @@ Chesster is designed to help players analyze and improve their chess by creating
 ---
 
 # 2. Installing Chesster
-
- -  git clone https://github.com/chesster.git
- -    cd chesster
+Users will need to navigate to our landing page (tbd) and download our application.
    
 # 3. Verify Installation
   </> Bash
@@ -44,7 +42,7 @@ Chesster is designed to help players analyze and improve their chess by creating
 # 4. Getting Started (UI Guide) 
   This section explaines how to use the Chesster interface. 
 
- **Step 1 - Open Chesster**
+ **Step 1 - Open Chesster App**
    When the system starts, you will see: 
 
   - Chesster Dashboard
@@ -63,4 +61,7 @@ Chesster is designed to help players analyze and improve their chess by creating
     Then: - Select your PGN File
           - Upload it
           - The system begins processing
+
+
+# 5. Reporting Bugs
 

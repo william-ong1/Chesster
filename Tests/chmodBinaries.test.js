@@ -3,6 +3,8 @@ const fs = require('fs');
 const os = require('os');
 const { chmodBinaries } = require('../app/functions');
 
+const isWindows = process.platform === 'win32';
+
 function makeTempRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'chmodbin-'));
 }
@@ -31,10 +33,12 @@ describe('chmodBinaries', () => {
 
     chmodBinaries(binDir);
 
-    files.forEach(f => {
-      const mode = fs.statSync(path.join(binDir, f)).mode & 0o777;
-      expect(mode).toBe(0o755);
-    });
+    if (!isWindows) {
+      files.forEach(f => {
+        const mode = fs.statSync(path.join(binDir, f)).mode & 0o777;
+        expect(mode).toBe(0o755);
+      });
+    }
   });
 
   test('does not throw when binDir does not exist', () => {
@@ -51,8 +55,10 @@ describe('chmodBinaries', () => {
 
     chmodBinaries(binDir);
 
-    const mode = fs.statSync(path.join(binDir, 'solo')).mode & 0o777;
-    expect(mode).toBe(0o755);
+    if (!isWindows) {
+      const mode = fs.statSync(path.join(binDir, 'solo')).mode & 0o777;
+      expect(mode).toBe(0o755);
+    }
   });
 
   test('handles files with various initial permissions', () => {
@@ -65,9 +71,11 @@ describe('chmodBinaries', () => {
 
     chmodBinaries(binDir);
 
-    cases.forEach(c => {
-      const mode = fs.statSync(path.join(binDir, c.name)).mode & 0o777;
-      expect(mode).toBe(0o755);
-    });
+    if (!isWindows) {
+      cases.forEach(c => {
+        const mode = fs.statSync(path.join(binDir, c.name)).mode & 0o777;
+        expect(mode).toBe(0o755);
+      });
+    }
   });
 });

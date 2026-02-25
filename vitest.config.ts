@@ -7,8 +7,10 @@ export default defineConfig({
     include: [
       'tests/**/*.ts',
       'tests/**/*.tsx',
+      'tests/**/*.js',
       'Tests/**/*.ts',
       'Tests/**/*.tsx',
+      'Tests/**/*.js',
     ],
     coverage: {
       enabled: true,

@@ -1,16 +1,15 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import * as engine from '../app/engine.js';
+'use strict';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const path = require('path');
+const engine = require('../app/engine');
+
 const BIN_DIR = path.join(__dirname, '..', 'bin');
 
 describe('loadEngine', () => {
   let fakeSpawn;
 
   beforeEach(() => {
-    fakeSpawn = vi.fn();
+    fakeSpawn = jest.fn();
   });
 
   afterEach(async () => {
@@ -38,15 +37,15 @@ describe('loadEngine', () => {
       expect(cmd).toBe(lc0Path);
       expect(args).toEqual(['-w', weightsPath]);
       return {
-        stdin: { write: vi.fn() },
+        stdin: { write: jest.fn() },
         stdout: {
           on(ev, fn) {
             if (ev === 'data') stdoutCb = fn;
           },
         },
-        stderr: { on: vi.fn() },
-        on: vi.fn(),
-        kill: vi.fn(),
+        stderr: { on: jest.fn() },
+        on: jest.fn(),
+        kill: jest.fn(),
       };
     });
 
@@ -58,9 +57,8 @@ describe('loadEngine', () => {
 
     const loadPromise = engine.loadEngine(weightsPath, deps);
 
-    // Simulate UCI handshake: uciok then readyok
     setImmediate(() => stdoutCb('uciok\n'));
-    await new Promise(r => setImmediate(r));
+    await new Promise((r) => setImmediate(r));
     setImmediate(() => stdoutCb('readyok\n'));
 
     await loadPromise;
@@ -76,11 +74,11 @@ describe('loadEngine', () => {
     async () => {
       const lc0Path = '/fake/bin/lc0';
       fakeSpawn.mockImplementation(() => ({
-        stdin: { write: vi.fn() },
-        stdout: { on: vi.fn() },
-        stderr: { on: vi.fn() },
-        on: vi.fn(),
-        kill: vi.fn(),
+        stdin: { write: jest.fn() },
+        stdout: { on: jest.fn() },
+        stderr: { on: jest.fn() },
+        on: jest.fn(),
+        kill: jest.fn(),
       }));
 
       const deps = {
@@ -98,18 +96,18 @@ describe('loadEngine', () => {
 
   it('kills existing process before loading again', async () => {
     const lc0Path = '/fake/bin/lc0';
-    const killFn = vi.fn();
+    const killFn = jest.fn();
     let stdoutCb;
 
     fakeSpawn.mockImplementation(() => ({
-      stdin: { write: vi.fn() },
+      stdin: { write: jest.fn() },
       stdout: {
         on(ev, fn) {
           if (ev === 'data') stdoutCb = fn;
         },
       },
-      stderr: { on: vi.fn() },
-      on: vi.fn(),
+      stderr: { on: jest.fn() },
+      on: jest.fn(),
       kill: killFn,
     }));
 
@@ -121,7 +119,7 @@ describe('loadEngine', () => {
 
     const load1 = engine.loadEngine('/w1.pb.gz', deps);
     setImmediate(() => stdoutCb('uciok\n'));
-    await new Promise(r => setImmediate(r));
+    await new Promise((r) => setImmediate(r));
     setImmediate(() => stdoutCb('readyok\n'));
     await load1;
 
@@ -130,7 +128,7 @@ describe('loadEngine', () => {
     const load2 = engine.loadEngine('/w2.pb.gz', deps);
     expect(killFn).toHaveBeenCalled();
     setImmediate(() => stdoutCb('uciok\n'));
-    await new Promise(r => setImmediate(r));
+    await new Promise((r) => setImmediate(r));
     setImmediate(() => stdoutCb('readyok\n'));
     await load2;
 

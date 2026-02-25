@@ -1,4 +1,4 @@
-const { getPythonBin } = require('./functions');
+const { getPythonBin } = require('./app/functions');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');

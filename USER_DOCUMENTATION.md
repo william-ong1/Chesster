@@ -32,17 +32,16 @@ Chesster is designed to help players analyze and improve their chess by creating
 ## 2. Installing Chesster
 Users will need to navigate to our landing page (tbd) and download our application.
 
-## 4. Getting Started (UI Guide) 
+## 3. Getting Started (UI Guide) 
   This section explaines how to use the Chesster interface. 
 
- **Step 1 - Open Chesster App**
 - There are three main tabs: Train, Play, and System Check
 - You don't need to pay much attention to system check - if it is all green, you're good. If not, file a bug report by creating an issue on our Github page or by emailing s99s42m@uw.edu.
 - In the Train tab, upload a PGN file of your games. The more games, the better. If you are a Chess.com or Lichess user, you can download a PGN of your game history from the website and then upload that. Then enter your elo and the player name (must match name used in the PGN file). Click "Train" and wait for the output terminal that appears on the right to tell you that training is complete. This might take 10-20 minutes. In the meantime, you can move the app to the background and do other things.
 - In the play tab, choose a model to play against (can be a model you just trained or some default base models). Choose whether to play as white and black, and click Load Engine. After the engine has been loaded, click New Game. Enjoy!
 
 
-## 5. Reporting Bugs
+## 4. Reporting Bugs
 File a bug report by creating an issue on our Github page or by emailing s99s42m@uw.edu. Please include:
 - Precise steps to reproduce the bug
 - If you can't reproduce the bug or can only occasionally reproduce the bug, provide any information about when the bug occurs

@@ -2,23 +2,33 @@
   "name": "chess-mimic",
   "version": "1.0.0",
   "description": "Train a chess engine on your games and play against it.",
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --linux",
-    "build:appimage": "electron-builder --linux AppImage"
+    "build:appimage": "electron-builder --linux AppImage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "gts lint"
   },
   "dependencies": {
     "chess.js": "0.10.3"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^3.0.0",
     "electron": "^29.0.0",
-    "electron-builder": "^24.9.1"
+    "electron-builder": "^24.9.1",
+    "gts": "^6.0.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
   },
   "build": {
     "appId": "com.chessmimic.app",
     "productName": "Chess Mimic",
-    "directories": { "output": "dist" },
+    "directories": {
+      "output": "dist"
+    },
     "files": [
       "main.js",
       "app/**/*",
@@ -26,12 +36,23 @@
       "node_modules/chess.js/**/*"
     ],
     "extraResources": [
-      { "from": "bin/", "to": "bin/" },
-      { "from": "maia-individual/", "to": "maia-individual/" },
-      { "from": "models/", "to": "models/" }
+      {
+        "from": "bin/",
+        "to": "bin/"
+      },
+      {
+        "from": "maia-individual/",
+        "to": "maia-individual/"
+      },
+      {
+        "from": "models/",
+        "to": "models/"
+      }
     ],
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Game"
     }
   }

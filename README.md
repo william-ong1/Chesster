@@ -46,3 +46,9 @@ AI was used for configuration files and UI formatting for this project. We also 
 **[Chesster Document](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?tab=t.0#heading=h.1ruhqhxj255p)**
 
 ---
+## Gamma Release Tag
+**Gamma Tag ID (1 hour late):** 122824562302d2699cf0f7e93247b9183f39777b
+(Please grade this one if possible, we needed only one extra hour to finish)
+
+**Gamma Tag ID (On-Time):** b31d31d7d4fe1f05ae5e3e08501c02b2ce89bf06
+(In case the late one can't be graded for credit)

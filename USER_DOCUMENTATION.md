@@ -1,14 +1,4 @@
-
-
-# Chesster Documentation
-
-## Project Information
-**Project Name:** Chesster  
-**Course:** CSE 403 – Software Engineering  
-**Team Project:** Personalized Chess Bot  
-
-Chesster is a chess bot that learns from a user's past chess games and mirrors their playing style. By importing a PGN file containing your games, the system cleans and processes the data, then allows you to play against a bot that reflects your own strategies and tendencies.
-
+# User Documentation
 ---
 
 # 1. High-Level Description of the Software

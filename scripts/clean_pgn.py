@@ -34,7 +34,7 @@ def clean_pgn(input_path, output_path):
             f.write("")
         return
 
-    # Split into games: by double newline, or by line starting with [Event (new game)
+    # Split games by double newline or [Event header
     raw_chunks = re.split(r"\n{2,}", content)
     games = []
     for chunk in raw_chunks:
@@ -42,12 +42,17 @@ def clean_pgn(input_path, output_path):
         if not chunk:
             continue
         lines = chunk.split("\n")
-        headers = [l.strip() for l in lines if l.strip().startswith("[")]
-        moves = " ".join(l.strip() for l in lines if l.strip() and not l.strip().startswith("["))
+        headers = [
+            l.strip() for l in lines if l.strip().startswith("[")
+        ]
+        moves = " ".join(
+            l.strip() for l in lines
+            if l.strip() and not l.strip().startswith("[")
+        )
         if headers and moves:
             games.append("\n".join(headers) + "\n\n" + moves + "\n")
 
-    # If we still got 0 games, try splitting by [Event as start of each game (single-newline PGNs)
+    # Fallback: split by [Event for single-newline PGNs
     if not games and "[Event " in content:
         game_blocks = re.split(r"\n(?=\[Event )", content)
         for chunk in game_blocks:
@@ -55,8 +60,15 @@ def clean_pgn(input_path, output_path):
             if not chunk:
                 continue
             lines = chunk.split("\n")
-            headers = [l.strip() for l in lines if l.strip().startswith("[")]
-            moves = " ".join(l.strip() for l in lines if l.strip() and not l.strip().startswith("["))
+            headers = [
+                l.strip() for l in lines
+                if l.strip().startswith("[")
+            ]
+            moves = " ".join(
+                l.strip() for l in lines
+                if l.strip()
+                and not l.strip().startswith("[")
+            )
             if headers and moves:
                 games.append("\n".join(headers) + "\n\n" + moves + "\n")
 

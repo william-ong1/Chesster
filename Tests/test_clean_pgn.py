@@ -1,10 +1,9 @@
 """Tests for scripts/clean_pgn.py"""
+# pylint: disable=redefined-outer-name
 # 65 statements, 6 missed, 91% coverage
 
-import os
 import subprocess
 import sys
-import tempfile
 from unittest import mock
 import pytest
 from scripts.clean_pgn import clean_pgn
@@ -259,7 +258,7 @@ class TestCleanPgnMainBlock:
         result = subprocess.run(
             [sys.executable, "scripts/clean_pgn.py",
              str(inp), str(out)],
-            capture_output=True, text=True,
+            capture_output=True, text=True, check=False,
         )
         assert result.returncode == 0
         assert "Cleaned 1 games" in result.stdout
@@ -268,7 +267,7 @@ class TestCleanPgnMainBlock:
         """Running with no args should exit with code 1."""
         result = subprocess.run(
             [sys.executable, "scripts/clean_pgn.py"],
-            capture_output=True, text=True,
+            capture_output=True, text=True, check=False,
         )
         assert result.returncode == 1
         assert "Usage" in result.stdout

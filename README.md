@@ -1,19 +1,26 @@
 # Chesster
 
-## Beta Release
-The use cases that are functional for our beta release are: 
-1. User can upload their personal chess data for the bot to train on
-2. User can see all legal moves when playing a game
-3. An entire chess game can be played from start to finish with legal moves
+## Gamma Release
 
-We are actively working on integrating the training feature into our application. 
+## User Documentation
 
-## How to Build and Test the system
 
-1. Open frontend/index.html
-2. Download it to your local computer
-3. Open it with a web browser (ensure Javascript is enabled in that browser)
-4. Play chess!
+## Developer Documentation
+Obtain the source code by cloning the repo (git clone ...).
+
+## Our Repository Structure
+
+```text
+/
+├── .github/            # CI/CD workflows
+├── app/                # Main application logic (API routes, game logic)
+├── models/             # Stores trained models
+├── maia-individual/    # Custom model training, evaluation, and base maia models
+├── Tests/              # Unit and integration tests for backend logic
+├── scripts/            # To assist with data cleaning and other utilities
+├── StatusReports/      # Project documentation, progress and status reports
+├── README.md           # Description on the application and how to build/test it
+```
 
 **Testing the system:**
 - To install all required testing tools (requires Python and NodeJS):
@@ -75,15 +82,3 @@ Allows users to upload their past chess data and then trains a chess bot with th
 **[Chesster Document](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?tab=t.0#heading=h.1ruhqhxj255p)**
 
 ---
-
-## Our Repository Structure
-
-```text
-/
-├── frontend/     # Chess GUI and user interaction
-├── backend/      # APIs, authentication, data upload/storage
-├── data/         # Data preprocessing
-├── ML/           # Chess bot logic and training
-├── Tests/        # Tests for application components
-├── docs/         # Technical documentation
-└── README.md     # Project overview

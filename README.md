@@ -39,7 +39,9 @@ Allows users to upload their past chess data and then trains a chess bot with th
 
 ---
 
-## Our Document
+## AI Disclaimer
+AI was used for configuration files and UI formatting for this project. We also used AI as a starting point for our tests, but modified the code to verify the validity of the tests and to suit our project's needs.
+
 
 **[Chesster Document](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?tab=t.0#heading=h.1ruhqhxj255p)**
 

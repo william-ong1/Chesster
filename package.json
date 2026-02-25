@@ -2,7 +2,15 @@
   "name": "chess-mimic",
   "version": "1.0.0",
   "description": "Train a chess engine on your games and play against it.",
-  "main": "main.js",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --linux",
+    "build:appimage": "electron-builder --linux AppImage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "gts lint"
+  },
   "jest": {
     "collectCoverage": true,
     "coverageThreshold": {
@@ -13,14 +21,6 @@
         "statements": 80
       }
     }
-  },
-  "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --linux",
-    "build:appimage": "electron-builder --linux AppImage",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "lint": "gts lint"
   },
   "dependencies": {
     "chess.js": "0.10.3"
@@ -79,4 +79,5 @@
     "url": "https://github.com/william-ong1/Chesster/issues"
   },
   "homepage": "https://github.com/william-ong1/Chesster#readme"
+  }
 }

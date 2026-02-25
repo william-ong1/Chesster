@@ -14,26 +14,53 @@ def clean_pgn(input_path, output_path):
             content = file.read()
     except FileNotFoundError:
         print(f"Error: The file {input_path} was not found.")
+        return
     except PermissionError:
         print(
-            "Error: Permission denied. \
-            Unable to access the file {input_path}."
+            "Error: Permission denied. "
+            f"Unable to access the file {input_path}."
         )
+        return
     except OSError as e:
         print(f"An unexpected error occurred: {e}")
+        return
 
-    games = content.strip().split("\n\n")
-    fixed = []
-    for chunk in games:
-        lines = chunk.strip().split("\n")
-        #Get all lines that start with brackets
-        #these lines are not moves but contain annotations about the game.
-        headers = [l for l in lines if l.startswith("[")]
-        #Merge all lines containing moves into a single line
-        moves = " ".join(l for l in lines \
-                         if not l.startswith("[") and l.strip())
+    # Normalize line endings so \r\n and \r don't break game splitting
+    content = content.replace("\r\n", "\n").replace("\r", "\n")
+    content = content.strip()
+    if not content:
+        print(f"Cleaned 0 games (file is empty) -> {output_path}")
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write("")
+        return
+
+    # Split into games: by double newline, or by line starting with [Event (new game)
+    raw_chunks = re.split(r"\n{2,}", content)
+    games = []
+    for chunk in raw_chunks:
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        lines = chunk.split("\n")
+        headers = [l.strip() for l in lines if l.strip().startswith("[")]
+        moves = " ".join(l.strip() for l in lines if l.strip() and not l.strip().startswith("["))
         if headers and moves:
-            fixed.append("\n".join(headers) + "\n\n" + moves + "\n")
+            games.append("\n".join(headers) + "\n\n" + moves + "\n")
+
+    # If we still got 0 games, try splitting by [Event as start of each game (single-newline PGNs)
+    if not games and "[Event " in content:
+        game_blocks = re.split(r"\n(?=\[Event )", content)
+        for chunk in game_blocks:
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            lines = chunk.split("\n")
+            headers = [l.strip() for l in lines if l.strip().startswith("[")]
+            moves = " ".join(l.strip() for l in lines if l.strip() and not l.strip().startswith("["))
+            if headers and moves:
+                games.append("\n".join(headers) + "\n\n" + moves + "\n")
+
+    fixed = games
 
     result = "\n".join(fixed)
     result = re.sub(r"\n{2,}", "\n\n", result)
@@ -43,13 +70,16 @@ def clean_pgn(input_path, output_path):
             f.write(result)
     except FileNotFoundError:
         print(f"Error: The file {output_path} was not found.")
+        return
     except PermissionError:
         print(
-            "Error: Permission denied. \
-            Unable to access the file {output_path}."
+            "Error: Permission denied. "
+            f"Unable to access the file {output_path}."
         )
+        return
     except OSError as e:
         print(f"An unexpected error occurred: {e}")
+        return
 
     print(f"Cleaned {len(fixed)} games -> {output_path}")
 

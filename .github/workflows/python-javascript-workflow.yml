@@ -51,8 +51,8 @@ jobs:
       run: |
         pylint --rcfile=pylintrc $(find . -type f -name "*.py")
 
-  test-typescript:
-    name: TypeScript Tests
+  test-javascript:
+    name: JavaScript Tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        id: ts-checkout
+        id: js-checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -68,15 +68,15 @@ jobs:
         uses: actions/setup-node@v6
 
       - name: Install dependencies
-        id: ts-dependencies
+        id: js-dependencies
         run: npm ci
         
-      - name: Test TypeScript code & code coverage
-        id: ts-test
+      - name: Test JavaScript code & code coverage
+        id: js-test
         run: npm run test:coverage
 
-      - name: Lint TypeScript files with gts
-        id: ts-lint
+      - name: Lint JavaScript files with gts
+        id: js-lint
         # ensure the linter will always run even if previous steps fail.
         if: always()
         run: npm run lint

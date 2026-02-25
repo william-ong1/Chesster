@@ -1,4 +1,4 @@
-
+# Developer Documentation
 Ensure docker is installed. 
 Then Clone the Github Repo
 ```bash
@@ -55,8 +55,8 @@ vitest run --coverage
 Tests should be added to the \Tests folder. 
 
 Naming conventions:
-- Python tests: test_<module_name>
-- JavaScript tests: (however you've been naming test files)
+- Python tests: test_<module_name>.py
+- JavaScript tests: <function_name>.test.js
 
 **Building the application**
 To build the application into an executable installer

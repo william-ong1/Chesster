@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 module.exports = [
   'build/',
   'dist/',
@@ -15,5 +14,6 @@ module.exports = [
   'eslint.config.cjs',
   'eslint.ignores.cjs',
   'vitest.config.ts',
-  '.pretterrc.cjs'
+  '.pretterrc.cjs',
+  'maia-individual/'
 ];

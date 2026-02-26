@@ -1,0 +1,38 @@
+{
+  "name": "chess-mimic",
+  "version": "1.0.0",
+  "description": "Train a chess engine on your games and play against it.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --linux",
+    "build:appimage": "electron-builder --linux AppImage"
+  },
+  "dependencies": {
+    "chess.js": "0.10.3"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.chessmimic.app",
+    "productName": "Chess Mimic",
+    "directories": { "output": "dist" },
+    "files": [
+      "main.js",
+      "app/**/*",
+      "scripts/**/*",
+      "node_modules/chess.js/**/*"
+    ],
+    "extraResources": [
+      { "from": "bin/", "to": "bin/" },
+      { "from": "maia-individual/", "to": "maia-individual/" },
+      { "from": "models/", "to": "models/" }
+    ],
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Game"
+    }
+  }
+}

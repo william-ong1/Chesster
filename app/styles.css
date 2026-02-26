@@ -951,3 +951,21 @@ body {
   color: #1a1a1a;
   filter: drop-shadow(0 1px 2px rgba(255,255,255,0.3));
 }
+
+.terminal-copy-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.terminal-copy-btn:hover {
+  border-color: var(--purple-mid);
+  color: var(--purple-light);
+}

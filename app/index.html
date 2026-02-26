@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chesster</title>
+  <title>Chess Mimic</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
@@ -64,7 +64,7 @@
     <!-- ── TRAIN VIEW ──────────────────────────────────────────────── -->
     <section class="view view--active" id="view-train">
       <div class="view__header">
-        <h1 class="view__title">Train Your Own Chess Bot</h1>
+        <h1 class="view__title">Train Your Mimic</h1>
         <p class="view__subtitle">Upload your games and we'll forge an engine that plays like you</p>
       </div>
 
@@ -113,11 +113,12 @@
         <!-- Right: terminal output -->
         <div class="card terminal-card">
           <div class="terminal-header">
-            <span class="terminal-dot terminal-dot--red"></span>
-            <span class="terminal-dot terminal-dot--yellow"></span>
-            <span class="terminal-dot terminal-dot--green"></span>
-            <span class="terminal-title">Training Output</span>
-          </div>
+  <span class="terminal-dot terminal-dot--red"></span>
+  <span class="terminal-dot terminal-dot--yellow"></span>
+  <span class="terminal-dot terminal-dot--green"></span>
+  <span class="terminal-title">Training Output</span>
+  <button class="terminal-copy-btn" id="terminalCopyBtn">Copy</button>
+</div>
           <div class="terminal-body" id="terminalBody">
             <div class="terminal-placeholder">Output will appear here when training begins...</div>
           </div>
@@ -137,7 +138,7 @@
     <!-- ── PLAY VIEW ──────────────────────────────────────────────── -->
     <section class="view" id="view-play">
       <div class="view__header">
-        <h1 class="view__title">Play Against Your Bot</h1>
+        <h1 class="view__title">Play Against Your Mimic</h1>
         <p class="view__subtitle">Load a trained model and face yourself</p>
       </div>
 

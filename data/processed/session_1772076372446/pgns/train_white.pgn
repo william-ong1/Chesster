@@ -1,0 +1,1166 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2026.02.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "akhilkrishnan92"]
+[Result "0-1"]
+
+1. e4 Nc6 2. Nc3 e5 3. Nf3 Bb4 4. a3 Bxc3 5. bxc3 a6 6. d3 Nf6 7. d4 exd4
+8. cxd4 d5 9. Bd3 O-O 10. O-O dxe4 11. Bxe4 Nxe4 12. d5 Ne7 13. Re1 Nc3 14.
+Qd4 Ncxd5 15. Bb2 Nf5 16. Qe5 Bd7 17. Qxd5 Nh4 18. Qd4 Nxf3+ 19. Kf1 Bb5+
+0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2026.02.11"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "sitramed2"]
+[Result "0-1"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bc5 4. d3 Nge7 5. Be2 d6 6. O-O O-O 7. Bd2 Be6
+8. a3 a5 9. b4 axb4 10. axb4 Bxb4 11. Rxa8 Qxa8 12. Ng5 Nd4 13. Nxe6 fxe6
+14. Bg4 Rf6 15. Qb1 Nec6 16. Nb5 Bxd2 17. Nxd4 Nxd4 18. Rd1 Qa5 19. Qxb7
+Qc3 20. Qc8+ Rf8 21. Qxe6+ Nxe6 22. Bxe6+ Kh8 23. Rb1 Qxc2 24. Rf1 c5 25.
+g4 Qxd3 26. Kg2 Qxe4+ 27. f3 Qe2+ 28. Rf2 Qe1 29. Bc4 e4 30. f4 e3 31. Rf3
+e2 32. f5 Qd1 33. Bxe2 Qxe2+ 34. Kg3 Qd1 35. Rf2 c4 36. g5 Re8 37. f6 gxf6
+38. g6 Qg1+ 39. Rg2 Re3+ 40. Kf4 Qxg2 41. Kf5 Qf2+ 42. Kg4 Re4+ 43. Kh5
+Qh4# 0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.23"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "wally-2026-BOT"]
+[Result "0-1"]
+
+1. e4 e6 2. Nf3 d5 3. Nc3 Nc6 4. d4 dxe4 5. Nxe4 Qe7 6. Bd3 f5 7. Ng3 Qf6
+8. Bg5 Qf7 9. Qd2 Bb4 10. c3 Bd6 11. O-O-O h6 12. Be3 f4 13. Bxf4 Bxf4 14.
+Qxf4 Qxf4+ 15. Kc2 Nf6 16. Bg6+ Kd8 17. Bf7 Ng4 18. Bxe6 Bxe6 19. Ne5 Ngxe5
+20. dxe5+ Kc8 21. Nh5 Qxf2+ 22. Rd2 Qf5+ 23. Kd1 Qb1+ 24. Ke2 Bc4+ 25. Rd3
+Bxd3+ 26. Kf2 Qxh1 27. Ke3 Qxg2 28. Kxd3 Nxe5+ 29. Kd4 Re8 30. Nf4 Qd2+ 31.
+Ke4 Ng6+ 32. Kf5 Nxf4 33. Kg4 h5+ 34. Kg5 Re5+ 35. Kh4 Qxh2# 0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.23"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "wally-2026-BOT"]
+[Result "0-1"]
+
+1. e4 c5 2. Nf3 d6 3. Nc3 Nc6 4. d3 Bg4 5. Be2 Nf6 6. h3 Bxf3 7. Bxf3 Ne5
+8. Be2 d5 9. exd5 Nxd5 10. Nxd5 Qxd5 11. O-O b5 12. Bf3 Nxf3+ 13. gxf3 Qd7
+14. Qe2 Qxh3 15. Re1 a6 16. Bd2 Rc8 17. b4 Rc6 18. bxc5 Rg6+ 19. Bg5 Rxg5#
+0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.22"]
+[Round "2"]
+[White "DontChesstheKnight"]
+[Black "nelson-2026-BOT"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Qf6 3. Nc3 Nc6 4. d4 Bb4 5. Bd2 exd4 6. Nxd4 Qxd4 7. Be3
+Qxd1+ 8. Rxd1 Bxc3+ 9. bxc3 Nf6 10. Bd3 d5 11. exd5 Nxd5 12. Bf4 O-O 13.
+Bxc7 Re8+ 14. Be2 Nxc3 15. Rd3 Nd4 16. Rxc3 Rxe2+ 17. Kd1 Be6 18. Rd3 Re8
+19. Rxd4 Bf5 20. Rd8 Rxd8+ 21. Bxd8 Rxf2 22. Ke1 Rxg2 23. Rf1 Be6 24. Rf2
+Rg1+ 25. Rf1 Rg4 26. h3 Rc4 27. Rf2 Rc8 28. Bh4 Re8 29. Rg2 Bb3+ 30. Kd2
+Re5 31. axb3 Rd5+ 32. Kc1 Kh8 33. Rd2 Rxd2 34. Kxd2 Kg8 35. c4 b5 36. c5 g5
+37. Bxg5 Kg7 38. c6 f6 39. Be3 a5 40. c7 a4 41. c8=Q axb3 42. Qb7+ Kg6 43.
+Qxb5 h5 44. Qd3+ f5 45. Qxb3 Kg7 46. Bd4+ Kf8 47. Qb4+ Kf7 48. Qc4+ Kf8 49.
+Bc5+ Kg7 50. Qd4+ Kg6 51. h4 Kf7 52. Qd5+ Kg6 53. Qd6+ Kf7 54. Qc7+ Kg6 55.
+Qg3+ Kf6 56. Qg5+ Ke5 57. Qxh5 Kd5 58. Be7 Ke4 59. Qe2+ Kd5 60. h5 f4 61.
+h6 Kc6 62. h7 Kd5 63. h8=Q Kc6 64. Qc3+ Kb6 65. Qe6+ Kb7 66. Qec6+ Kb8 67.
+Qb3+ Ka7 68. Qbb7# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.22"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d3 Rg8 5. Be3 Nb4 6. Be2 Nxc2+ 7. Qxc2 h6
+8. d4 Nxe4 9. Nxe4 Bd6 10. dxe5 Bb4+ 11. Nc3 Bxc3+ 12. bxc3 Rb8 13. O-O-O
+Rh8 14. Nd4 c5 15. Nf5 Qb6 16. Nxg7+ Kf8 17. Nf5 Ke8 18. Nxh6 Rxh6 19. Bxh6
+Qxh6+ 20. Rd2 d6 21. Bb5+ Kf8 22. Rd1 b6 23. Kb1 Kg7 24. Rxd6 Qh5 25. Bd3
+Qxd1+ 26. Qxd1 Be6 27. Be4 Bxa2+ 28. Kxa2 Rg8 29. Qg4+ Kf8 30. Qc8+ Kg7 31.
+Qg4+ Kf8 32. Rd8+ Ke7 33. Qxg8 a6 34. Qe8# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.22"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+
+1. e4 Nf6 2. Nf3 d5 3. d4 Nxe4 4. Be3 c6 5. c3 e6 6. Nbd2 Rg8 7. Nb3 Kd7 8.
+Bd3 h5 9. O-O Bd6 10. h4 Kc7 11. Qe2 b5 12. Nc5 Bxc5 13. dxc5 b4 14. cxb4
+Qf6 15. Rac1 e5 16. Qc2 Kd7 17. Bg5 Nxg5 18. hxg5 Qf4 19. Bh7 Re8 20. Bf5+
+Kd8 21. Bxc8 Kxc8 22. Rfe1 Rg8 23. Rxe5 Qxc1+ 24. Qxc1 a6 25. Nd4 Re8 26.
+Rxe8+ Kd7 27. Rf8 g6 28. Rxf7+ Ke8 29. Qf4 Kd8 30. Qd6+ Kc8 31. Rf8+ Kb7
+32. Qe7+ Nd7 33. Qxd7# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.21"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4 exd4 5. Nxd4 Bb4 6. Bd2 Bxc3 7. Bxc3
+d5 8. e5 Nxd4 9. Bxd4 Ne4 10. Bb5+ c6 11. Bd3 c5 12. Be3 Bg4 13. f3 Qh4+
+14. g3 O-O-O 15. fxg4 Qe7 16. O-O Qxe5 17. b3 Kc7 18. Rxf7+ Kd6 19. Rxb7 g5
+20. Rxa7 Nf2 21. Bxf2 Qxa1 22. Qxa1 Rde8 23. Ra6+ Kc7 24. Bxc5 Kd7 25. Bb5+
+Kc8 26. Ra8+ Kb7 27. Rxe8 Rxe8 28. Bxe8 d4 29. Bxd4 h6 30. Bb5 Ka8 31. Bc6+
+Kb8 32. Be5+ Ka7 33. Qd4+ Ka6 34. Qa4+ Kb6 35. Qb5+ Ka7 36. Qb7# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.21"]
+[Round "2"]
+[White "DontChesstheKnight"]
+[Black "nelson-2026-BOT"]
+[Result "0-1"]
+
+1. e4 e5 2. Nf3 Qf6 3. Nc3 Bc5 4. d3 a5 5. Be3 Qd6 6. Be2 Nc6 7. O-O Bxe3
+8. fxe3 Qb4 9. Rb1 b5 10. a3 Qc5 11. Nd5 Nge7 12. Nxc7+ Kf8 13. Nxa8 b4 14.
+d4 Qd6 15. Bb5 Qb8 16. Nxe5 Nxe5 17. dxe5 Qxe5 18. Bc4 Qxe4 19. Rxf7+ Ke8
+20. Qh5 Qxa8 21. Qe5 Kd8 22. Qxe7+ Kc7 23. Qc5+ Qc6 24. Qa7+ Bb7 25. Qxa5+
+Kc8 26. Qxb4 Qxg2# 0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.18"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d3 Ng4 5. Be2 Rb8 6. O-O Bd6 7. Bg5 Qf6
+8. Bxf6 Nxf6 9. d4 b6 10. d5 Ne7 11. h3 Ng4 12. hxg4 Bb7 13. Nb5 Bc6 14.
+dxc6 Nxc6 15. Nxd6+ cxd6 16. Qxd6 Rf8 17. Rad1 Rd8 18. Nxe5 Ne7 19. Nxd7 f6
+20. g5 Rf7 21. gxf6 gxf6 22. Bh5 a6 23. Bxf7+ Kxf7 24. Qxb6 Kg7 25. Qxd8
+Ng6 26. Nc5 a5 27. Qc7+ Kg8 28. Rd8+ Nf8 29. Ne6 h5 30. Nxf8 a4 31. Ng6#
+1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Jimmy-Bot"]
+[Result "1-0"]
+
+1. e4 d5 2. Nc3 dxe4 3. Nxe4 Qd4 4. f3 f5 5. c3 Qd5 6. d3 Nc6 7. Ne2 Kd7 8.
+g4 Nd4 9. Nxd4 Nh6 10. g5 Nf7 11. Bh3 c6 12. Bxf5+ Ke8 13. Bxc8 Rxc8 14.
+Kf1 Qd6 15. Nxd6+ exd6 16. Nf5 Rg8 17. Bf4 Rb8 18. Qe1+ Kd7 19. Bxd6 Bxd6
+20. Nxd6 Nxd6 21. d4 c5 22. dxc5 Kc7 23. cxd6+ Kc6 24. d7 Kb6 25. Qe6+ Kc7
+26. d8=Q+ Rbxd8 27. Qc4+ Kb8 28. Re1 b5 29. Qf4+ Ka8 30. Qe4+ Kb8 31. Qe5+
+Rd6 32. Qxd6+ Kc8 33. Qe6+ Kc7 34. Qxg8 a5 35. Qxg7+ Kb6 36. Re6+ Kc5 37.
+Qe5+ Kc4 38. Rc6+ Kd3 39. Rd6+ Kc2 40. Ke2 Kxb2 41. Qxb5+ Kxa2 42. Rb1 a4
+43. Ra6 a3 44. Qb4 h5 45. Rxa3# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.10"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "majedmashallah"]
+[Result "1-0"]
+
+1. e4 g6 2. Nf3 Bg7 3. d4 Nf6 4. Nc3 O-O 5. Bc4 Nc6 6. Be3 Nb4 7. a3 Na6 8.
+b4 Ng4 9. Qd2 e5 10. O-O-O exd4 11. Nxd4 c6 12. f3 Nh6 13. Bxh6 Bxh6 14.
+Qxh6 d5 15. exd5 cxd5 16. Nxd5 Nc7 17. Nxc7 Qxc7 18. Bd5 Bf5 19. Nxf5 gxf5
+20. Qg5+ Kh8 21. Qf6+ Kg8 22. Qxf5 Rac8 23. Rd2 a5 24. Be4 f6 25. Qxh7+
+Qxh7 26. Bxh7+ Kxh7 27. Rd7+ Kg8 28. Rxb7 axb4 29. axb4 f5 30. Re1 Ra8 31.
+Kd2 Rfd8+ 32. Kc3 Ra3+ 33. Kb2 Ra4 34. Ree7 Kf8 35. Rf7+ Ke8 36. Rxf5 Rd4
+37. Re5+ Kd8 38. Ra5 Raxb4+ 39. Rxb4 Rxb4+ 40. Ka3 Rc4 41. Rd5+ Ke7 42. Kb3
+Rc8 43. Re5+ Kf6 44. f4 Rb8+ 45. Kc3 Rc8+ 46. Kd2 Rd8+ 47. Kc1 Rd4 48. g3
+Ra4 49. Rc5 Ra1+ 50. Kb2 Rh1 51. c4 Rxh2+ 52. Kc3 Rh3 53. Rc6+ Kf5 54. c5
+Rxg3+ 55. Kc4 Kxf4 56. Rf6+ Ke3 57. c6 Rg4+ 58. Kc5 Kd3 59. c7 Rc4+ 60. Kd6
+Kd4 61. Rf4+ Kc3 62. Rxc4+ Kxc4 63. c8=Q+ 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.09"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "rachtock25"]
+[Result "1/2-1/2"]
+
+1. e4 d5 2. Nc3 d4 3. Nce2 e5 4. d3 Bb4+ 5. Bd2 Nc6 6. Nf3 f6 7. c3 Ba5 8.
+cxd4 exd4 9. Nfxd4 Nxd4 10. Bxa5 b6 11. Qa4+ Kf7 12. Nxd4 bxa5 13. Qxa5 Ne7
+14. Qh5+ Ng6 15. Nc6 Qd6 16. Qd5+ Qxd5 17. exd5 Bd7 18. Rc1 Rhe8+ 19. Kd2
+Kg8 20. Be2 Nf4 21. Bf3 Nxg2 22. Bxg2 Bf5 23. d6 cxd6 24. Bd5+ Be6 25.
+Bxe6+ Rxe6 26. Rhe1 Kf7 27. Nd4 Ree8 28. Rc7+ Kg8 29. Re6 Rab8 30. b3 Rxe6
+31. Nxe6 a5 32. Rxg7+ Kh8 33. Ra7 Re8 34. Nd4 Re5 35. Ra8+ Kg7 36. Ra7+ Kg6
+37. f4 Rd5 38. f5+ Kg5 39. Rg7+ Kf4 40. Ne6+ Kxf5 41. Nc7 Rc5 42. Rxh7 Kg6
+43. Rd7 f5 44. Ne6 Re5 45. Nf8+ Kg5 46. Rxd6 f4 47. Nh7+ Kg4 48. Rg6+ Kf5
+49. Ra6 f3 50. Rf6+ Kg4 51. d4 Re2+ 52. Kd3 Rxh2 53. Rg6+ Kf5 54. Nf8 f2
+55. Ke2 Ke4 56. Rg4+ Kf5 57. Rg3 Kf4 58. Rf3+ Ke4 59. Ne6 Kd5 60. Rf6 Rg2
+61. Nf4+ Kxd4 62. Nxg2 Kc3 63. Rxf2 Kb2 64. Ke3+ Ka3 65. Nf4 Kb4 66. Nd5+
+Ka3 67. Nc3 Kb4 68. Nd5+ Ka3 69. Kd3 a4 70. b4 1/2-1/2
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.07"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "LEV1LEV1"]
+[Result "1-0"]
+
+1. e4 d5 2. Nc3 d4 3. Nb5 a6 4. Nxd4 Qxd4 5. d3 e5 6. Nf3 Qd8 7. Nxe5 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.06"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "C_Brian"]
+[Result "1-0"]
+
+1. e4 h6 2. Nf3 a6 3. Nc3 e6 4. Bc4 Ne7 5. d4 Ng6 6. Be3 d6 7. O-O Be7 8.
+Qd2 e5 9. Rad1 Bd7 10. dxe5 dxe5 11. Nxe5 Nxe5 12. Bd4 Bf6 13. b3 O-O 14.
+f4 Ng6 15. e5 Be7 16. f5 Bg5 17. Qd3 Nf4 18. Qe4 Bc6 19. Bd5 Nxd5 20. Nxd5
+Bxd5 21. Qd3 Nc6 22. Bc5 Nxe5 23. Qxd5 Re8 24. Rfe1 Bh4 25. g3 Bf6 26. Bb4
+Qxd5 27. Rxd5 Nf3+ 28. Kf2 Nxe1 29. Bxe1 Rad8 30. Rd2 Rxd2+ 31. Bxd2 Bd4+
+32. Kf3 c5 33. c3 Be5 34. b4 c4 35. Ke4 Bf6+ 36. Kd5 Rd8+ 37. Kxc4 b5+ 38.
+Kc5 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.06"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Frensozich"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bc4 Bb4 5. a3 Bxc3 6. dxc3 O-O 7. Be3
+Nxe4 8. O-O d6 9. Bd5 Bf5 10. Qd3 Bg4 11. Bxe4 d5 12. Bxd5 Bxf3 13. gxf3
+Qf6 14. Qe4 Rad8 15. Bc4 Rd6 16. Bd3 Nd4 17. Qxh7# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.24"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Mohamed-Elagib"]
+[Result "0-1"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bb4 4. d4 d6 5. Be3 Bg4 6. Be2 Nf6 7. a3 Bxc3+
+8. bxc3 exd4 9. cxd4 Nxe4 10. h3 Bf5 11. g4 Bg6 12. O-O O-O 13. Rb1 b6 14.
+c4 Re8 15. d5 Ne5 16. a4 Nc3 17. Qc2 Bxc2 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.21"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Sel-Borum"]
+[Result "0-1"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bc5 4. d3 Nge7 5. Be3 Bxe3 6. fxe3 O-O 7. d4 d6
+8. Be2 b6 9. O-O a5 10. a4 Ba6 11. b3 Bxe2 12. Qxe2 Nb4 13. Rad1 c6 14. d5
+cxd5 15. exd5 Rc8 16. Qd2 f5 17. Nh4 Ng6 18. Nxg6 hxg6 19. e4 f4 20. g3 Qg5
+21. h4 Qg4 22. Kg2 Qxg3+ 23. Kh1 Qxh4+ 24. Qh2 Qg3 25. Qxg3 fxg3 26. Kg2
+Rxf1 27. Rxf1 Nxc2 28. Kxg3 Rxc3+ 29. Kf2 Rxb3 30. Rc1 Nd4 31. Rc8+ Kh7 32.
+Rc6 Nxc6 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.18"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Inkeri1234"]
+[Result "0-1"]
+
+1. e4 e5 2. Nf3 Bc5 3. Nc3 Nf6 4. d4 exd4 5. Be3 O-O 6. Bxd4 Bb6 7. Bd3 c5
+8. O-O cxd4 9. Nxd4 Bxd4 10. Nd5 Bxb2 11. Rb1 Bd4 12. Re1 Be5 13. g3 d6 14.
+f4 Bd4+ 15. Kf1 Bg4 16. Qd2 Bh3+ 17. Ke2 Ng4 18. Kf3 Nf6 19. Rb5 a6 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "BronzosPuolejas"]
+[Result "1/2-1/2"]
+
+1. e4 e5 2. Nf3 c6 3. d4 Nf6 4. Nc3 d6 5. d5 cxd5 6. exd5 Bg4 7. Be2 e4 8.
+Nd4 Bxe2 9. Qxe2 Qe7 10. O-O g6 11. f3 exf3 12. gxf3 Qxe2 13. Ncxe2 Be7 14.
+Bg5 Nxd5 15. Bh6 Bf6 16. c3 Bxd4+ 17. Nxd4 Nc6 18. Rfe1+ Kd7 19. Bg7 Rhg8
+20. Bf6 Nxf6 21. Nxc6 bxc6 22. Rad1 d5 23. Rd4 Rae8 24. Red1 h5 25. Ra4 g5
+26. Rxa7+ Kd6 27. Rxf7 Ke6 28. Rc7 g4 29. Rxc6+ Kf7 30. fxg4 Nxg4 31. Rf1+
+Ke7 32. Rc7+ Kd6 33. Rh7 Ne3+ 34. Kf2 Rgf8+ 35. Ke1 Rxf1+ 36. Ke2 Ra1 37.
+Rh6+ Kc5 38. Rxh5 Nc4+ 39. Kd3 Rxa2 40. b4+ Kb5 41. Rxd5+ Kc6 42. Kxc4 Re4+
+43. Rd4 Rxd4+ 44. cxd4 Rxh2 45. b5+ Kb6 46. d5 Rb2 47. d6 Rxb5 48. d7 Rc5+
+49. Kd4 Kc7 50. Kxc5 Kxd7 1/2-1/2
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Vincentdhaka"]
+[Result "0-1"]
+
+1. e4 Nf6 2. Nc3 d6 3. d4 c5 4. Nf3 Qa5 5. Bd2 Qb6 6. Bc4 Qxb2 7. Rb1 Qa3
+8. O-O cxd4 9. Nxd4 Qc5 10. Be2 Qxd4 11. Bf3 h5 12. h4 Bg4 13. Bxg4 hxg4
+14. Rxb7 g6 15. Kh1 Rxh4+ 16. Kg1 g3 17. Re1 Qxf2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "kvckvaa"]
+[Result "1-0"]
+
+1. e4 c5 2. Nc3 d6 3. Nf3 Nf6 4. d3 g6 5. Be2 Bg7 6. O-O O-O 7. Be3 Nbd7 8.
+Qd2 Qb6 9. Rab1 h6 10. d4 cxd4 11. Nxd4 Nxe4 12. Nxe4 d5 13. Nc3 Ne5 14. f4
+Nc6 15. Nxc6 Qxc6 16. Nxd5 Rd8 17. Nxe7+ Kh7 18. Nxc6 Rxd2 19. Bxd2 bxc6
+20. Be3 Bf5 21. g4 Bxc2 22. Rbc1 Be4 23. Bf3 Bd3 24. Rfd1 Rd8 25. Rxc6 Bd4
+26. Bxd4 Rxd4 27. f5 h5 28. gxh5 gxh5 29. Bxh5 Kg7 30. f6+ Kh6 31. Rc5 Rd7
+32. Bg4 Rd4 33. Rh5+ Kg6 34. Rf5 Rxg4+ 35. Kf2 Kxf5 36. Rxd3 Ke4 37. Re3+
+Kd4 38. Re7 Rf4+ 39. Kg3 Rxf6 40. Rd7+ Ke4 41. Re7+ Kd3 42. Rxa7 Rg6+ 43.
+Kf4 Rf6+ 44. Kg5 Rg6+ 45. Kf5 Rd6 46. Rxf7 Rd5+ 47. Ke6 Kd4 48. Rf4+ Kc5
+49. a3 Rd6+ 50. Ke5 Rd5+ 51. Kf6 Kd6 52. Rf5 Rd2 53. Rh5 Rxb2 54. a4 Ra2
+55. a5 Rf2+ 56. Kg6 Ke6 57. a6 Ra2 58. Rh6 Rxa6 59. Kg5+ Ke5 60. Rxa6 Ke4
+61. h3 Kf3 62. h4 Kg3 63. h5 Kf3 64. h6 Ke4 65. h7 Ke5 66. h8=Q+ Ke4 67.
+Re6+ Kf3 68. Qc3+ Kg2 69. Re2+ Kf1 70. Qe1# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "LongB4U"]
+[Result "0-1"]
+
+1. e4 e5 2. d4 f6 3. Nf3 d6 4. d5 c6 5. c4 Bg4 6. h3 Bxf3 7. gxf3 g6 8. Nc3
+f5 9. Bd3 f4 10. O-O Qg5+ 11. Kh1 Qh4 12. Kh2 g5 13. a4 a5 14. b3 Nf6 15.
+Ba3 h6 16. b4 g4 17. b5 Nh7 18. fxg4 Ng5 19. Be2 Qxh3+ 20. Kg1 f3 21. Bd3
+Qg2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "mrpennypacker94"]
+[Result "1/2-1/2"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 d6 4. d4 Qf6 5. d5 Nd4 6. Be3 c5 7. Bb5+ Bd7 8.
+O-O Nxb5 9. Nxb5 Bxb5 10. Re1 g6 11. h4 h5 12. b3 c4 13. bxc4 Bxc4 14. c3
+Bh6 15. Bg5 Bxg5 16. hxg5 Qe7 17. Qa4+ b5 18. Qd1 Qc7 19. a4 Ne7 20. axb5
+Bxb5 21. Rc1 f5 22. c4 Ba6 23. Qa4+ Kf7 24. Qxa6 Rac8 25. Nd2 h4 26. g3
+hxg3 27. fxg3 Rh5 28. Nf3 fxe4 29. Rxe4 Nf5 30. g4 Rh3 31. Kg2 Rg3+ 32. Kf2
+Qb6+ 33. Qxb6 axb6 34. gxf5 Rh3 35. f6 b5 36. Rh4 Rxh4 37. Nxh4 bxc4 38.
+Ra1 Rc7 39. Ke3 c3 40. Nf3 c2 41. Kd2 e4 42. Nd4 Rc4 43. Nxc2 Rc5 44. Ra7+
+Kf8 45. f7 Rxd5+ 46. Ke3 Rxg5 47. Kxe4 Rf5 48. Rd7 d5+ 49. Kd4 Rxf7 50.
+Rxd5 Kg7 51. Ne3 Rf4+ 52. Ke5 g5 53. Rd7+ Kg6 54. Rd6+ Kh5 55. Rd1 Rf3 56.
+Rh1+ Kg6 57. Nf5 Rxf5+ 58. Ke6 g4 59. Rg1 Rg5 60. Ke7 Kh5 61. Rh1+ Kg6 62.
+Rg1 Kf5 63. Rf1+ Ke4 64. Re1+ Kf3 65. Rf1+ Kg2 66. Rf7 g3 67. Kf6 Ra5 68.
+Rg7 Ra3 69. Kf7 Kf2 70. Kg8 g2 71. Kh8 g1=Q 72. Rxg1 Kxg1 73. Kg7 Rf3 74.
+Kg6 Kg2 75. Kg5 Kg3 76. Kg6 Rf4 77. Kg5 Kf3 78. Kh5 Kg3 79. Kg5 Kf3 80. Kh5
+Rg4 81. Kh6 Kf4 82. Kh5 Kf5 83. Kh6 Rg5 84. Kh7 Kf6 85. Kh6 Rf5 86. Kh7 Rg5
+87. Kh6 Rf5 88. Kh7 Kg5 89. Kg7 Rf6 90. Kh7 Kf5 91. Kg7 Ke6 92. Kh7 Rf5 93.
+Kg6 Rf4 94. Kg5 Ke5 95. Kh5 Kf5 96. Kh6 Rg4 97. Kh5 Rf4 98. Kh6 Kg4 99. Kg6
+Rf5 100. Kh6 Rg5 101. Kh7 Kh5 102. Kh8 Rg1 103. Kh7 Rg2 104. Kh8 Kh6
+1/2-1/2
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "HUZEFA-1"]
+[Result "1-0"]
+
+1. e4 e5 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Mgda321"]
+[Result "0-1"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bc5 4. d4 exd4 5. Nxd4 Bxd4 6. Bd3 Nf6 7. O-O d5
+8. Qe1 Be6 9. Be3 O-O 10. f3 Qd6 11. Qf2 Qc5 12. a3 Bxe3 13. Na4 Qd4 14. b3
+dxe4 15. fxe4 Nxe4 16. Bxe4 Qxe4 17. Rae1 Bxf2+ 18. Kxf2 Qxc2+ 19. Re2 Qxb3
+20. Nb2 Bc4 21. Nxc4 Qxc4 22. Ke1 Rfe8 23. Rxe8+ Rxe8+ 24. Kf2 Qe2+ 25. Kg1
+Re3 26. a4 Ne5 27. a5 Ng4 28. h3 Rxh3 29. gxh3 Qh2# 0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2025.11.15"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Bob-The-Cat-BOT"]
+[Result "0-1"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 d6 4. d4 exd4 5. Nxd4 Nxd4 6. Qxd4 Bd7 7. Bd3
+Qf6 8. Qe3 c5 9. O-O c4 10. Bxc4 Rc8 11. b3 b5 12. Bxb5 Qxc3 13. Qxc3 Rxc3
+14. Bxd7+ Kxd7 15. Re1 Kc8 16. e5 d5 17. Rd1 Kb7 18. Rxd5 Kc6 19. Rd6+ Bxd6
+20. exd6 h5 21. b4 Nf6 22. b5+ Kd7 23. Ba3 Rxa3 24. Rd1 Rxa2 25. c4 Rc2 26.
+Rd4 Rc1+ 27. Rd1 Rxd1# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.12"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "jamalfaraj171"]
+[Result "1-0"]
+[WhiteElo "448"]
+[BlackElo "418"]
+[TimeControl "900+10"]
+[EndTime "11:49:55 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. Be2 Nf6 5. d5 Nxe4 6. c4 c6 7. O-O Nd7 8. Be3 Ndf6 9. Nc3 Bf5 10. Nxe4 Bxe4 11. Nd2 g6 12. f3 Bf5 13. f4 e4 14. Bd4 e3 15. Bxf6 Qxf6 16. Nf3 Qxb2 17. Bd3 cxd5 18. cxd5 Rc8 19. Re1 Qb6 20. Qa4+ Bd7 21. Qe4+ Be7 22. Rxe3 f5 23. Qxe7# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.12"]
+[Round "-"]
+[White "Pezarelli"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "454"]
+[BlackElo "464"]
+[TimeControl "900+10"]
+[EndTime "2:05:53 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Qh5 Nc6 3. Bc4 g6 4. Qf3 Nf6 5. c3 d6 6. h3 Be6 7. Bb5 Qd7 8. Qxf6 Rg8 9. d3 Bg7 10. Qg5 f6 11. Qg3 O-O-O 12. Nf3 f5 13. exf5 Bxf5 14. Kd2 e4 15. Nd4 Rgf8 16. Ke3 exd3 17. Na3 Rfe8+ 18. Kf4 Re4+ 19. Kg5 Qe7# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.13"]
+[Round "-"]
+[White "thai1812"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "472"]
+[BlackElo "479"]
+[TimeControl "900+10"]
+[EndTime "12:20:00 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. d4 d5 2. Nc3 Nc6 3. e4 Be6 4. exd5 Bxd5 5. Bb5 a6 6. Bxc6+ bxc6 7. Nf3 Nf6 8. Bg5 h6 9. Bxf6 exf6 10. Nh4 g5 11. Nf5 Qd7 12. Qe2+ Be6 13. d5 cxd5 14. Nxd5 Qxd5 15. Rd1 Qxf5 16. O-O Bc5 17. g3 O-O 18. Qd3 Qh3 19. c3 c6 20. b4 Bd5 21. Qxd5 cxd5 22. bxc5 Rac8 23. Rxd5 Rb8 24. Re1 Rb2 25. a4 Rbb8 26. c6 Rfe8 27. c7 Rxe1# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.14"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "godingaet"]
+[Result "1-0"]
+[WhiteElo "493"]
+[BlackElo "464"]
+[TimeControl "900+10"]
+[EndTime "2:46:42 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 c5 2. Nc3 e6 3. d4 cxd4 4. Qxd4 Nc6 5. Qa4 Bb4 6. Bd2 Nd4 7. O-O-O Ne7 8. Qxb4 Ndc6 9. Qd6 O-O 10. Nf3 Re8 11. h4 a6 12. Bd3 b5 13. Qa3 Bb7 14. b4 a5 15. Ne2 axb4 16. Qb2 Qa5 17. e5 Ra6 18. c3 Rea8 19. cxb4 Qxa2 20. Bxb5 Ra3 21. Bg5 Nxb4 22. Bxe7 Qxb2+ 23. Kxb2 Bd5 24. Ra1 Ba2 25. Nc3 Rb3+ 26. Kc1 Rxc3+ 27. Kb2 Rb3+ 28. Kc1 Rc8+ 29. Kd2 Rc2+ 30. Kd1 Rd3+ 31. Ke1 Rb2 32. Bxd3 Nxd3+ 33. Kf1 g6 34. Ba3 Rxf2+ 35. Kg1 Re2 36. Rd1 Nf4 37. g3 Rg2+ 38. Kf1 Bc4+ 39. Ke1 Rxg3 40. Kf2 Rg4 41. Rh2 Nd3+ 42. Ke3 Nf4 43. Rxd7 h6 44. Rd8+ Kg7 45. Bf8+ Kh7 46. Ng5+ Kg8 47. Bxh6# 1-0
+
+[Event "Play vs Coach"]
+[Site "Chess.com"]
+[Date "2025.11.14"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Coach-David"]
+[Result "1-0"]
+[WhiteElo "493"]
+[BlackElo "400"]
+[TimeControl "-"]
+[EndDate "2025.11.15"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 Nf6 2. Nc3 e5 3. Nf3 d6 4. d4 Nc6 5. d5 Ne7 6. Bd3 c6 7. O-O b5 8. b4 cxd5 9. exd5 Nexd5 10. Nxd5 Bb7 11. Bxb5+ Nd7 12. Bg5 Qc8 13. h4 h5 14. c3 Bxd5 15. Qxd5 Be7 16. Bc6 Kf8 17. Bxa8 Rg8 18. Bb7 Qc7 19. Rfc1 Bd8 20. Bxd8 Qxd8 21. Qxd6+ Ke8 22. Bc6 g5 23. hxg5 f5 24. Bxd7+ Qxd7 25. Rd1 Qxd6 26. Rxd6 e4 27. Re6+ Kf8 28. Rf6+ Ke8 29. Nd4 Rg7 30. Re6+ Kf8 31. Nxf5 a5 32. Nxg7 Kxg7 33. Rd1 a4 34. Rd7+ Kf8 35. Ree7 a3 36. g6 e3 37. g7+ Kg8 38. Re8+ Kh7 39. g8=Q+ Kh6 40. Qh7+ Kg5 41. Rd5+ Kg4 42. Rxe3 Kh4 43. Qxh5# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.15"]
+[Round "-"]
+[White "Seba0301"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "463"]
+[BlackElo "506"]
+[TimeControl "900+10"]
+[EndTime "14:06:23 GMT+0000"]
+[Termination "DontChesstheKnight won by resignation"]
+
+1. e4 e5 2. Bc4 Nf6 3. Nc3 d5 4. exd5 Bd6 5. d3 O-O 6. Be3 Nbd7 7. Nf3 Qe7 8. O-O b6 9. h3 a5 10. a4 Bb7 11. b3 c6 12. dxc6 Bxc6 13. d4 e4 14. Nxe4 Nxe4 15. d5 Bb7 16. Re1 Ba6 17. Rb1 g5 18. Qe2 h6 19. Bd4 f5 20. Bc3 Nxc3 21. Qd2 Nxb1 22. Rxe7 Bxe7 23. Qe3 Rfe8 24. Qe6+ Kg7 25. Qxd7 Rad8 26. Qxf5 Rf8 27. Qe5+ Kf7 28. Qe6+ Ke8 29. Qxh6 Bxc4 30. bxc4 Rd6 31. Qh5+ Kd7 32. Qh4 gxh4 33. Nxh4 Bxh4 0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2025.11.15"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Bob-The-Cat-BOT"]
+[Result "0-1"]
+[WhiteElo "506"]
+[BlackElo "1350"]
+[TimeControl "?"]
+[EndDate "2025.11.15"]
+[Termination "Bob-The-Cat-BOT won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 d6 4. d4 exd4 5. Nxd4 Nxd4 6. Qxd4 Bd7 7. Bd3 Qf6 8. Qe3 c5 9. O-O c4 10. Bxc4 Rc8 11. b3 b5 12. Bxb5 Qxc3 13. Qxc3 Rxc3 14. Bxd7+ Kxd7 15. Re1 Kc8 16. e5 d5 17. Rd1 Kb7 18. Rxd5 Kc6 19. Rd6+ Bxd6 20. exd6 h5 21. b4 Nf6 22. b5+ Kd7 23. Ba3 Rxa3 24. Rd1 Rxa2 25. c4 Rc2 26. Rd4 Rc1+ 27. Rd1 Rxd1# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Mgda321"]
+[Result "0-1"]
+[WhiteElo "493"]
+[BlackElo "532"]
+[TimeControl "900+10"]
+[EndTime "15:18:43 GMT+0000"]
+[Termination "Mgda321 won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bc5 4. d4 exd4 5. Nxd4 Bxd4 6. Bd3 Nf6 7. O-O d5 8. Qe1 Be6 9. Be3 O-O 10. f3 Qd6 11. Qf2 Qc5 12. a3 Bxe3 13. Na4 Qd4 14. b3 dxe4 15. fxe4 Nxe4 16. Bxe4 Qxe4 17. Rae1 Bxf2+ 18. Kxf2 Qxc2+ 19. Re2 Qxb3 20. Nb2 Bc4 21. Nxc4 Qxc4 22. Ke1 Rfe8 23. Rxe8+ Rxe8+ 24. Kf2 Qe2+ 25. Kg1 Re3 26. a4 Ne5 27. a5 Ng4 28. h3 Rxh3 29. gxh3 Qh2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "HUZEFA-1"]
+[Result "1-0"]
+[WhiteElo "506"]
+[BlackElo "480"]
+[TimeControl "900+10"]
+[EndTime "15:19:52 GMT+0000"]
+[Termination "DontChesstheKnight won by resignation"]
+
+1. e4 e5 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "mcaxc1003"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "484"]
+[BlackElo "518"]
+[TimeControl "900+10"]
+[EndTime "15:34:06 GMT+0000"]
+[Termination "DontChesstheKnight won by resignation"]
+
+1. d4 d5 2. Bf4 Nc6 3. Nf3 Nf6 4. Nbd2 e6 5. e3 Bd6 6. Ne5 Ne7 7. Bd3 O-O 8. O-O c6 9. Ng4 h5 10. Nxf6+ gxf6 11. Qxh5 f5 12. e4 fxe4 13. Nxe4 dxe4 14. Bxe4 Nf5 15. Bg5 f6 16. g4 fxg5 17. gxf5 exf5 18. Bxf5 Rxf5 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "mrpennypacker94"]
+[Result "1/2-1/2"]
+[WhiteElo "518"]
+[BlackElo "528"]
+[TimeControl "900+10"]
+[EndTime "16:20:47 GMT+0000"]
+[Termination "Game drawn by stalemate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 d6 4. d4 Qf6 5. d5 Nd4 6. Be3 c5 7. Bb5+ Bd7 8. O-O Nxb5 9. Nxb5 Bxb5 10. Re1 g6 11. h4 h5 12. b3 c4 13. bxc4 Bxc4 14. c3 Bh6 15. Bg5 Bxg5 16. hxg5 Qe7 17. Qa4+ b5 18. Qd1 Qc7 19. a4 Ne7 20. axb5 Bxb5 21. Rc1 f5 22. c4 Ba6 23. Qa4+ Kf7 24. Qxa6 Rac8 25. Nd2 h4 26. g3 hxg3 27. fxg3 Rh5 28. Nf3 fxe4 29. Rxe4 Nf5 30. g4 Rh3 31. Kg2 Rg3+ 32. Kf2 Qb6+ 33. Qxb6 axb6 34. gxf5 Rh3 35. f6 b5 36. Rh4 Rxh4 37. Nxh4 bxc4 38. Ra1 Rc7 39. Ke3 c3 40. Nf3 c2 41. Kd2 e4 42. Nd4 Rc4 43. Nxc2 Rc5 44. Ra7+ Kf8 45. f7 Rxd5+ 46. Ke3 Rxg5 47. Kxe4 Rf5 48. Rd7 d5+ 49. Kd4 Rxf7 50. Rxd5 Kg7 51. Ne3 Rf4+ 52. Ke5 g5 53. Rd7+ Kg6 54. Rd6+ Kh5 55. Rd1 Rf3 56. Rh1+ Kg6 57. Nf5 Rxf5+ 58. Ke6 g4 59. Rg1 Rg5 60. Ke7 Kh5 61. Rh1+ Kg6 62. Rg1 Kf5 63. Rf1+ Ke4 64. Re1+ Kf3 65. Rf1+ Kg2 66. Rf7 g3 67. Kf6 Ra5 68. Rg7 Ra3 69. Kf7 Kf2 70. Kg8 g2 71. Kh8 g1=Q 72. Rxg1 Kxg1 73. Kg7 Rf3 74. Kg6 Kg2 75. Kg5 Kg3 76. Kg6 Rf4 77. Kg5 Kf3 78. Kh5 Kg3 79. Kg5 Kf3 80. Kh5 Rg4 81. Kh6 Kf4 82. Kh5 Kf5 83. Kh6 Rg5 84. Kh7 Kf6 85. Kh6 Rf5 86. Kh7 Rg5 87. Kh6 Rf5 88. Kh7 Kg5 89. Kg7 Rf6 90. Kh7 Kf5 91. Kg7 Ke6 92. Kh7 Rf5 93. Kg6 Rf4 94. Kg5 Ke5 95. Kh5 Kf5 96. Kh6 Rg4 97. Kh5 Rf4 98. Kh6 Kg4 99. Kg6 Rf5 100. Kh6 Rg5 101. Kh7 Kh5 102. Kh8 Rg1 103. Kh7 Rg2 104. Kh8 Kh6 1/2-1/2
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "wiaja2j"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "534"]
+[BlackElo "531"]
+[TimeControl "900+10"]
+[EndTime "5:46:55 GMT+0000"]
+[Termination "DontChesstheKnight won by resignation"]
+
+1. d4 d5 2. Bf4 Nc6 3. e3 Nf6 4. Nf3 Be6 5. Bd3 Qd7 6. Ne5 Nxe5 7. dxe5 Ne4 8. Bxe4 dxe4 9. O-O O-O-O 10. Nc3 Bc4 11. Re1 e6 12. Nxe4 Qd5 13. Bg5 Rd7 14. Qxd5 Bxd5 15. Nc5 Bxc5 16. e4 h6 17. Bd2 Bc6 18. Rad1 f6 19. a3 Rhd8 20. b4 Bb6 21. Re2 a5 22. bxa5 Bxa5 23. c3 b5 24. Kf1 fxe5 25. Ke1 Rd3 26. c4 Bxd2+ 27. Rdxd2 bxc4 28. Rxd3 cxd3 29. Ra2 Bxe4 30. Kd2 Bxg2 31. a4 e4 32. Ke3 c5 33. a5 Rd7 34. a6 c4 35. a7 Rxa7 36. Rxa7 c3 37. Ra8+ Kb7 38. Ra2 c2 39. Kd2 e3+ 40. fxe3 Bd5 41. Ra1 g5 42. Kxd3 e5 43. Kxc2 Be4+ 44. Kd2 g4 45. Rh1 Bxh1 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "Hope4Forever"]
+[Black "DontChesstheKnight"]
+[Result "1-0"]
+[WhiteElo "550"]
+[BlackElo "520"]
+[TimeControl "900+10"]
+[EndTime "6:46:37 GMT+0000"]
+[Termination "Hope4Forever won by resignation"]
+
+1. d4 d5 2. g3 Nf6 3. Bg2 Bd7 4. c4 Nc6 5. cxd5 Nxd5 6. Bxd5 e6 7. Bg2 Bb4+ 8. Bd2 a5 9. a3 Bxd2+ 10. Nxd2 Nxd4 11. e3 Nb5 12. Bxb7 Rb8 13. Bf3 O-O 14. Ne4 a4 15. Qxa4 Nd4 16. Qxd4 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "LongB4U"]
+[Result "0-1"]
+[WhiteElo "509"]
+[BlackElo "521"]
+[TimeControl "900+10"]
+[EndTime "6:55:34 GMT+0000"]
+[Termination "LongB4U won by checkmate"]
+
+1. e4 e5 2. d4 f6 3. Nf3 d6 4. d5 c6 5. c4 Bg4 6. h3 Bxf3 7. gxf3 g6 8. Nc3 f5 9. Bd3 f4 10. O-O Qg5+ 11. Kh1 Qh4 12. Kh2 g5 13. a4 a5 14. b3 Nf6 15. Ba3 h6 16. b4 g4 17. b5 Nh7 18. fxg4 Ng5 19. Be2 Qxh3+ 20. Kg1 f3 21. Bd3 Qg2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.16"]
+[Round "-"]
+[White "davidefestari"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "535"]
+[BlackElo "521"]
+[TimeControl "900+10"]
+[EndTime "7:35:03 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 c5 2. Nf3 d6 3. Bc4 Nh6 4. d4 cxd4 5. Qxd4 Nc6 6. Qd1 e5 7. Bxh6 gxh6 8. Bxf7+ Kxf7 9. Nc3 Nd4 10. Nxd4 exd4 11. Qxd4 Rg8 12. O-O Qg5 13. e5 Qxg2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "kvckvaa"]
+[Result "1-0"]
+[WhiteElo "531"]
+[BlackElo "495"]
+[TimeControl "900+10"]
+[EndTime "9:19:18 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 c5 2. Nc3 d6 3. Nf3 Nf6 4. d3 g6 5. Be2 Bg7 6. O-O O-O 7. Be3 Nbd7 8. Qd2 Qb6 9. Rab1 h6 10. d4 cxd4 11. Nxd4 Nxe4 12. Nxe4 d5 13. Nc3 Ne5 14. f4 Nc6 15. Nxc6 Qxc6 16. Nxd5 Rd8 17. Nxe7+ Kh7 18. Nxc6 Rxd2 19. Bxd2 bxc6 20. Be3 Bf5 21. g4 Bxc2 22. Rbc1 Be4 23. Bf3 Bd3 24. Rfd1 Rd8 25. Rxc6 Bd4 26. Bxd4 Rxd4 27. f5 h5 28. gxh5 gxh5 29. Bxh5 Kg7 30. f6+ Kh6 31. Rc5 Rd7 32. Bg4 Rd4 33. Rh5+ Kg6 34. Rf5 Rxg4+ 35. Kf2 Kxf5 36. Rxd3 Ke4 37. Re3+ Kd4 38. Re7 Rf4+ 39. Kg3 Rxf6 40. Rd7+ Ke4 41. Re7+ Kd3 42. Rxa7 Rg6+ 43. Kf4 Rf6+ 44. Kg5 Rg6+ 45. Kf5 Rd6 46. Rxf7 Rd5+ 47. Ke6 Kd4 48. Rf4+ Kc5 49. a3 Rd6+ 50. Ke5 Rd5+ 51. Kf6 Kd6 52. Rf5 Rd2 53. Rh5 Rxb2 54. a4 Ra2 55. a5 Rf2+ 56. Kg6 Ke6 57. a6 Ra2 58. Rh6 Rxa6 59. Kg5+ Ke5 60. Rxa6 Ke4 61. h3 Kf3 62. h4 Kg3 63. h5 Kf3 64. h6 Ke4 65. h7 Ke5 66. h8=Q+ Ke4 67. Re6+ Kf3 68. Qc3+ Kg2 69. Re2+ Kf1 70. Qe1# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.17"]
+[Round "-"]
+[White "Koest2Koest"]
+[Black "DontChesstheKnight"]
+[Result "1-0"]
+[WhiteElo "544"]
+[BlackElo "521"]
+[TimeControl "900+10"]
+[EndTime "1:03:57 GMT+0000"]
+[Termination "Koest2Koest won - game abandoned"]
+
+1. e4 c5 2. Bc4 d6 3. Nf3 e5 4. O-O Nc6 5. c3 Bd7 6. d4 cxd4 7. Bg5 f6 8. Bh4 g5 9. Bg3 Nge7 10. Na3 Qc7 11. Nb5 Qb6 12. Nxd6+ Kd8 13. Nf7+ Ke8 14. Nxh8 Qxb2 15. Qd2 Qxd2 16. Nxd2 dxc3 17. Nb3 c2 18. Rac1 Bg7 19. Nf7 Nd4 20. Nxd4 exd4 21. Rxc2 f5 22. Nxg5 fxe4 23. Nxe4 a6 24. Re1 b5 25. Nd6+ Kd8 26. Nb7+ Ke8 27. Bd5 Rc8 28. Nd6+ Kd8 29. Nxc8 Bxc8 30. Bf3 d3 31. Rd2 Bf5 32. Rc1 Bb2 33. Rxb2 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Vincentdhaka"]
+[Result "0-1"]
+[WhiteElo "511"]
+[BlackElo "507"]
+[TimeControl "900+10"]
+[EndTime "7:37:37 GMT+0000"]
+[Termination "Vincentdhaka won by checkmate"]
+
+1. e4 Nf6 2. Nc3 d6 3. d4 c5 4. Nf3 Qa5 5. Bd2 Qb6 6. Bc4 Qxb2 7. Rb1 Qa3 8. O-O cxd4 9. Nxd4 Qc5 10. Be2 Qxd4 11. Bf3 h5 12. h4 Bg4 13. Bxg4 hxg4 14. Rxb7 g6 15. Kh1 Rxh4+ 16. Kg1 g3 17. Re1 Qxf2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "BronzosPuolejas"]
+[Result "1/2-1/2"]
+[WhiteElo "511"]
+[BlackElo "518"]
+[TimeControl "900+10"]
+[EndTime "7:58:11 GMT+0000"]
+[Termination "Game drawn - insufficient material"]
+
+1. e4 e5 2. Nf3 c6 3. d4 Nf6 4. Nc3 d6 5. d5 cxd5 6. exd5 Bg4 7. Be2 e4 8. Nd4 Bxe2 9. Qxe2 Qe7 10. O-O g6 11. f3 exf3 12. gxf3 Qxe2 13. Ncxe2 Be7 14. Bg5 Nxd5 15. Bh6 Bf6 16. c3 Bxd4+ 17. Nxd4 Nc6 18. Rfe1+ Kd7 19. Bg7 Rhg8 20. Bf6 Nxf6 21. Nxc6 bxc6 22. Rad1 d5 23. Rd4 Rae8 24. Red1 h5 25. Ra4 g5 26. Rxa7+ Kd6 27. Rxf7 Ke6 28. Rc7 g4 29. Rxc6+ Kf7 30. fxg4 Nxg4 31. Rf1+ Ke7 32. Rc7+ Kd6 33. Rh7 Ne3+ 34. Kf2 Rgf8+ 35. Ke1 Rxf1+ 36. Ke2 Ra1 37. Rh6+ Kc5 38. Rxh5 Nc4+ 39. Kd3 Rxa2 40. b4+ Kb5 41. Rxd5+ Kc6 42. Kxc4 Re4+ 43. Rd4 Rxd4+ 44. cxd4 Rxh2 45. b5+ Kb6 46. d5 Rb2 47. d6 Rxb5 48. d7 Rc5+ 49. Kd4 Kc7 50. Kxc5 Kxd7 1/2-1/2
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.18"]
+[Round "-"]
+[White "Leonjiks"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "588"]
+[BlackElo "523"]
+[TimeControl "900+10"]
+[EndTime "8:16:04 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 c5 2. Bc4 e6 3. Nf3 Nf6 4. d3 d5 5. exd5 exd5 6. Qe2+ Be7 7. Bb5+ Bd7 8. Bxd7+ Nbxd7 9. Ne5 O-O 10. Ng4 h5 11. Nxf6+ Bxf6 12. h3 g6 13. g4 Re8 14. Be3 d4 15. gxh5 dxe3 16. fxe3 Bh4+ 17. Kd2 Bg5 18. Kd1 Bxe3 19. hxg6 fxg6 20. Qg4 Kg7 21. Re1 Ne5 22. Qg3 Qd4 23. c3 Qxd3+ 24. Nd2 Qxd2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.18"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Inkeri1234"]
+[Result "0-1"]
+[WhiteElo "100"]
+[BlackElo "143"]
+[TimeControl "60"]
+[EndTime "8:36:58 GMT+0000"]
+[Termination "Inkeri1234 won on time"]
+
+1. e4 e5 2. Nf3 Bc5 3. Nc3 Nf6 4. d4 exd4 5. Be3 O-O 6. Bxd4 Bb6 7. Bd3 c5 8. O-O cxd4 9. Nxd4 Bxd4 10. Nd5 Bxb2 11. Rb1 Bd4 12. Re1 Be5 13. g3 d6 14. f4 Bd4+ 15. Kf1 Bg4 16. Qd2 Bh3+ 17. Ke2 Ng4 18. Kf3 Nf6 19. Rb5 a6 0-1
+
+[Event "Let's Play!"]
+[Site "Chess.com"]
+[Date "2025.11.18"]
+[Round "-"]
+[White "sd19ie19ai79man88"]
+[Black "DontChesstheKnight"]
+[Result "1-0"]
+[WhiteElo "1284"]
+[BlackElo "396"]
+[TimeControl "1/86400"]
+[EndDate "2025.11.22"]
+[Termination "sd19ie19ai79man88 won on time"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bf4 h6 5. e3 Nc6 6. Nf3 g5 7. Bg3 Bd6 8. Ne5 Nxe5 9. dxe5 Nh5 10. exd6 cxd6 11. Qxh5 O-O 12. Qxh6 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.21"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Sel-Borum"]
+[Result "0-1"]
+[WhiteElo "514"]
+[BlackElo "532"]
+[TimeControl "900+10"]
+[EndTime "16:07:45 GMT+0000"]
+[Termination "Sel-Borum won by resignation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bc5 4. d3 Nge7 5. Be3 Bxe3 6. fxe3 O-O 7. d4 d6 8. Be2 b6 9. O-O a5 10. a4 Ba6 11. b3 Bxe2 12. Qxe2 Nb4 13. Rad1 c6 14. d5 cxd5 15. exd5 Rc8 16. Qd2 f5 17. Nh4 Ng6 18. Nxg6 hxg6 19. e4 f4 20. g3 Qg5 21. h4 Qg4 22. Kg2 Qxg3+ 23. Kh1 Qxh4+ 24. Qh2 Qg3 25. Qxg3 fxg3 26. Kg2 Rxf1 27. Rxf1 Nxc2 28. Kxg3 Rxc3+ 29. Kf2 Rxb3 30. Rc1 Nd4 31. Rc8+ Kh7 32. Rc6 Nxc6 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.23"]
+[Round "-"]
+[White "Loveles5"]
+[Black "DontChesstheKnight"]
+[Result "1-0"]
+[WhiteElo "544"]
+[BlackElo "505"]
+[TimeControl "900+10"]
+[EndTime "21:15:36 GMT+0000"]
+[Termination "Loveles5 won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. O-O d6 5. Ng5 Be6 6. Bxe6 fxe6 7. Nxe6 Qd7 8. Nxf8 Rxf8 9. d3 O-O-O 10. Bg5 h6 11. Bh4 g5 12. Bg3 d5 13. exd5 Qxd5 14. c4 Qd4 15. Nc3 Ne4 16. Qg4+ Kb8 17. Qxe4 a5 18. Qxd4 exd4 19. Na4 Nb4 20. Rfd1 Rde8 21. a3 Nc2 22. Ra2 Re1+ 23. Rxe1 Nxe1 24. h4 Nxd3 25. hxg5 hxg5 26. b3 Rh8 27. Rd2 Nf4 28. Bxf4 gxf4 29. Rxd4 Rf8 30. Nc3 f3 31. gxf3 Rxf3 32. Rd8+ Ka7 33. Nb5+ Kb6 34. b4 axb4 35. axb4 c6 36. Nd4 Rd3 37. c5+ Kc7 38. Ne6# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.23"]
+[Round "-"]
+[White "Amritpal1998"]
+[Black "DontChesstheKnight"]
+[Result "1-0"]
+[WhiteElo "595"]
+[BlackElo "498"]
+[TimeControl "900+10"]
+[EndTime "6:45:06 GMT+0000"]
+[Termination "Amritpal1998 won by resignation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Be2 Nf6 4. d4 d5 5. exd5 Nxd5 6. dxe5 Be6 7. Bc4 Be7 8. Bxd5 Bxd5 9. O-O Qd7 10. Nc3 O-O-O 11. Nxd5 Qxd5 12. Qxd5 Rxd5 13. Re1 Rhd8 14. Bg5 Bxg5 15. Nxg5 h6 16. Nxf7 R8d7 17. e6 Re7 18. c4 Rd4 19. b3 Rxe6 20. Rxe6 Rd6 21. Rxd6 cxd6 22. Nxd6+ Kc7 23. Nb5+ Kb6 24. Rc1 a6 25. Nd6 g5 26. c5+ Kc7 27. Nf7 Nd4 28. Re1 g4 29. Nxh6 Nc2 30. Re7+ Kd8 31. Rxb7 a5 32. Nxg4 Kc8 33. Ra7 Nb4 34. Ra8+ Kb7 35. Rxa5 Nc6 36. Rb5+ Ka6 37. Rb6+ 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.23"]
+[Round "-"]
+[White "markusgots"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "536"]
+[BlackElo "508"]
+[TimeControl "900+10"]
+[EndTime "6:49:04 GMT+0000"]
+[Termination "DontChesstheKnight won - game abandoned"]
+
+1. e3 e5 2. Qf3 Nc6 3. Bc4 f6 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.11.24"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Mohamed-Elagib"]
+[Result "0-1"]
+[WhiteElo "499"]
+[BlackElo "494"]
+[TimeControl "900+10"]
+[EndTime "23:46:12 GMT+0000"]
+[Termination "Mohamed-Elagib won by resignation"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bb4 4. d4 d6 5. Be3 Bg4 6. Be2 Nf6 7. a3 Bxc3+ 8. bxc3 exd4 9. cxd4 Nxe4 10. h3 Bf5 11. g4 Bg6 12. O-O O-O 13. Rb1 b6 14. c4 Re8 15. d5 Ne5 16. a4 Nc3 17. Qc2 Bxc2 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.01"]
+[Round "-"]
+[White "Cmcpherson1"]
+[Black "DontChesstheKnight"]
+[Result "1/2-1/2"]
+[WhiteElo "592"]
+[BlackElo "501"]
+[TimeControl "900+10"]
+[EndTime "11:13:57 GMT+0000"]
+[Termination "Game drawn by stalemate"]
+
+1. d4 d5 2. Bf4 Nc6 3. c3 f6 4. Qb3 e5 5. dxe5 fxe5 6. Bd2 Nf6 7. g3 Be6 8. Qxb7 Bd7 9. Bg2 Bd6 10. Nf3 Rb8 11. Qa6 O-O 12. Qd3 Be6 13. Bg5 h6 14. Bxf6 Rxf6 15. O-O e4 16. Qa6 Bd7 17. Nd4 Rb6 18. Qa4 Nxd4 19. Qxd4 Rxb2 20. Qxd5+ Be6 21. Qxe4 Qd7 22. c4 Bh3 23. Nc3 Bb4 24. Qa8+ Kf7 25. Bd5+ Ke7 26. Rfd1 Bxc3 27. Rac1 Rfb6 28. Qg8 c6 29. Qxg7+ Bxg7 30. Be4 Rd2 31. Bc2 Rxd1+ 32. Rxd1 Qxd1+ 33. Bxd1 Rb1 34. f4 Rxd1+ 35. Kf2 Bd4+ 36. Kf3 Rc1 37. e3 Bc5 38. Ke4 Rxc4+ 39. Kf3 Rc2 40. g4 Rxh2 41. Kg3 Rh1 42. e4 Bf1 43. f5 Rg1+ 44. Kf4 Bd6+ 45. e5 Bxe5+ 46. Kxe5 Rxg4 47. f6+ Kf7 48. Kf5 Ra4 49. Ke5 Rxa2 50. Kf5 Ra5+ 51. Kf4 Kxf6 52. Ke4 c5 53. Kd5 c4+ 54. Kd4 h5 55. Kc3 Rc5 56. Kd2 h4 57. Ke1 Bg2 58. Kf2 h3 59. Kg1 Be4 60. Kh2 Bf5 61. Kg3 c3 62. Kf2 c2 63. Ke1 c1=Q+ 64. Kf2 h2 65. Kg3 h1=Q 66. Kf2 Rc2+ 67. Kg3 Qcf1 1/2-1/2
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.04"]
+[Round "-"]
+[White "VB5602"]
+[Black "DontChesstheKnight"]
+[Result "1-0"]
+[WhiteElo "529"]
+[BlackElo "492"]
+[TimeControl "900+10"]
+[EndTime "5:17:03 GMT+0000"]
+[Termination "VB5602 won by checkmate"]
+
+1. e4 e5 2. Nf3 Nf6 3. Bd3 d5 4. Nxe5 Be6 5. Bb5+ c6 6. Ba4 b5 7. Bb3 Nbd7 8. Nxc6 Qc7 9. Nd4 Bc5 10. Nxb5 Qe5 11. d3 dxe4 12. d4 Bb4+ 13. c3 Qxb5 14. a4 Bxc3+ 15. bxc3 Bxb3 16. Qd2 Bxa4 17. Na3 Qb3 18. Rb1 Qe6 19. O-O O-O-O 20. Qb2 Qg4 21. Qb7# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.06"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Frensozich"]
+[Result "1-0"]
+[WhiteElo "501"]
+[BlackElo "485"]
+[TimeControl "900+10"]
+[EndTime "9:30:51 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bc4 Bb4 5. a3 Bxc3 6. dxc3 O-O 7. Be3 Nxe4 8. O-O d6 9. Bd5 Bf5 10. Qd3 Bg4 11. Bxe4 d5 12. Bxd5 Bxf3 13. gxf3 Qf6 14. Qe4 Rad8 15. Bc4 Rd6 16. Bd3 Nd4 17. Qxh7# 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.06"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "C_Brian"]
+[Result "1-0"]
+[WhiteElo "510"]
+[BlackElo "515"]
+[TimeControl "900+10"]
+[EndTime "10:12:43 GMT+0000"]
+[Termination "DontChesstheKnight won on time"]
+
+1. e4 h6 2. Nf3 a6 3. Nc3 e6 4. Bc4 Ne7 5. d4 Ng6 6. Be3 d6 7. O-O Be7 8. Qd2 e5 9. Rad1 Bd7 10. dxe5 dxe5 11. Nxe5 Nxe5 12. Bd4 Bf6 13. b3 O-O 14. f4 Ng6 15. e5 Be7 16. f5 Bg5 17. Qd3 Nf4 18. Qe4 Bc6 19. Bd5 Nxd5 20. Nxd5 Bxd5 21. Qd3 Nc6 22. Bc5 Nxe5 23. Qxd5 Re8 24. Rfe1 Bh4 25. g3 Bf6 26. Bb4 Qxd5 27. Rxd5 Nf3+ 28. Kf2 Nxe1 29. Bxe1 Rad8 30. Rd2 Rxd2+ 31. Bxd2 Bd4+ 32. Kf3 c5 33. c3 Be5 34. b4 c4 35. Ke4 Bf6+ 36. Kd5 Rd8+ 37. Kxc4 b5+ 38. Kc5 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.06"]
+[Round "-"]
+[White "khapp13"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "536"]
+[BlackElo "520"]
+[TimeControl "900+10"]
+[EndTime "14:44:05 GMT+0000"]
+[Termination "DontChesstheKnight won - game abandoned"]
+
+1. d4 d5 2. Nf3 Nc6 3. Nc3 e6 4. Bf4 Nf6 5. e3 Bd6 6. Bb5 Bd7 7. Bg5 Be7 8. O-O O-O 9. g3 a6 10. Bxc6 Bxc6 11. Ne5 h6 12. Bxf6 Bxf6 13. Ng4 Qd7 14. Qf3 Qe7 15. Ne2 Rad8 16. Nf4 Bb5 17. Rfc1 g5 18. Nh5 Bg7 19. Nhf6+ Bxf6 20. Nxf6+ Kg7 21. Ng4 f5 22. Ne5 c6 23. Qh5 Rf6 24. b3 c5 25. a4 Be8 26. Qf3 Qd6 27. Nd3 g4 28. Qe2 Bh5 29. Nxc5 Rd7 30. c4 Rc7 31. cxd5 b6 32. Nxa6 Ra7 33. dxe6 Rxa6 34. Qxa6 Rxe6 35. Qa7+ Kf6 36. a5 Be8 37. axb6 Bc6 38. b7 Qd5 39. Kf1 Qb5+ 40. Rc4 Bxb7 41. d5 Qxd5 42. Qxb7 Qxb7 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.06"]
+[Round "-"]
+[White "Fadzzz_20"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "481"]
+[BlackElo "528"]
+[TimeControl "900+10"]
+[EndTime "15:39:22 GMT+0000"]
+[Termination "DontChesstheKnight won by resignation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nc3 Nc6 4. d4 d5 5. dxe5 dxe4 6. Ng5 Ng4 7. Bc4 Bc5 8. Nd5 Ncxe5 9. Nxf7 Kxf7 10. Rg1 Nxc4 11. h3 Bxf2+ 12. Ke2 Bxg1 13. hxg4 Bxg4+ 14. Kf1 Bxd1 15. Kxg1 Qxd5 16. b3 Qd4+ 17. Kh2 Qxa1 18. bxc4 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.07"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "LEV1LEV1"]
+[Result "1-0"]
+[WhiteElo "537"]
+[BlackElo "528"]
+[TimeControl "900+10"]
+[EndTime "20:31:03 GMT+0000"]
+[Termination "DontChesstheKnight won by resignation"]
+
+1. e4 d5 2. Nc3 d4 3. Nb5 a6 4. Nxd4 Qxd4 5. d3 e5 6. Nf3 Qd8 7. Nxe5 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.09"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "rachtock25"]
+[Result "1/2-1/2"]
+[WhiteElo "537"]
+[BlackElo "556"]
+[TimeControl "900+10"]
+[EndTime "15:54:59 GMT+0000"]
+[Termination "Game drawn by stalemate"]
+
+1. e4 d5 2. Nc3 d4 3. Nce2 e5 4. d3 Bb4+ 5. Bd2 Nc6 6. Nf3 f6 7. c3 Ba5 8. cxd4 exd4 9. Nfxd4 Nxd4 10. Bxa5 b6 11. Qa4+ Kf7 12. Nxd4 bxa5 13. Qxa5 Ne7 14. Qh5+ Ng6 15. Nc6 Qd6 16. Qd5+ Qxd5 17. exd5 Bd7 18. Rc1 Rhe8+ 19. Kd2 Kg8 20. Be2 Nf4 21. Bf3 Nxg2 22. Bxg2 Bf5 23. d6 cxd6 24. Bd5+ Be6 25. Bxe6+ Rxe6 26. Rhe1 Kf7 27. Nd4 Ree8 28. Rc7+ Kg8 29. Re6 Rab8 30. b3 Rxe6 31. Nxe6 a5 32. Rxg7+ Kh8 33. Ra7 Re8 34. Nd4 Re5 35. Ra8+ Kg7 36. Ra7+ Kg6 37. f4 Rd5 38. f5+ Kg5 39. Rg7+ Kf4 40. Ne6+ Kxf5 41. Nc7 Rc5 42. Rxh7 Kg6 43. Rd7 f5 44. Ne6 Re5 45. Nf8+ Kg5 46. Rxd6 f4 47. Nh7+ Kg4 48. Rg6+ Kf5 49. Ra6 f3 50. Rf6+ Kg4 51. d4 Re2+ 52. Kd3 Rxh2 53. Rg6+ Kf5 54. Nf8 f2 55. Ke2 Ke4 56. Rg4+ Kf5 57. Rg3 Kf4 58. Rf3+ Ke4 59. Ne6 Kd5 60. Rf6 Rg2 61. Nf4+ Kxd4 62. Nxg2 Kc3 63. Rxf2 Kb2 64. Ke3+ Ka3 65. Nf4 Kb4 66. Nd5+ Ka3 67. Nc3 Kb4 68. Nd5+ Ka3 69. Kd3 a4 70. b4 1/2-1/2
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.10"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "majedmashallah"]
+[Result "1-0"]
+[WhiteElo "546"]
+[BlackElo "544"]
+[TimeControl "900+10"]
+[EndTime "11:07:32 GMT+0000"]
+[Termination "DontChesstheKnight won - game abandoned"]
+
+1. e4 g6 2. Nf3 Bg7 3. d4 Nf6 4. Nc3 O-O 5. Bc4 Nc6 6. Be3 Nb4 7. a3 Na6 8. b4 Ng4 9. Qd2 e5 10. O-O-O exd4 11. Nxd4 c6 12. f3 Nh6 13. Bxh6 Bxh6 14. Qxh6 d5 15. exd5 cxd5 16. Nxd5 Nc7 17. Nxc7 Qxc7 18. Bd5 Bf5 19. Nxf5 gxf5 20. Qg5+ Kh8 21. Qf6+ Kg8 22. Qxf5 Rac8 23. Rd2 a5 24. Be4 f6 25. Qxh7+ Qxh7 26. Bxh7+ Kxh7 27. Rd7+ Kg8 28. Rxb7 axb4 29. axb4 f5 30. Re1 Ra8 31. Kd2 Rfd8+ 32. Kc3 Ra3+ 33. Kb2 Ra4 34. Ree7 Kf8 35. Rf7+ Ke8 36. Rxf5 Rd4 37. Re5+ Kd8 38. Ra5 Raxb4+ 39. Rxb4 Rxb4+ 40. Ka3 Rc4 41. Rd5+ Ke7 42. Kb3 Rc8 43. Re5+ Kf6 44. f4 Rb8+ 45. Kc3 Rc8+ 46. Kd2 Rd8+ 47. Kc1 Rd4 48. g3 Ra4 49. Rc5 Ra1+ 50. Kb2 Rh1 51. c4 Rxh2+ 52. Kc3 Rh3 53. Rc6+ Kf5 54. c5 Rxg3+ 55. Kc4 Kxf4 56. Rf6+ Ke3 57. c6 Rg4+ 58. Kc5 Kd3 59. c7 Rc4+ 60. Kd6 Kd4 61. Rf4+ Kc3 62. Rxc4+ Kxc4 63. c8=Q+ 1-0
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.13"]
+[Round "-"]
+[White "Imhesinn"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "635"]
+[BlackElo "557"]
+[TimeControl "900+10"]
+[EndTime "11:17:59 GMT+0000"]
+[Termination "DontChesstheKnight won by resignation"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 Qe7 4. Nf3 Qxe4+ 5. Qe2 Qxe2+ 6. Bxe2 d5 7. O-O Bd6 8. Nc3 Be6 9. d4 Nc6 10. Bg5 h6 11. Bxf6 gxf6 12. Bb5 a6 13. Bxc6+ bxc6 14. Rae1 O-O-O 15. g3 Bh3 16. g4 Bxf1 17. Kxf1 Rhg8 18. a3 Rxg4 19. h3 Rf4 20. Re3 h5 21. h4 Rg4 22. b4 Bf4 23. Re7 Rf8 24. Ne2 Bd6 25. Re3 f5 26. Rc3 Kb7 27. Ng3 Bxg3 28. fxg3 Rxg3 29. Rd3 f4 30. Ng5 Rxd3 31. cxd3 f6 32. Ne6 Rc8 33. Nxf4 Rh8 34. Ng6 Rh6 35. Ne7 Kb6 36. Nf5 Rg6 37. Ne7 Rg4 38. Nf5 Rf4+ 39. Kg2 Rxf5 40. Kg3 Rf1 41. Kg2 Rd1 42. Kf3 Rxd3+ 43. Kf4 Rxd4+ 44. Kf5 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2025.12.13"]
+[Round "-"]
+[White "aja1397"]
+[Black "DontChesstheKnight"]
+[Result "1-0"]
+[WhiteElo "694"]
+[BlackElo "552"]
+[TimeControl "900+10"]
+[EndTime "12:56:20 GMT+0000"]
+[Termination "aja1397 won by resignation"]
+
+1. e4 e5 2. d4 Nc6 3. d5 Nd4 4. c3 Nb5 5. Bxb5 c6 6. Ba4 cxd5 7. Qxd5 Nf6 8. Qxe5+ Be7 9. Bg5 h6 10. Bxf6 gxf6 11. Qg3 Qa5 12. Qg7 Rf8 13. Bb3 Qe5 14. Nd2 f5 15. Qxe5 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.17"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "Jimmy-Bot"]
+[Result "1-0"]
+[WhiteElo "552"]
+[BlackElo "600"]
+[TimeControl "?"]
+[EndDate "2026.01.17"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 d5 2. Nc3 dxe4 3. Nxe4 Qd4 4. f3 f5 5. c3 Qd5 6. d3 Nc6 7. Ne2 Kd7 8. g4 Nd4 9. Nxd4 Nh6 10. g5 Nf7 11. Bh3 c6 12. Bxf5+ Ke8 13. Bxc8 Rxc8 14. Kf1 Qd6 15. Nxd6+ exd6 16. Nf5 Rg8 17. Bf4 Rb8 18. Qe1+ Kd7 19. Bxd6 Bxd6 20. Nxd6 Nxd6 21. d4 c5 22. dxc5 Kc7 23. cxd6+ Kc6 24. d7 Kb6 25. Qe6+ Kc7 26. d8=Q+ Rbxd8 27. Qc4+ Kb8 28. Re1 b5 29. Qf4+ Ka8 30. Qe4+ Kb8 31. Qe5+ Rd6 32. Qxd6+ Kc8 33. Qe6+ Kc7 34. Qxg8 a5 35. Qxg7+ Kb6 36. Re6+ Kc5 37. Qe5+ Kc4 38. Rc6+ Kd3 39. Rd6+ Kc2 40. Ke2 Kxb2 41. Qxb5+ Kxa2 42. Rb1 a4 43. Ra6 a3 44. Qb4 h5 45. Rxa3# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.18"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+[WhiteElo "552"]
+[BlackElo "725"]
+[TimeControl "?"]
+[EndDate "2026.01.18"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d3 Ng4 5. Be2 Rb8 6. O-O Bd6 7. Bg5 Qf6 8. Bxf6 Nxf6 9. d4 b6 10. d5 Ne7 11. h3 Ng4 12. hxg4 Bb7 13. Nb5 Bc6 14. dxc6 Nxc6 15. Nxd6+ cxd6 16. Qxd6 Rf8 17. Rad1 Rd8 18. Nxe5 Ne7 19. Nxd7 f6 20. g5 Rf7 21. gxf6 gxf6 22. Bh5 a6 23. Bxf7+ Kxf7 24. Qxb6 Kg7 25. Qxd8 Ng6 26. Nc5 a5 27. Qc7+ Kg8 28. Rd8+ Nf8 29. Ne6 h5 30. Nxf8 a4 31. Ng6# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.21"]
+[Round "2"]
+[White "DontChesstheKnight"]
+[Black "nelson-2026-BOT"]
+[Result "0-1"]
+[WhiteElo "552"]
+[BlackElo "1375"]
+[TimeControl "?"]
+[EndDate "2026.01.21"]
+[Termination "nelson-2026-BOT won by checkmate"]
+
+1. e4 e5 2. Nf3 Qf6 3. Nc3 Bc5 4. d3 a5 5. Be3 Qd6 6. Be2 Nc6 7. O-O Bxe3 8. fxe3 Qb4 9. Rb1 b5 10. a3 Qc5 11. Nd5 Nge7 12. Nxc7+ Kf8 13. Nxa8 b4 14. d4 Qd6 15. Bb5 Qb8 16. Nxe5 Nxe5 17. dxe5 Qxe5 18. Bc4 Qxe4 19. Rxf7+ Ke8 20. Qh5 Qxa8 21. Qe5 Kd8 22. Qxe7+ Kc7 23. Qc5+ Qc6 24. Qa7+ Bb7 25. Qxa5+ Kc8 26. Qxb4 Qxg2# 0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.21"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+[WhiteElo "552"]
+[BlackElo "725"]
+[TimeControl "?"]
+[EndDate "2026.01.22"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4 exd4 5. Nxd4 Bb4 6. Bd2 Bxc3 7. Bxc3 d5 8. e5 Nxd4 9. Bxd4 Ne4 10. Bb5+ c6 11. Bd3 c5 12. Be3 Bg4 13. f3 Qh4+ 14. g3 O-O-O 15. fxg4 Qe7 16. O-O Qxe5 17. b3 Kc7 18. Rxf7+ Kd6 19. Rxb7 g5 20. Rxa7 Nf2 21. Bxf2 Qxa1 22. Qxa1 Rde8 23. Ra6+ Kc7 24. Bxc5 Kd7 25. Bb5+ Kc8 26. Ra8+ Kb7 27. Rxe8 Rxe8 28. Bxe8 d4 29. Bxd4 h6 30. Bb5 Ka8 31. Bc6+ Kb8 32. Be5+ Ka7 33. Qd4+ Ka6 34. Qa4+ Kb6 35. Qb5+ Ka7 36. Qb7# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.22"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+[WhiteElo "552"]
+[BlackElo "725"]
+[TimeControl "?"]
+[EndDate "2026.01.23"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 Nf6 2. Nf3 d5 3. d4 Nxe4 4. Be3 c6 5. c3 e6 6. Nbd2 Rg8 7. Nb3 Kd7 8. Bd3 h5 9. O-O Bd6 10. h4 Kc7 11. Qe2 b5 12. Nc5 Bxc5 13. dxc5 b4 14. cxb4 Qf6 15. Rac1 e5 16. Qc2 Kd7 17. Bg5 Nxg5 18. hxg5 Qf4 19. Bh7 Re8 20. Bf5+ Kd8 21. Bxc8 Kxc8 22. Rfe1 Rg8 23. Rxe5 Qxc1+ 24. Qxc1 a6 25. Nd4 Re8 26. Rxe8+ Kd7 27. Rf8 g6 28. Rxf7+ Ke8 29. Qf4 Kd8 30. Qd6+ Kc8 31. Rf8+ Kb7 32. Qe7+ Nd7 33. Qxd7# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.22"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "janjay-2026-BOT"]
+[Result "1-0"]
+[WhiteElo "552"]
+[BlackElo "725"]
+[TimeControl "?"]
+[EndDate "2026.01.23"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d3 Rg8 5. Be3 Nb4 6. Be2 Nxc2+ 7. Qxc2 h6 8. d4 Nxe4 9. Nxe4 Bd6 10. dxe5 Bb4+ 11. Nc3 Bxc3+ 12. bxc3 Rb8 13. O-O-O Rh8 14. Nd4 c5 15. Nf5 Qb6 16. Nxg7+ Kf8 17. Nf5 Ke8 18. Nxh6 Rxh6 19. Bxh6 Qxh6+ 20. Rd2 d6 21. Bb5+ Kf8 22. Rd1 b6 23. Kb1 Kg7 24. Rxd6 Qh5 25. Bd3 Qxd1+ 26. Qxd1 Be6 27. Be4 Bxa2+ 28. Kxa2 Rg8 29. Qg4+ Kf8 30. Qc8+ Kg7 31. Qg4+ Kf8 32. Rd8+ Ke7 33. Qxg8 a6 34. Qe8# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.22"]
+[Round "2"]
+[White "DontChesstheKnight"]
+[Black "nelson-2026-BOT"]
+[Result "1-0"]
+[WhiteElo "552"]
+[BlackElo "1375"]
+[TimeControl "?"]
+[EndDate "2026.01.23"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Nf3 Qf6 3. Nc3 Nc6 4. d4 Bb4 5. Bd2 exd4 6. Nxd4 Qxd4 7. Be3 Qxd1+ 8. Rxd1 Bxc3+ 9. bxc3 Nf6 10. Bd3 d5 11. exd5 Nxd5 12. Bf4 O-O 13. Bxc7 Re8+ 14. Be2 Nxc3 15. Rd3 Nd4 16. Rxc3 Rxe2+ 17. Kd1 Be6 18. Rd3 Re8 19. Rxd4 Bf5 20. Rd8 Rxd8+ 21. Bxd8 Rxf2 22. Ke1 Rxg2 23. Rf1 Be6 24. Rf2 Rg1+ 25. Rf1 Rg4 26. h3 Rc4 27. Rf2 Rc8 28. Bh4 Re8 29. Rg2 Bb3+ 30. Kd2 Re5 31. axb3 Rd5+ 32. Kc1 Kh8 33. Rd2 Rxd2 34. Kxd2 Kg8 35. c4 b5 36. c5 g5 37. Bxg5 Kg7 38. c6 f6 39. Be3 a5 40. c7 a4 41. c8=Q axb3 42. Qb7+ Kg6 43. Qxb5 h5 44. Qd3+ f5 45. Qxb3 Kg7 46. Bd4+ Kf8 47. Qb4+ Kf7 48. Qc4+ Kf8 49. Bc5+ Kg7 50. Qd4+ Kg6 51. h4 Kf7 52. Qd5+ Kg6 53. Qd6+ Kf7 54. Qc7+ Kg6 55. Qg3+ Kf6 56. Qg5+ Ke5 57. Qxh5 Kd5 58. Be7 Ke4 59. Qe2+ Kd5 60. h5 f4 61. h6 Kc6 62. h7 Kd5 63. h8=Q Kc6 64. Qc3+ Kb6 65. Qe6+ Kb7 66. Qec6+ Kb8 67. Qb3+ Ka7 68. Qbb7# 1-0
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.23"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "wally-2026-BOT"]
+[Result "0-1"]
+[WhiteElo "552"]
+[BlackElo "1850"]
+[TimeControl "?"]
+[EndDate "2026.01.23"]
+[Termination "wally-2026-BOT won by checkmate"]
+
+1. e4 c5 2. Nf3 d6 3. Nc3 Nc6 4. d3 Bg4 5. Be2 Nf6 6. h3 Bxf3 7. Bxf3 Ne5 8. Be2 d5 9. exd5 Nxd5 10. Nxd5 Qxd5 11. O-O b5 12. Bf3 Nxf3+ 13. gxf3 Qd7 14. Qe2 Qxh3 15. Re1 a6 16. Bd2 Rc8 17. b4 Rc6 18. bxc5 Rg6+ 19. Bg5 Rxg5# 0-1
+
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.23"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "wally-2026-BOT"]
+[Result "0-1"]
+[WhiteElo "552"]
+[BlackElo "1850"]
+[TimeControl "?"]
+[EndDate "2026.01.23"]
+[Termination "wally-2026-BOT won by checkmate"]
+
+1. e4 e6 2. Nf3 d5 3. Nc3 Nc6 4. d4 dxe4 5. Nxe4 Qe7 6. Bd3 f5 7. Ng3 Qf6 8. Bg5 Qf7 9. Qd2 Bb4 10. c3 Bd6 11. O-O-O h6 12. Be3 f4 13. Bxf4 Bxf4 14. Qxf4 Qxf4+ 15. Kc2 Nf6 16. Bg6+ Kd8 17. Bf7 Ng4 18. Bxe6 Bxe6 19. Ne5 Ngxe5 20. dxe5+ Kc8 21. Nh5 Qxf2+ 22. Rd2 Qf5+ 23. Kd1 Qb1+ 24. Ke2 Bc4+ 25. Rd3 Bxd3+ 26. Kf2 Qxh1 27. Ke3 Qxg2 28. Kxd3 Nxe5+ 29. Kd4 Re8 30. Nf4 Qd2+ 31. Ke4 Ng6+ 32. Kf5 Nxf4 33. Kg4 h5+ 34. Kg5 Re5+ 35. Kh4 Qxh2# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2026.02.11"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "sitramed2"]
+[Result "0-1"]
+[WhiteElo "538"]
+[BlackElo "555"]
+[TimeControl "900+10"]
+[EndTime "10:40:43 GMT+0000"]
+[Termination "sitramed2 won by checkmate"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Bc5 4. d3 Nge7 5. Be2 d6 6. O-O O-O 7. Bd2 Be6 8. a3 a5 9. b4 axb4 10. axb4 Bxb4 11. Rxa8 Qxa8 12. Ng5 Nd4 13. Nxe6 fxe6 14. Bg4 Rf6 15. Qb1 Nec6 16. Nb5 Bxd2 17. Nxd4 Nxd4 18. Rd1 Qa5 19. Qxb7 Qc3 20. Qc8+ Rf8 21. Qxe6+ Nxe6 22. Bxe6+ Kh8 23. Rb1 Qxc2 24. Rf1 c5 25. g4 Qxd3 26. Kg2 Qxe4+ 27. f3 Qe2+ 28. Rf2 Qe1 29. Bc4 e4 30. f4 e3 31. Rf3 e2 32. f5 Qd1 33. Bxe2 Qxe2+ 34. Kg3 Qd1 35. Rf2 c4 36. g5 Re8 37. f6 gxf6 38. g6 Qg1+ 39. Rg2 Re3+ 40. Kf4 Qxg2 41. Kf5 Qf2+ 42. Kg4 Re4+ 43. Kh5 Qh4# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2026.02.11"]
+[Round "-"]
+[White "mulhamghanem"]
+[Black "DontChesstheKnight"]
+[Result "0-1"]
+[WhiteElo "619"]
+[BlackElo "554"]
+[TimeControl "900+10"]
+[EndTime "11:24:44 GMT+0000"]
+[Termination "DontChesstheKnight won by checkmate"]
+
+1. e4 e5 2. Qh5 Nf6 3. Qxe5+ Be7 4. Bc4 O-O 5. Nf3 d6 6. Qg3 Nc6 7. Ng5 Bd7 8. Nc3 d5 9. Bxd5 Nxd5 10. exd5 Bxg5 11. dxc6 Bxc6 12. O-O Qe7 13. Qd3 Rfe8 14. h3 Bf4 15. b3 Qe1 16. Ba3 Qxd2 17. Qxd2 Bxd2 18. Bb2 Bxc3 19. Bxc3 Re7 20. a4 b5 21. a5 Rae8 22. Bb4 Re4 23. c3 h5 24. Rad1 Re2 25. c4 a6 26. cxb5 Bxb5 27. Rc1 R2e4 28. Rfe1 Rxe1+ 29. Bxe1 f5 30. f4 h4 31. Bxh4 Re4 32. g3 Re3 33. Rxc7 Re1+ 34. Kf2 Re2+ 35. Kf1 Rb2+ 36. Ke1 Kf8 37. g4 Rxb3 38. gxf5 Re3+ 39. Kf2 Rxh3 40. Rc8+ Be8 41. Kg2 Rxh4 42. Kg3 Rh5 43. Kg4 Rh1 44. Kg5 Rg1+ 45. Kh4 Ra1 46. f6 gxf6 47. Rc5 Rh1+ 48. Kg3 Bd7 49. Kg2 Rh4 50. Kg3 Rh3+ 51. Kg2 Rh4 52. f5 Rg4+ 53. Kf3 Rg5 54. Rd5 Rxf5+ 55. Ke4 Rxd5 56. Kxd5 f5 57. Ke5 Kf7 58. Kd5 f4 59. Kc5 f3 60. Kb6 f2 61. Kxa6 f1=Q+ 62. Kb7 Qb5+ 63. Kc7 Qc6+ 64. Kd8 Qc8# 0-1
+
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2026.02.16"]
+[Round "-"]
+[White "DontChesstheKnight"]
+[Black "akhilkrishnan92"]
+[Result "0-1"]
+[WhiteElo "546"]
+[BlackElo "687"]
+[TimeControl "900+10"]
+[EndTime "12:58:35 GMT+0000"]
+[Termination "akhilkrishnan92 won by resignation"]
+
+1. e4 Nc6 2. Nc3 e5 3. Nf3 Bb4 4. a3 Bxc3 5. bxc3 a6 6. d3 Nf6 7. d4 exd4 8. cxd4 d5 9. Bd3 O-O 10. O-O dxe4 11. Bxe4 Nxe4 12. d5 Ne7 13. Re1 Nc3 14. Qd4 Ncxd5 15. Bb2 Nf5 16. Qe5 Bd7 17. Qxd5 Nh4 18. Qd4 Nxf3+ 19. Kf1 Bb5+ 0-1

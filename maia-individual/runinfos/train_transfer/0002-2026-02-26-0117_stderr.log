@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "2-training/train_transfer.py", line 143, in <module>
+    cfg = main(args.config, name, collection_name, args.player_name, args.gpu, args.num_workers)
+  File "/maia-individual/backend/utils.py", line 112, in wrapped_main
+    val = mainFunc(*args, **kwds)
+  File "2-training/train_transfer.py", line 37, in main
+    cfg['dataset']['name'],
+KeyError: 'name'

@@ -1,0 +1,3 @@
+2026-02-20 07:41:32[94m split_by_player.py /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/SamplePGN.pgn DontChesstheKnight /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/games[0m
+2026-02-20 07:41:32[94m Starting split_by_player[0m
+2026-02-20 07:41:32 0 done with 1:0 players from /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/SamplePGN.pgn2026-02-20 07:41:32[94m Error encountered[0m

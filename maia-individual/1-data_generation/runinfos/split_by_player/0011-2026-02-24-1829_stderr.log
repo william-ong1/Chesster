@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "split_by_player.py", line 48, in <module>
+    main()
+  File "/opt/conda/envs/transfer_chess/lib/python3.8/site-packages/backend-1.0.0-py3.8.egg/backend/utils.py", line 112, in wrapped_main
+    val = mainFunc(*args, **kwds)
+  File "split_by_player.py", line 34, in main
+    backend.printWithDate(f"{i} found totals of {len(outputs_white)}:{len(outputs_black)} players from {args.input}")
+UnboundLocalError: local variable 'i' referenced before assignment

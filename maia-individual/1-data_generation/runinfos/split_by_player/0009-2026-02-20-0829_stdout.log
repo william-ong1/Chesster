@@ -1,0 +1,7 @@
+2026-02-20 08:29:11[94m split_by_player.py /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/SamplePGN_fixed.pgn DontChesstheKnight /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/games[0m
+2026-02-20 08:29:11[94m Starting split_by_player[0m
+2026-02-20 08:29:11 0 done with 1:0 players from /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/SamplePGN_fixed.pgn2026-02-20 08:29:11 49 found totals of 30:20 players from /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/SamplePGN_fixed.pgn
+2026-02-20 08:29:11 Writing white
+2026-02-20 08:29:11 Writing black
+2026-02-20 08:29:11 done
+2026-02-20 08:29:11[94m Run completed[0m

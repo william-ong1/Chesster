@@ -37,7 +37,8 @@ for c in "white" "black"; do
 
         #using tool from:
         #https://github.com/DanielUranga/trainingdata-tool
-        screen -S "${p_name}-${c}-${s}" -dm bash -c "cd ${s}/${c}; trainingdata-tool -v ../../pgns/${s}_${c}.pgn"
+        #screen -S "${p_name}-${c}-${s}" -dm bash -c "cd ${s}/${c}; trainingdata-tool -v ../../pgns/${s}_${c}.pgn"
+        (cd ${s}/${c} && trainingdata-tool -v ../../pgns/${s}_${c}.pgn)
     done
     cd -
 done

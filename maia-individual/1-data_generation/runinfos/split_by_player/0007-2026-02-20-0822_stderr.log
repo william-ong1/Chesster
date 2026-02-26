@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/homes/iws/s99s42m/chess-mimic-app/my-mimic-app/maia-individual/1-data_generation/split_by_player.py", line 48, in <module>
+    main()
+  File "/homes/iws/s99s42m/chess-mimic-app/my-mimic-app/venv/lib/python3.12/site-packages/backend/utils.py", line 112, in wrapped_main
+    val = mainFunc(*args, **kwds)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/homes/iws/s99s42m/chess-mimic-app/my-mimic-app/maia-individual/1-data_generation/split_by_player.py", line 25, in main
+    for i, (d, l) in enumerate(games):
+                     ^^^^^^^^^^^^^^^^
+  File "/homes/iws/s99s42m/chess-mimic-app/my-mimic-app/venv/lib/python3.12/site-packages/backend/pgn_parsering.py", line 20, in __iter__
+    yield next(self)
+          ^^^^^^^^^^
+  File "/homes/iws/s99s42m/chess-mimic-app/my-mimic-app/venv/lib/python3.12/site-packages/backend/pgn_parsering.py", line 44, in __next__
+    k, v, _ = l.split('"')
+    ^^^^^^^
+ValueError: not enough values to unpack (expected 3, got 1)

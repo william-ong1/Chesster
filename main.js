@@ -19,8 +19,12 @@ const MAIA_ELOS = [1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900];
 
 const SETUP_FLAG = path.join(ROOT, '.setup_complete');
 
-const IMAGE_NAME = 'chess-mimic-training';
-const IMAGE_FLAG = path.join(ROOT, '.docker_image_built');
+// Detect platform and use appropriate Docker image
+const PLATFORM = process.platform === 'darwin' && process.arch === 'arm64' 
+  ? 'arm64' 
+  : 'amd64';
+const IMAGE_NAME = `chess-mimic-training-${PLATFORM}`;
+const IMAGE_FLAG = path.join(ROOT, `.docker_image_built_${PLATFORM}`);
 
 function dockerAvailable() {
   try {
@@ -39,65 +43,35 @@ async function runFirstTimeSetup(win) {
 
   // Check Docker first (quick)
   win.webContents.send('setup:progress', 'Checking Docker...');
-if (!dockerAvailable()) {
-  if (process.platform === 'linux') {
-    win.webContents.send('setup:progress', 'Docker not found. Installing Docker Engine...');
-    await new Promise((resolve, reject) => {
-      const proc = spawn('bash', ['-c', 'curl -fsSL https://get.docker.com | sh'], {
-        stdio: ['ignore', 'pipe', 'pipe']
+  if (!dockerAvailable()) {
+    if (process.platform === 'linux') {
+      win.webContents.send('setup:progress', 'Docker not found. Installing Docker Engine...');
+      await new Promise((resolve, reject) => {
+        const proc = spawn('bash', ['-c', 'curl -fsSL https://get.docker.com | sh'], {
+          stdio: ['ignore', 'pipe', 'pipe']
+        });
+        proc.stdout.on('data', d =>
+          win.webContents.send('setup:progress', d.toString().trim()));
+        proc.stderr.on('data', d =>
+          win.webContents.send('setup:progress', d.toString().trim()));
+        proc.on('close', code => {
+          if (code === 0) resolve();
+          else reject(new Error('Docker installation failed.'));
+        });
+      }).catch(err => {
+        win.webContents.send('setup:error', err.message);
+        return;
       });
-      proc.stdout.on('data', d =>
-        win.webContents.send('setup:progress', d.toString().trim()));
-      proc.stderr.on('data', d =>
-        win.webContents.send('setup:progress', d.toString().trim()));
-      proc.on('close', code => {
-        if (code === 0) resolve();
-        else reject(new Error('Docker installation failed.'));
-      });
-    }).catch(err => {
-      win.webContents.send('setup:error', err.message);
+      win.webContents.send('setup:progress', 'Docker installed successfully.');
+    } else {
+      // Mac or Windows — can't auto-install, direct user to download
+      win.webContents.send('setup:docker-needed');
       return;
-    });
-    win.webContents.send('setup:progress', 'Docker installed successfully.');
-  } else {
-    // Mac or Windows — can't auto-install, direct user to download
-    win.webContents.send('setup:docker-needed');
-    return;
+    }
   }
-}
-win.webContents.send('setup:progress', 'Docker found.');
+  win.webContents.send('setup:progress', 'Docker found.');
 
-  win.webContents.send('setup:progress', 'Installing maia-individual backend...');
-  const py = getPythonBin();
-  win.webContents.send('setup:progress', `Using Python: ${py}`);
-  win.webContents.send('setup:progress', `Working directory: ${MAIA_DIR}`);
-
-  return new Promise((resolve, reject) => {
-    const proc = spawn(py, ['setup.py', 'install'], {
-      cwd: MAIA_DIR,
-      env: envWithBin()
-    });
-
-    // Timeout after 3 minutes
-    const timeout = setTimeout(() => {
-      proc.kill();
-      win.webContents.send('setup:error', 'setup.py install timed out after 3 minutes.');
-      reject(new Error('timeout'));
-    }, 3 * 60 * 1000);
-
-    proc.stdout.on('data', d =>
-      win.webContents.send('setup:progress', d.toString().trim()));
-    proc.stderr.on('data', d =>
-      win.webContents.send('setup:progress', d.toString().trim()));
-
-proc.on('close', code => {
-  clearTimeout(timeout);
-  if (code !== 0) {
-    win.webContents.send('setup:error', `setup.py install failed with exit code ${code}`);
-    reject(new Error('setup.py install failed'));
-    return;
-  }
-
+  // Backend install is not needed - it's installed in Docker during image build
   // Trigger OpenCL tuning so first move isn't slow
   win.webContents.send('setup:progress', 'Calibrating chess engine (one-time, ~1-2 minutes)...');
 
@@ -108,50 +82,49 @@ proc.on('close', code => {
 
   if (!lc0Path || !firstModel) {
     // No lc0 or no model yet — skip tuning, finish setup
-    win.webContents.send('setup:progress', 'Skipping engine calibration (no model found in models/).');
+    win.webContents.send('setup:progress', 'Setup complete! Add Maia models (.pb.gz files) to models/ folder.');
     fs.writeFileSync(SETUP_FLAG, 'done');
     win.webContents.send('setup:done');
-    resolve();
     return;
   }
 
-  const tuneProc = spawn(lc0Path, ['-w', path.join(MODELS_DIR, firstModel)], {
-    stdio: ['pipe', 'pipe', 'pipe']
-  });
+  return new Promise((resolve) => {
+    const tuneProc = spawn(lc0Path, ['-w', path.join(MODELS_DIR, firstModel)], {
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
 
-  tuneProc.stdin.write('uci\n');
+    tuneProc.stdin.write('uci\n');
 
-  const tuneTimeout = setTimeout(() => {
-    tuneProc.kill();
-    win.webContents.send('setup:progress', 'Engine calibration timed out — continuing anyway.');
-    fs.writeFileSync(SETUP_FLAG, 'done');
-    win.webContents.send('setup:done');
-    resolve();
-  }, 3 * 60 * 1000);
-
-  tuneProc.stderr.on('data', d => {
-    win.webContents.send('setup:progress', d.toString().trim());
-  });
-
-  tuneProc.stdout.on('data', d => {
-    const txt = d.toString();
-    win.webContents.send('setup:progress', txt.trim());
-    if (txt.includes('uciok')) {
-      clearTimeout(tuneTimeout);
-      tuneProc.stdin.write('quit\n');
+    const tuneTimeout = setTimeout(() => {
+      tuneProc.kill();
+      win.webContents.send('setup:progress', 'Engine calibration timed out — continuing anyway.');
       fs.writeFileSync(SETUP_FLAG, 'done');
       win.webContents.send('setup:done');
       resolve();
-    }
-  });
+    }, 3 * 60 * 1000);
 
-  tuneProc.on('close', () => {
-    clearTimeout(tuneTimeout);
-    fs.writeFileSync(SETUP_FLAG, 'done');
-    win.webContents.send('setup:done');
-    resolve();
-  });
-});
+    tuneProc.stderr.on('data', d => {
+      win.webContents.send('setup:progress', d.toString().trim());
+    });
+
+    tuneProc.stdout.on('data', d => {
+      const txt = d.toString();
+      win.webContents.send('setup:progress', txt.trim());
+      if (txt.includes('uciok')) {
+        clearTimeout(tuneTimeout);
+        tuneProc.stdin.write('quit\n');
+        fs.writeFileSync(SETUP_FLAG, 'done');
+        win.webContents.send('setup:done');
+        resolve();
+      }
+    });
+
+    tuneProc.on('close', () => {
+      clearTimeout(tuneTimeout);
+      fs.writeFileSync(SETUP_FLAG, 'done');
+      win.webContents.send('setup:done');
+      resolve();
+    });
   });
 }
 
@@ -230,12 +203,19 @@ function buildDockerImage(win) {
     if (fs.existsSync(IMAGE_FLAG)) { resolve(); return; }
 
     win.webContents.send('setup:progress',
-      'Building Docker training image — 10-20 minutes on first run...');
+      `Building Docker training image for ${PLATFORM} — 10-20 minutes on first run...`);
+
+    const dockerfileArg = PLATFORM === 'arm64' 
+      ? ['-f', 'Dockerfile.arm64']
+      : ['-f', 'Dockerfile.amd64'];
 
     const proc = spawn('docker', [
-  'build', '--platform', 'linux/amd64',
-  '-t', IMAGE_NAME, '--progress=plain', '.'
-], { cwd: ROOT });
+      'build',
+      ...dockerfileArg,
+      '-t', IMAGE_NAME,
+      '--progress=plain',
+      '.'
+    ], { cwd: ROOT });
 
     proc.stdout.on('data', d => {
       d.toString().split('\n').filter(l => l.trim())
@@ -274,13 +254,13 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
     fs.mkdirSync(outputDir, { recursive: true });
 
     if (!fs.existsSync(IMAGE_FLAG)) {
-  send('train', 'Building Docker image for the first time — this takes 10-20 minutes...');
-  try {
-    await buildDockerImage({ webContents: { send: (_, msg) => send('train', msg) } });
-  } catch (err) {
-    return reject(new Error('Docker image build failed: ' + err.message));
-  }
-}
+      send('train', 'Building Docker image for the first time — this takes 10-20 minutes...');
+      try {
+        await buildDockerImage({ webContents: { send: (_, msg) => send('train', msg) } });
+      } catch (err) {
+        return reject(new Error('Docker image build failed: ' + err.message));
+      }
+    }
 
     if (!fs.existsSync(model.path)) {
       return reject(new Error(
@@ -308,17 +288,16 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
       // ── Step 2: Generate training data ──────────────────────────────────
       send('data', `Extracting games for "${username}" using Maia ${model.elo}...`);
 
-      const script = path.join(MAIA_DIR, '1-data_generation', '9-pgn_to_training_data.sh');
       const step2 = spawn('docker', [
-  'run', '--rm', '--platform', 'linux/amd64', '--gpus', 'all',
-  '-v', `${MAIA_DIR}:/maia-individual`,
-  '-v', `${outputDir}:/session`,
-  '-w', '/maia-individual/1-data_generation',
-  IMAGE_NAME,
-  'conda', 'run', '-n', 'transfer_chess',
-  'bash', '9-pgn_to_training_data.sh',
-  '/session/cleaned.pgn', '/session', username
-]);
+        'run', '--rm',
+        '-v', `${MAIA_DIR}:/maia-individual`,
+        '-v', `${outputDir}:/session`,
+        '-w', '/maia-individual/1-data_generation',
+        IMAGE_NAME,
+        'conda', 'run', '-n', 'transfer_chess',
+        'bash', '9-pgn_to_training_data.sh',
+        '/session/cleaned.pgn', '/session', username
+      ]);
 
       step2.stdout.on('data', d => send('data', d.toString().trim()));
       step2.stderr.on('data', d => send('data', d.toString().trim()));
@@ -337,13 +316,18 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
 
         let config = fs.readFileSync(templatePath, 'utf-8');
         config = config.replace(
-  /path:\s*['"]path to player data['"]/,
-  `path: '/session'`
-);
-config = config.replace(
-  /path:\s*["']maia-\d+["']/,
-  `path: "/models/${model.filename}"`
-);
+          /path:\s*['"]path to player data['"]/,
+          `path: '/session'`
+        );
+        config = config.replace(
+          /path:\s*["']maia-\d+["']/,
+          `path: "/models/${model.filename}"`
+        );
+
+        config = config.replace(
+          /#name:\s*['"]+/,
+          `name: '${username}'`
+        );
 
         fs.writeFileSync(configPath, config);
         send('train', `Config written. Using base model: maia-${model.elo}`);
@@ -352,15 +336,15 @@ config = config.replace(
         send('train', 'Starting neural network training. This may take a while...');
 
         const step3 = spawn('docker', [
-  'run', '--rm', '--platform', 'linux/amd64', '--gpus', 'all',
-  '-v', `${MAIA_DIR}:/maia-individual`,
-  '-v', `${outputDir}:/session`,
-  '-v', `${MODELS_DIR}:/models`,        // ← add this
-  '-w', '/maia-individual',
-  IMAGE_NAME,
-  'conda', 'run', '-n', 'transfer_chess',
-  'python', '2-training/train_transfer.py', '/session/config.yaml'
-]);
+          'run', '--rm',
+          '-v', `${MAIA_DIR}:/maia-individual`,
+          '-v', `${outputDir}:/session`,
+          '-v', `${MODELS_DIR}:/models`,
+          '-w', '/maia-individual',
+          IMAGE_NAME,
+          'conda', 'run', '-n', 'transfer_chess',
+          'python', '2-training/train_transfer.py', '/session/config.yaml'
+        ]);
 
         step3.stdout.on('data', d => {
           const text = d.toString().trim();

@@ -1,0 +1,7 @@
+2026-02-26 01:07:53[94m pgn_fractional_split.py /session/split/games_white.pgn.bz2 /session/split/train_white.pgn.bz2 /session/split/validate_white.pgn.bz2 --ratios 90 10[0m
+2026-02-26 01:07:53[94m Starting pgn_fractional_split[0m
+2026-02-26 01:07:53 0 done from /session/split/games_white.pgn.bz22026-02-26 01:07:53 29 done total from /session/split/games_white.pgn.bz2
+2026-02-26 01:07:53 Writing 27 games to: /session/split/train_white.pgn.bz2
+2026-02-26 01:07:53 Writing 3 games to: /session/split/validate_white.pgn.bz2
+2026-02-26 01:07:53 done
+2026-02-26 01:07:53[94m Run completed[0m

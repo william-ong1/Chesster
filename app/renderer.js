@@ -178,6 +178,18 @@ function appendTerminal(step, message) {
   body.scrollTop = body.scrollHeight;
 }
 
+document.getElementById('terminalCopyBtn').addEventListener('click', () => {
+  const body = document.getElementById('terminalBody');
+  const text = Array.from(body.querySelectorAll('.terminal-line'))
+    .map(el => el.textContent)
+    .join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('terminalCopyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+});
+
 // ─── Play View ────────────────────────────────────────────────────────────────
 
 async function refreshModelList() {
@@ -413,6 +425,7 @@ function onSquareClick(sq) {
   if (!game) { showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`)); return; }
   if (game.game_over()) { showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`)); return; }
   if (engineThinking) return;
+  if (game.game_over()) return;
   const isPlayerTurn =
     (game.turn() === 'w' && playerSide === 'white') ||
     (game.turn() === 'b' && playerSide === 'black');

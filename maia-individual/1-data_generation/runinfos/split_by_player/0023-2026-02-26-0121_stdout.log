@@ -1,0 +1,7 @@
+2026-02-26 01:21:07[94m split_by_player.py /session/cleaned.pgn DontChesstheKnight /session/split/games[0m
+2026-02-26 01:21:07[94m Starting split_by_player[0m
+2026-02-26 01:21:07 0 done with 1:0 players from /session/cleaned.pgn2026-02-26 01:21:07 49 found totals of 30:20 players from /session/cleaned.pgn
+2026-02-26 01:21:07 Writing white
+2026-02-26 01:21:07 Writing black
+2026-02-26 01:21:07 done
+2026-02-26 01:21:07[94m Run completed[0m

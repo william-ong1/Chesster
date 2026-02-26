@@ -1,5 +1,0 @@
-
-> testci_vitest@1.0.0 lint
-> gts lint
-
-version: 24

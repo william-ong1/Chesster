@@ -1,0 +1,10 @@
+numpy
+matplotlib
+pandas
+seaborn
+python-chess>=0.30.0
+pytz
+natsort
+humanize
+pyyaml
+tensorboardX

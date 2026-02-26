@@ -1,0 +1,7 @@
+2026-02-20 08:29:13[94m pgn_fractional_split.py /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/games_black.pgn.bz2 /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/train_black.pgn.bz2 /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/validate_black.pgn.bz2 --ratios 90 10[0m
+2026-02-20 08:29:13[94m Starting pgn_fractional_split[0m
+2026-02-20 08:29:13 0 done from /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/games_black.pgn.bz22026-02-20 08:29:13 19 done total from /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/games_black.pgn.bz2
+2026-02-20 08:29:13 Writing 18 games to: /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/train_black.pgn.bz2
+2026-02-20 08:29:13 Writing 2 games to: /homes/iws/s99s42m/chess-mimic-app/my-mimic-app/data/processed/test/split/validate_black.pgn.bz2
+2026-02-20 08:29:13 done
+2026-02-20 08:29:13[94m Run completed[0m

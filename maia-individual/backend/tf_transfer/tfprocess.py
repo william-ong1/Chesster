@@ -111,10 +111,19 @@ class TFProcess:
         self.renorm_momentum = self.cfg['training'].get('renorm_momentum', 0.99)
 
         gpus = tf.config.experimental.list_physical_devices('GPU')
-        tf.config.experimental.set_visible_devices(gpus[self.cfg['gpu']], 'GPU')
-        tf.config.experimental.set_memory_growth(gpus[self.cfg['gpu']], True)
+        if gpus and self.cfg.get('gpu', -1) >= 0 and self.cfg['gpu'] < len(gpus):
+            tf.config.experimental.set_visible_devices(gpus[self.cfg['gpu']], 'GPU')
+            tf.config.experimental.set_memory_growth(gpus[self.cfg['gpu']], True)
+        else:
+            # CPU-only mode
+            tf.config.experimental.set_visible_devices([], 'GPU')
         if self.model_dtype == tf.float16:
-            tf.keras.mixed_precision.experimental.set_policy('mixed_float16')
+            try:
+                # TensorFlow 2.4+
+                tf.keras.mixed_precision.set_global_policy('mixed_float16')
+            except AttributeError:
+                # TensorFlow 2.1-2.3
+                tf.keras.mixed_precision.experimental.set_policy('mixed_float16')
 
         self.global_step = tf.Variable(0, name='global_step', trainable=False, dtype=tf.int64)
 
@@ -181,7 +190,12 @@ class TFProcess:
         self.optimizer = tf.keras.optimizers.SGD(learning_rate=lambda: self.active_lr, momentum=0.9, nesterov=True)
         self.orig_optimizer = self.optimizer
         if self.loss_scale != 1:
-            self.optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(self.optimizer, self.loss_scale)
+            try:
+                # TensorFlow 2.4+
+                self.optimizer = tf.keras.mixed_precision.LossScaleOptimizer(self.optimizer)
+            except (AttributeError, TypeError):
+                # TensorFlow 2.1-2.3
+                self.optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(self.optimizer, self.loss_scale)
         def correct_policy(target, output):
             output = tf.cast(output, tf.float32)
             # Calculate loss on policy head
@@ -826,4 +840,3 @@ class TFProcess:
 
 
         return h_fc1, h_fc3
-

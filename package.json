@@ -2,7 +2,7 @@
   "name": "chess-mimic",
   "version": "1.0.0",
   "description": "Train a chess engine on your games and play against it.",
-  "main": "app/main.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --linux",

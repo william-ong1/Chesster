@@ -315,6 +315,7 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         }
 
         let config = fs.readFileSync(templatePath, 'utf-8');
+        config = config.replace(/gpu:\s*\d+/, '');
         config = config.replace(
           /path:\s*['"]path to player data['"]/,
           `path: '/session'`

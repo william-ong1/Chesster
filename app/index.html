@@ -17,6 +17,10 @@
     <div class="setup-title">First Time Setup</div>
     <div class="setup-msg" id="setupMsg">Installing maia-individual backend...</div>
     <div class="setup-spinner" id="setupSpinner"></div>
+    <!-- Setup progress bar -->
+    <div class="setup-progress-track">
+      <div class="setup-progress-bar" id="setupProgressBar"></div>
+    </div>
     <a class="setup-link" id="setupDockerLink" style="display:none" href="#">
       Install Docker Desktop →
     </a>
@@ -108,6 +112,14 @@
           <button class="btn btn--primary" id="startTrainBtn" disabled>
             <span class="btn__icon">⚗</span> Begin Training
           </button>
+
+          <!-- Training progress bar (hidden until training starts) -->
+          <div class="progress-wrap" id="progressWrap" style="display:none">
+            <div class="progress-track">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <span class="progress-pct" id="progressPct">0%</span>
+          </div>
         </div>
 
         <!-- Right: terminal output -->
@@ -117,6 +129,9 @@
             <span class="terminal-dot terminal-dot--yellow"></span>
             <span class="terminal-dot terminal-dot--green"></span>
             <span class="terminal-title">Training Output</span>
+            <button class="terminal-copy-btn" id="terminalCopyBtn">Copy</button>
+            <!-- Collapse / expand toggle -->
+            <button class="terminal-toggle" id="terminalToggle">▶ Show terminal</button>
           </div>
           <div class="terminal-body" id="terminalBody">
             <div class="terminal-placeholder">Output will appear here when training begins...</div>

@@ -211,3 +211,11 @@ node_modules/
 
 # Vitest + v8 coverage
 coverage/
+
+#Other
+data/
+maia-individual/runs
+maia-individual/runinfos
+.docker*
+.setup_complete
+leelaz_opencl_tuning

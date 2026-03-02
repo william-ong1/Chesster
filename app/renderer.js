@@ -15,7 +15,6 @@ let engineThinking  = false;
 
 // ─── Chess piece unicode ───────────────────────────────────────────────────────
 
-
 const PIECES = {
   wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
   bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟'
@@ -114,7 +113,42 @@ function updateTrainBtn() {
   document.getElementById('startTrainBtn').disabled = !(hasFile && hasUser && hasElo && !isTraining);
 }
 
-// Start training
+// ─── Progress bar ─────────────────────────────────────────────────────────────
+
+function setProgressBar(percent) {
+  const bar = document.getElementById('progressBar');
+  const pct = document.getElementById('progressPct');
+  if (!bar) return;
+  const clamped = Math.max(0, Math.min(100, percent));
+  bar.style.width = `${clamped}%`;
+  if (pct) pct.textContent = `${clamped}%`;
+}
+
+function showProgressBar(visible) {
+  const wrap = document.getElementById('progressWrap');
+  if (wrap) wrap.style.display = visible ? 'flex' : 'none';
+}
+
+// ─── Collapsible terminal ─────────────────────────────────────────────────────
+
+(function initTerminalToggle() {
+  const toggle = document.getElementById('terminalToggle');
+  const body   = document.getElementById('terminalBody');
+  if (!toggle || !body) return;
+
+  // Start collapsed
+  body.classList.add('terminal-body--collapsed');
+  toggle.textContent = '▶ Show terminal';
+
+  toggle.addEventListener('click', () => {
+    const collapsed = body.classList.toggle('terminal-body--collapsed');
+    toggle.textContent = collapsed ? '▶ Show terminal' : '▼ Hide terminal';
+    if (!collapsed) body.scrollTop = body.scrollHeight; // scroll to bottom when opening
+  });
+})();
+
+// ─── Start training ───────────────────────────────────────────────────────────
+
 document.getElementById('startTrainBtn').addEventListener('click', async () => {
   const username = document.getElementById('usernameInput').value.trim();
   const userElo  = parseInt(document.getElementById('eloInput').value, 10);
@@ -122,14 +156,26 @@ document.getElementById('startTrainBtn').addEventListener('click', async () => {
   isTraining = true;
   updateTrainBtn();
   clearTerminal();
+  showProgressBar(true);
+  setProgressBar(0);
 
   document.getElementById('trainingBanner').style.display = 'flex';
 
   window.api.removeListeners();
 
-  window.api.onProgress(({ step, message }) => {
-    updateBanner(step, message);
+  window.api.onProgress(({ step, message, percent, type }) => {
+    // Always update the terminal with every line
     appendTerminal(step, message);
+
+    // Only update banner headline for 'status' type messages
+    if (type === 'status' || type == null) {
+      updateBanner(step, message);
+    }
+
+    // Update progress bar whenever a percent value is provided
+    if (percent !== null && percent !== undefined) {
+      setProgressBar(percent);
+    }
   });
 
   window.api.onError(({ message }) => {
@@ -137,6 +183,7 @@ document.getElementById('startTrainBtn').addEventListener('click', async () => {
     updateBanner('error', 'Training failed');
     isTraining = false;
     updateTrainBtn();
+    showProgressBar(false);
   });
 
   await window.api.startTraining({ pgnPath: selectedPgnPath, username, userElo });
@@ -144,11 +191,12 @@ document.getElementById('startTrainBtn').addEventListener('click', async () => {
 
 function updateBanner(step, message) {
   const stepLabels = {
-    clean: 'Step 1 — Cleaning PGN',
-    data:  'Step 2 — Generating Training Data',
-    train: 'Step 3 — Training Neural Network',
-    done:  'Complete',
-    error: 'Error'
+    clean:  'Step 1 — Cleaning PGN',
+    data:   'Step 2 — Generating Training Data',
+    config: 'Step 2b — Building Config',
+    train:  'Step 3 — Training Neural Network',
+    done:   'Complete',
+    error:  'Error'
   };
   document.getElementById('bannerStep').textContent = stepLabels[step] || step;
   document.getElementById('bannerMsg').textContent  = message.slice(0, 120);
@@ -156,7 +204,11 @@ function updateBanner(step, message) {
   if (step === 'done') {
     isTraining = false;
     updateTrainBtn();
-    document.getElementById('trainingBanner').style.display = 'none';
+    setProgressBar(100);
+    setTimeout(() => {
+      document.getElementById('trainingBanner').style.display = 'none';
+      showProgressBar(false);
+    }, 2000);
     refreshModelList();
   }
 }
@@ -175,8 +227,24 @@ function appendTerminal(step, message) {
   line.textContent = message;
   body.appendChild(line);
   body.appendChild(document.createElement('br'));
-  body.scrollTop = body.scrollHeight;
+
+  // Auto-scroll only if terminal is expanded
+  if (!body.classList.contains('terminal-body--collapsed')) {
+    body.scrollTop = body.scrollHeight;
+  }
 }
+
+document.getElementById('terminalCopyBtn').addEventListener('click', () => {
+  const body = document.getElementById('terminalBody');
+  const text = Array.from(body.querySelectorAll('.terminal-line'))
+    .map(el => el.textContent)
+    .join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('terminalCopyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+});
 
 // ─── Play View ────────────────────────────────────────────────────────────────
 
@@ -360,13 +428,13 @@ function renderEmptyBoard() {
 
       const piece = tempGame.get(sq);
       if (game) {
-      const piece = game.get(sq);
-      if (piece) {
+        const piece = game.get(sq);
+        if (piece) {
           const span = document.createElement('span');
           span.className = `piece piece--${piece.color === 'w' ? 'white' : 'black'}`;
           span.textContent = PIECES[piece.color + piece.type.toUpperCase()];
           div.appendChild(span);
-      }
+        }
       }
 
       div.addEventListener('click', () => showNoGameTooltip(div));
@@ -603,13 +671,13 @@ async function runSystemCheck() {
   grid.innerHTML = '';
 
   const labels = {
-  lc0:            'lc0 Engine (v0.23.x)',
-  docker:         'Docker',
-  dockerImage:    'Docker Training Image',
-  python3:        'Python 3',
-  maiaIndividual: 'maia-individual repo',
-  baseModels:     'Base Maia Models'
-};
+    lc0:            'lc0 Engine (v0.23.x)',
+    docker:         'Docker',
+    dockerImage:    'Docker Training Image',
+    python3:        'Python 3',
+    maiaIndividual: 'maia-individual repo',
+    baseModels:     'Base Maia Models'
+  };
 
   let allOk = true;
 
@@ -637,33 +705,42 @@ document.getElementById('recheckBtn').addEventListener('click', runSystemCheck);
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 async function init() {
-  game = null
+  game = null;
   renderCoords();
   renderEmptyBoard();
   await refreshModelList();
 
-  window.api.onSetupProgress(msg => {
-    document.getElementById('setupMsg').textContent = msg;
+  // Setup overlay — now receives structured { message, percent, type }
+  window.api.onSetupProgress(({ message, percent, type }) => {
+    // Always update the text
+    document.getElementById('setupMsg').textContent = message;
+
+    // Drive the setup overlay progress bar if present
+    const bar = document.getElementById('setupProgressBar');
+    if (bar && percent !== null && percent !== undefined) {
+      bar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+    }
   });
+
   window.api.onSetupDone(() => {
     document.getElementById('setupOverlay').classList.add('setup-overlay--hidden');
   });
+
   window.api.onSetupError(msg => {
     document.getElementById('setupMsg').textContent = `Error: ${msg}`;
   });
+
   window.api.onDockerNeeded(() => {
-  document.getElementById('setupSpinner').style.display = 'none';
-  document.getElementById('setupMsg').textContent =
-    'Docker is required but is not installed.';
-  const link = document.getElementById('setupDockerLink');
-  link.style.display = 'block';
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.api.openExternal(
-      'https://www.docker.com/products/docker-desktop/'
-    );
+    document.getElementById('setupSpinner').style.display = 'none';
+    document.getElementById('setupMsg').textContent =
+      'Docker is required but is not installed.';
+    const link = document.getElementById('setupDockerLink');
+    link.style.display = 'block';
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.api.openExternal('https://www.docker.com/products/docker-desktop/');
+    });
   });
-});
 
   // Quick silent system check for the status dot
   const checks = await window.api.checkSystem();

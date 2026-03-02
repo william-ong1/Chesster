@@ -234,6 +234,18 @@ function appendTerminal(step, message) {
   }
 }
 
+document.getElementById('terminalCopyBtn').addEventListener('click', () => {
+  const body = document.getElementById('terminalBody');
+  const text = Array.from(body.querySelectorAll('.terminal-line'))
+    .map(el => el.textContent)
+    .join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('terminalCopyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+});
+
 // ─── Play View ────────────────────────────────────────────────────────────────
 
 async function refreshModelList() {

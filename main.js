@@ -137,7 +137,7 @@ async function runFirstTimeSetup(win) {
   });
 }
 
-function closestMaiaModel(elo) {
+/*function closestMaiaModel(elo) {
   const n = parseInt(elo, 10);
   const closest = MAIA_ELOS.reduce((a, b) =>
     Math.abs(b - n) < Math.abs(a - n) ? b : a
@@ -146,6 +146,14 @@ function closestMaiaModel(elo) {
     elo: closest,
     filename: `maia-${closest}.pb.gz`,
     path: path.join(MODELS_DIR, `maia-${closest}.pb.gz`)
+  };
+}*/
+
+function closestMaiaModel(elo) {
+  return {
+    elo: 1900,
+    filename: `maia-1900.pb.gz`,
+    path: path.join(MODELS_DIR, `maia-1900.pb.gz`)
   };
 }
 
@@ -378,7 +386,7 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         );
         config = config.replace(
           /path:\s*["']maia-\d+["']/,
-          `path: "/models/${model.filename}"`
+          `path: "maia-${model.elo}"`
         );
         config = config.replace(
           /#name:\s*['"]+/,
@@ -393,13 +401,14 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
 
         const step3 = spawn('docker', [
           'run', '--rm',
+          '-e', 'PYTHONUNBUFFERED=1',
           '-v', `${MAIA_DIR}:/maia-individual`,
           '-v', `${outputDir}:/session`,
-          '-v', `${MODELS_DIR}:/models`,
+          //'-v', `${MODELS_DIR}:/models`,
           '-w', '/maia-individual',
           IMAGE_NAME,
-          'conda', 'run', '-n', 'transfer_chess',
-          'python', '2-training/train_transfer.py', '/session/config.yaml'
+          'conda', 'run', '--no-capture-output', '-n', 'transfer_chess',
+          'python', '-u', '2-training/train_transfer.py', '/session/config.yaml'
         ]);
 
         // Parse epoch/step info from training output to drive the progress bar

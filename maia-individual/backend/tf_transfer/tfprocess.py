@@ -37,7 +37,9 @@ def model_path_gen(short_path):
     models_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../models'))
     return os.path.join(models_path, short_path, 'ckpt/ckpt-40')
 
+
 class ApplySqueezeExcitation(tf.keras.layers.Layer):
+    """NHWC version — used for training on CPU / Apple Silicon."""
     def __init__(self, **kwargs):
         super(ApplySqueezeExcitation, self).__init__(**kwargs)
 
@@ -47,6 +49,23 @@ class ApplySqueezeExcitation(tf.keras.layers.Layer):
     def call(self, inputs):
         x = inputs[0]
         excited = inputs[1]
+        # NHWC: [batch, 1, 1, channels]
+        gammas, betas = tf.split(tf.reshape(excited, [-1, 1, 1, self.reshape_size]), 2, axis=-1)
+        return tf.nn.sigmoid(gammas) * x + betas
+
+
+class ApplySqueezeExcitationNCHW(tf.keras.layers.Layer):
+    """NCHW version — used only for loading the checkpoint into model_maia."""
+    def __init__(self, **kwargs):
+        super(ApplySqueezeExcitationNCHW, self).__init__(**kwargs)
+
+    def build(self, input_dimens):
+        self.reshape_size = input_dimens[1][1]
+
+    def call(self, inputs):
+        x = inputs[0]
+        excited = inputs[1]
+        # NCHW: [batch, channels, 1, 1]
         gammas, betas = tf.split(tf.reshape(excited, [-1, self.reshape_size, 1, 1]), 2, axis=1)
         return tf.nn.sigmoid(gammas) * x + betas
 
@@ -59,6 +78,7 @@ class ApplyPolicyMap(tf.keras.layers.Layer):
     def call(self, inputs):
         h_conv_pol_flat = tf.reshape(inputs, [-1, 80*8*8])
         return tf.matmul(h_conv_pol_flat, tf.cast(self.fc1, h_conv_pol_flat.dtype))
+
 
 class TFProcess:
     def __init__(self, cfg, name, collection_name):
@@ -96,7 +116,6 @@ class TFProcess:
 
         self.VALUE_HEAD = pb.NetworkFormat.VALUE_WDL
         self.wdl = True
-
 
         self.net.set_valueformat(self.VALUE_HEAD)
 
@@ -137,25 +156,27 @@ class TFProcess:
     def init_net_v2(self):
         self.l2reg = tf.keras.regularizers.l2(l=0.5 * (0.0001))
         input_var = tf.keras.Input(shape=(112, 8*8))
-        x_planes = tf.keras.layers.Reshape([112, 8, 8])(input_var)
 
-        base_ckpt_path = model_path_gen(self.cfg['model']['path'])
-
-        self.model_maia = tf.keras.Model(inputs=input_var, outputs=self.construct_net_complete(x_planes))
+        # NCHW reshape for checkpoint loading (model_maia must match maia-1900 format)
+        x_planes_nchw = tf.keras.layers.Reshape([112, 8, 8])(input_var)
+        self.model_maia = tf.keras.Model(inputs=input_var, outputs=self.construct_net_complete_nchw(x_planes_nchw))
         self.checkpoint_restore = tf.train.Checkpoint(model=self.model_maia)
+        base_ckpt_path = model_path_gen(self.cfg['model']['path'])
         self.restore_ckpt(base_ckpt_path)
 
         # The tf names use natural numbers with no prefixes
-        # so to index layers correctly we neec to sort them naturally
-
+        # so to index layers correctly we need to sort them naturally
         natsort_key = natsort.natsort_keygen()
 
+        # NHWC reshape for training model (required for CPU / Apple Silicon)
+        x_planes_nhwc = tf.keras.layers.Reshape([8, 8, 112])(input_var)
         self.model = tf.keras.Model(
                 inputs=input_var,
                 outputs=self.construct_with_stops(
-                    x_planes,
+                    x_planes_nhwc,
                     self.cfg['model'].get('back_prop_blocks', 3),
                     ))
+
         maia_layers = sorted(
             self.model_maia.layers,
             key = lambda x : natsort_key(x.name),
@@ -173,13 +194,19 @@ class TFProcess:
                 break
             if 'lambda' not in model_layer.name:
                 l_maia = layer_map[model_layer.name]
-                model_layer.set_weights([w.numpy() for w in l_maia.weights])
+                # Reshape weights from NCHW (maia) to NHWC (model) where shapes differ.
+                # BatchNorm with virtual_batch_size stores gamma/beta shaped to the axis,
+                # so (1,C,1,1) in NCHW becomes (1,1,1,C) in NHWC — same values, different shape.
+                model_layer.set_weights([
+                    w.numpy().reshape(target_w.shape)
+                    for w, target_w in zip(l_maia.weights, model_layer.weights)
+                ])
             elif not self.cfg['model'].get('keep_weights', False):
                 printWithDate(f"ending at depth {i}: {model_layer.name}")
                 break
 
         printWithDate("Setting up lc0 stuff")
-        # swa_count initialized reguardless to make checkpoint code simpler.
+        # swa_count initialized regardless to make checkpoint code simpler.
         self.swa_count = tf.Variable(0., name='swa_count', trainable=False)
         self.swa_weights = None
         if self.swa_enabled:
@@ -196,18 +223,16 @@ class TFProcess:
             except (AttributeError, TypeError):
                 # TensorFlow 2.1-2.3
                 self.optimizer = tf.keras.mixed_precision.experimental.LossScaleOptimizer(self.optimizer, self.loss_scale)
+
         def correct_policy(target, output):
             output = tf.cast(output, tf.float32)
-            # Calculate loss on policy head
             if self.cfg['training'].get('mask_legal_moves'):
-                # extract mask for legal moves from target policy
                 move_is_legal = tf.greater_equal(target, 0)
-                # replace logits of illegal moves with large negative value (so that it doesn't affect policy of legal moves) without gradient
                 illegal_filler = tf.zeros_like(output) - 1.0e10
                 output = tf.where(move_is_legal, output, illegal_filler)
-            # y_ still has -1 on illegal moves, flush them to 0
             target = tf.nn.relu(target)
             return target, output
+
         def policy_loss(target, output):
             target, output = correct_policy(target, output)
             policy_cross_entropy = \
@@ -215,11 +240,11 @@ class TFProcess:
                                                         logits=output)
             return tf.reduce_mean(input_tensor=policy_cross_entropy)
         self.policy_loss_fn = policy_loss
+
         def policy_accuracy(target, output):
             target, output = correct_policy(target, output)
             return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(input=target, axis=1), tf.argmax(input=output, axis=1)), tf.float32))
         self.policy_accuracy_fn = policy_accuracy
-
 
         q_ratio = self.cfg['training'].get('q_ratio', 0)
         assert 0 <= q_ratio <= 1
@@ -227,7 +252,8 @@ class TFProcess:
         # Linear conversion to scalar to compute MSE with, for comparison to old values
         wdl = tf.expand_dims(tf.constant([1.0, 0.0, -1.0]), 1)
 
-        self.qMix = lambda z, q: q * q_ratio + z *(1 - q_ratio)
+        self.qMix = lambda z, q: q * q_ratio + z * (1 - q_ratio)
+
         # Loss on value head
         if self.wdl:
             def value_loss(target, output):
@@ -295,24 +321,6 @@ class TFProcess:
 
     def replace_weights_v2(self, new_weights_orig):
         new_weights = [w for w in new_weights_orig]
-        # self.model.weights ordering doesn't match up nicely, so first shuffle the new weights to match up.
-        # input order is (for convolutional policy):
-        # policy conv
-        # policy bn * 4
-        # policy raw conv and bias
-        # value conv
-        # value bn * 4
-        # value dense with bias
-        # value dense with bias
-        #
-        # output order is (for convolutional policy):
-        # value conv
-        # policy conv
-        # value bn * 4
-        # policy bn * 4
-        # policy raw conv and bias
-        # value dense with bias
-        # value dense with bias
         new_weights[-5] = new_weights_orig[-10]
         new_weights[-6] = new_weights_orig[-11]
         new_weights[-7] = new_weights_orig[-12]
@@ -330,64 +338,43 @@ class TFProcess:
         offset = 0
         last_was_gamma = False
         for e, weights in enumerate(self.model.weights):
-            source_idx = e+offset
+            source_idx = e + offset
             if weights.shape.ndims == 4:
-                # Rescale rule50 related weights as clients do not normalize the input.
                 if e == 0:
                     num_inputs = 112
-                    # 50 move rule is the 110th input, or 109 starting from 0.
                     rule50_input = 109
                     for i in range(len(new_weights[source_idx])):
                         if (i % (num_inputs*9))//9 == rule50_input:
                             new_weights[source_idx][i] = new_weights[source_idx][i]*99
-
-                # Convolution weights need a transpose
-                #
-                # TF (kYXInputOutput)
-                # [filter_height, filter_width, in_channels, out_channels]
-                #
-                # Leela/cuDNN/Caffe (kOutputInputYX)
-                # [output, input, filter_size, filter_size]
                 s = weights.shape.as_list()
                 shape = [s[i] for i in [3, 2, 0, 1]]
                 new_weight = tf.constant(new_weights[source_idx], shape=shape)
                 weights.assign(
                     tf.transpose(a=new_weight, perm=[2, 3, 1, 0]))
             elif weights.shape.ndims == 2:
-                # Fully connected layers are [in, out] in TF
-                #
-                # [out, in] in Leela
-                #
                 s = weights.shape.as_list()
                 shape = [s[i] for i in [1, 0]]
                 new_weight = tf.constant(new_weights[source_idx], shape=shape)
                 weights.assign(
                     tf.transpose(a=new_weight, perm=[1, 0]))
             else:
-                # Can't populate renorm weights, but the current new_weight will need using elsewhere.
                 if 'renorm' in weights.name:
-                    offset-=1
+                    offset -= 1
                     continue
-                # betas without gamms need to skip the gamma in the input.
                 if 'beta:' in weights.name and not last_was_gamma:
-                    source_idx+=1
-                    offset+=1
-                # Biases, batchnorm etc
+                    source_idx += 1
+                    offset += 1
                 new_weight = tf.constant(new_weights[source_idx], shape=weights.shape)
                 if 'stddev:' in weights.name:
                     weights.assign(tf.math.sqrt(new_weight + 1e-5))
                 else:
                     weights.assign(new_weight)
-                # need to use the variance to also populate the stddev for renorm, so adjust offset.
                 if 'variance:' in weights.name and self.renorm_enabled:
-                    offset-=1
+                    offset -= 1
             last_was_gamma = 'gamma:' in weights.name
-        # Replace the SWA weights as well, ensuring swa accumulation is reset.
         if self.swa_enabled:
             self.swa_count.assign(tf.constant(0.))
             self.update_swa_v2()
-        # This should result in identical file to the starting one
-        # self.save_leelaz_weights_v2('restored.pb.gz')
 
     def restore_v2(self):
         if self.manager.latest_checkpoint is not None:
@@ -399,8 +386,6 @@ class TFProcess:
         self.checkpoint_restore.restore(ckpt_path)
 
     def process_loop_v2(self, batch_size, test_batches, batch_splits=1):
-        # Get the initial steps value in case this is a resume from a step count
-        # which is not a multiple of total_steps.
         steps = self.global_step.read_value()
         total_steps = self.cfg['training']['total_steps']
         for _ in range(steps % total_steps, total_steps):
@@ -434,31 +419,24 @@ class TFProcess:
         if not self.time_start:
             self.time_start = time.time()
 
-        # Get the initial steps value before we do a training step.
         steps = self.global_step.read_value()
         if not self.last_steps:
             self.last_steps = steps
 
         if self.swa_enabled:
-            # split half of test_batches between testing regular weights and SWA weights
             test_batches //= 2
-        # Run test before first step to see delta since end of last run.
+
         if steps % self.cfg['training']['total_steps'] == 0:
-            # Steps is given as one higher than current in order to avoid it
-            # being equal to the value the end of a run is stored against.
             self.calculate_test_summaries_v2(test_batches, steps + 1)
             if self.swa_enabled:
                 self.calculate_swa_summaries_v2(test_batches, steps + 1)
 
-        # Make sure that ghost batch norm can be applied
         if batch_size % 64 != 0:
-            # Adjust required batch size for batch splitting.
             required_factor = 64 * \
                 self.cfg['training'].get('num_batch_splits', 1)
             raise ValueError(
                 'batch_size must be a multiple of {}'.format(required_factor))
 
-        # Determine learning rate
         lr_values = self.cfg['training']['lr_values']
         lr_boundaries = self.cfg['training']['lr_boundaries']
         steps_total = steps % self.cfg['training']['total_steps']
@@ -466,15 +444,12 @@ class TFProcess:
         if self.warmup_steps > 0 and steps < self.warmup_steps:
             self.lr = self.lr * tf.cast(steps + 1, tf.float32) / self.warmup_steps
 
-        # need to add 1 to steps because steps will be incremented after gradient update
         if (steps + 1) % self.cfg['training']['train_avg_report_steps'] == 0 or (steps + 1) % self.cfg['training']['total_steps'] == 0:
             before_weights = self.read_weights()
 
         x, y, z, q = next(self.train_iter)
         policy_loss, value_loss, mse_loss, reg_term, grads = self.process_inner_loop(x, y, z, q)
-        # Keep running averages
-        # Google's paper scales MSE by 1/4 to a [0, 1] range, so do the same to
-        # get comparable values.
+
         mse_loss /= 4.0
         self.avg_policy_loss.append(policy_loss)
         if self.wdl:
@@ -482,7 +457,6 @@ class TFProcess:
         self.avg_mse_loss.append(mse_loss)
         self.avg_reg_term.append(reg_term)
 
-        # Gradients of batch splits are summed, not averaged like usual, so need to scale lr accordingly to correct for this.
         self.active_lr = self.lr / batch_splits
         if self.loss_scale != 1:
             grads = self.optimizer.get_unscaled_gradients(grads)
@@ -494,7 +468,6 @@ class TFProcess:
             if grad is not None
         ])
 
-        # Update steps.
         self.global_step.assign_add(1)
         steps = self.global_step.read_value()
 
@@ -534,14 +507,11 @@ class TFProcess:
         if self.swa_enabled and steps % self.cfg['training']['swa_steps'] == 0:
             self.update_swa_v2()
 
-        # Calculate test values every 'test_steps', but also ensure there is
-        # one at the final step so the delta to the first step can be calculted.
         if steps % self.cfg['training']['test_steps'] == 0 or steps % self.cfg['training']['total_steps'] == 0:
             self.calculate_test_summaries_v2(test_batches, steps)
             if self.swa_enabled:
                 self.calculate_swa_summaries_v2(test_batches, steps)
 
-        # Save session and weights at end, and also optionally every 'checkpoint_steps'.
         if steps % self.cfg['training']['total_steps'] == 0 or (
                 'checkpoint_steps' in self.cfg['training'] and steps % self.cfg['training']['checkpoint_steps'] == 0):
             self.manager.save()
@@ -575,7 +545,7 @@ class TFProcess:
         if self.wdl:
             value_loss = self.value_loss_fn(self.qMix(z, q), value)
             mse_loss = self.mse_loss_fn(self.qMix(z, q), value)
-            value_accuracy = self.accuracy_fn(self.qMix(z,q), value)
+            value_accuracy = self.accuracy_fn(self.qMix(z, q), value)
         else:
             value_loss = self.value_loss_fn(self.qMix(z, q), value)
             mse_loss = self.mse_loss_fn(self.qMix(z, q), value)
@@ -604,12 +574,10 @@ class TFProcess:
         if self.wdl:
             sum_value_accuracy /= test_batches
             sum_value_accuracy *= 100
-        # Additionally rescale to [0, 1] so divide by 4
         sum_mse /= (4.0 * test_batches)
         self.net.pb.training_params.learning_rate = self.lr
         self.net.pb.training_params.mse_loss = sum_mse
         self.net.pb.training_params.policy_loss = sum_policy
-        # TODO store value and value accuracy in pb
         self.net.pb.training_params.accuracy = sum_policy_accuracy
         with self.test_writer.as_default():
             tf.summary.scalar("Policy Loss", sum_policy, step=steps)
@@ -627,10 +595,6 @@ class TFProcess:
 
     @tf.function()
     def compute_update_ratio_v2(self, before_weights, after_weights, steps):
-        """Compute the ratio of gradient norm to weight norm.
-
-        Adapted from https://github.com/tensorflow/minigo/blob/c923cd5b11f7d417c9541ad61414bf175a84dc31/dual_net.py#L567
-        """
         deltas = [after - before for after,
                   before in zip(after_weights, before_weights)]
         delta_norms = [tf.math.reduce_euclidean_norm(d) for d in deltas]
@@ -638,7 +602,6 @@ class TFProcess:
         ratios = [(tensor.name, tf.cond(w != 0., lambda: d / w, lambda: -1.)) for d, w, tensor in zip(delta_norms, weight_norms, self.model.weights) if not 'moving' in tensor.name]
         for name, ratio in ratios:
             tf.summary.scalar('update_ratios/' + name, ratio, step=steps)
-        # Filtering is hard, so just push infinities/NaNs to an unreasonably large value.
         ratios = [tf.cond(r > 0, lambda: tf.math.log(r) / 2.30258509299, lambda: 200.) for (_, r) in ratios]
         tf.summary.histogram('update_ratios_log10', tf.stack(ratios), buckets=1000, step=steps)
 
@@ -663,45 +626,23 @@ class TFProcess:
         for weights in self.model.weights:
             work_weights = None
             if weights.shape.ndims == 4:
-                # Convolution weights need a transpose
-                #
-                # TF (kYXInputOutput)
-                # [filter_height, filter_width, in_channels, out_channels]
-                #
-                # Leela/cuDNN/Caffe (kOutputInputYX)
-                # [output, input, filter_size, filter_size]
                 work_weights = tf.transpose(a=weights, perm=[3, 2, 0, 1])
             elif weights.shape.ndims == 2:
-                # Fully connected layers are [in, out] in TF
-                #
-                # [out, in] in Leela
-                #
                 work_weights = tf.transpose(a=weights, perm=[1, 0])
             else:
-                # batch renorm has extra weights, but we don't know what to do with them.
                 if 'renorm' in weights.name:
                     continue
-                # renorm has variance, but it is not the primary source of truth
                 if 'variance:' in weights.name and self.renorm_enabled:
                     continue
-                # Renorm has moving stddev not variance, undo the transform to make it compatible.
                 if 'stddev:' in weights.name:
                     all_tensors.append(tf.math.square(weights) - 1e-5)
                     continue
-                # Biases, batchnorm etc
-                # pb expects every batch norm to have gammas, but not all of our
-                # batch norms have gammas, so manually add pretend gammas.
                 if 'beta:' in weights.name and not last_was_gamma:
                     all_tensors.append(tf.ones_like(weights))
                 work_weights = weights.read_value()
             all_tensors.append(work_weights)
             last_was_gamma = 'gamma:' in weights.name
 
-        # HACK: model weights ordering is some kind of breadth first traversal,
-        # but pb expects a specific ordering which BFT is not a match for once
-        # we get to the heads. Apply manual permutation.
-        # This is fragile and at minimum should have some checks to ensure it isn't breaking things.
-        #TODO: also support classic policy head as it has a different set of layers and hence changes the permutation.
         permuted_tensors = [w for w in all_tensors]
         permuted_tensors[-5] = all_tensors[-11]
         permuted_tensors[-6] = all_tensors[-12]
@@ -718,10 +659,8 @@ class TFProcess:
         all_tensors = permuted_tensors
 
         for e, nparray in enumerate(all_tensors):
-            # Rescale rule50 related weights as clients do not normalize the input.
             if e == 0:
                 num_inputs = 112
-                # 50 move rule is the 110th input, or 109 starting from 0.
                 rule50_input = 109
                 wt_flt = []
                 for i, weight in enumerate(np.ravel(nparray)):
@@ -736,7 +675,9 @@ class TFProcess:
         self.net.fill_net(all_weights)
         self.net.save_proto(filename)
 
-    def batch_norm_v2(self, input, scale=False):
+    # ── NCHW methods — used only for loading the maia-1900 checkpoint ─────────
+
+    def batch_norm_v2_nchw(self, input, scale=False):
         if self.renorm_enabled:
             clipping = {
                 "rmin": 1.0/self.renorm_max_r,
@@ -752,49 +693,84 @@ class TFProcess:
                 epsilon=1e-5, axis=1, fused=False, center=True,
                 scale=scale, virtual_batch_size=64)(input)
 
-    def squeeze_excitation_v2(self, inputs, channels):
+    def squeeze_excitation_v2_nchw(self, inputs, channels):
         assert channels % self.SE_ratio == 0
-
         pooled = tf.keras.layers.GlobalAveragePooling2D(data_format='channels_first')(inputs)
         squeezed = tf.keras.layers.Activation('relu')(tf.keras.layers.Dense(channels // self.SE_ratio, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg)(pooled))
         excited = tf.keras.layers.Dense(2 * channels, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg)(squeezed)
-        return ApplySqueezeExcitation()([inputs, excited])
+        return ApplySqueezeExcitationNCHW()([inputs, excited])
 
-    def conv_block_v2(self, inputs, filter_size, output_channels, bn_scale=False):
+    def conv_block_v2_nchw(self, inputs, filter_size, output_channels, bn_scale=False):
         conv = tf.keras.layers.Conv2D(output_channels, filter_size, use_bias=False, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, data_format='channels_first')(inputs)
-        return tf.keras.layers.Activation('relu')(self.batch_norm_v2(conv, scale=bn_scale))
+        return tf.keras.layers.Activation('relu')(self.batch_norm_v2_nchw(conv, scale=bn_scale))
 
-    def residual_block_v2(self, inputs, channels):
+    def residual_block_v2_nchw(self, inputs, channels):
         conv1 = tf.keras.layers.Conv2D(channels, 3, use_bias=False, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, data_format='channels_first')(inputs)
-        out1 = tf.keras.layers.Activation('relu')(self.batch_norm_v2(conv1, scale=False))
+        out1 = tf.keras.layers.Activation('relu')(self.batch_norm_v2_nchw(conv1, scale=False))
         conv2 = tf.keras.layers.Conv2D(channels, 3, use_bias=False, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, data_format='channels_first')(out1)
-        out2 = self.squeeze_excitation_v2(self.batch_norm_v2(conv2, scale=True), channels)
+        out2 = self.squeeze_excitation_v2_nchw(self.batch_norm_v2_nchw(conv2, scale=True), channels)
         return tf.keras.layers.Activation('relu')(tf.keras.layers.add([inputs, out2]))
 
-    def construct_net_complete(self, inputs):
-        flow = self.conv_block_v2(inputs, filter_size=3, output_channels=self.RESIDUAL_FILTERS, bn_scale=True)
+    def construct_net_complete_nchw(self, inputs):
+        """NCHW network build — only used to restore the base checkpoint into model_maia."""
+        flow = self.conv_block_v2_nchw(inputs, filter_size=3, output_channels=self.RESIDUAL_FILTERS, bn_scale=True)
 
         for _ in range(0, self.RESIDUAL_BLOCKS):
-            flow = self.residual_block_v2(flow, self.RESIDUAL_FILTERS)
+            flow = self.residual_block_v2_nchw(flow, self.RESIDUAL_FILTERS)
 
         # Policy head
-        conv_pol = self.conv_block_v2(flow, filter_size=3, output_channels=self.RESIDUAL_FILTERS)
+        conv_pol = self.conv_block_v2_nchw(flow, filter_size=3, output_channels=self.RESIDUAL_FILTERS)
         conv_pol2 = tf.keras.layers.Conv2D(80, 3, use_bias=True, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, bias_regularizer=self.l2reg, data_format='channels_first')(conv_pol)
         h_fc1 = ApplyPolicyMap()(conv_pol2)
 
         # Value head
-        conv_val = self.conv_block_v2(flow, filter_size=1, output_channels=32)
+        conv_val = self.conv_block_v2_nchw(flow, filter_size=1, output_channels=32)
         h_conv_val_flat = tf.keras.layers.Flatten()(conv_val)
         h_fc2 = tf.keras.layers.Dense(128, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, activation='relu')(h_conv_val_flat)
         h_fc3 = tf.keras.layers.Dense(3, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, bias_regularizer=self.l2reg)(h_fc2)
         return h_fc1, h_fc3
 
-    def construct_with_stops(self, inputs, num_sections, from_top = True):
+    # ── NHWC methods — used for training on CPU / Apple Silicon ──────────────
+
+    def batch_norm_v2(self, input, scale=False):
+        if self.renorm_enabled:
+            clipping = {
+                "rmin": 1.0/self.renorm_max_r,
+                "rmax": self.renorm_max_r,
+                "dmax": self.renorm_max_d
+                }
+            return tf.keras.layers.BatchNormalization(
+                epsilon=1e-5, axis=-1, fused=False, center=True,
+                scale=scale, renorm=True, renorm_clipping=clipping,
+                renorm_momentum=self.renorm_momentum)(input)
+        else:
+            return tf.keras.layers.BatchNormalization(
+                epsilon=1e-5, axis=-1, fused=False, center=True,
+                scale=scale, virtual_batch_size=64)(input)
+
+    def squeeze_excitation_v2(self, inputs, channels):
+        assert channels % self.SE_ratio == 0
+        pooled = tf.keras.layers.GlobalAveragePooling2D(data_format='channels_last')(inputs)
+        squeezed = tf.keras.layers.Activation('relu')(tf.keras.layers.Dense(channels // self.SE_ratio, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg)(pooled))
+        excited = tf.keras.layers.Dense(2 * channels, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg)(squeezed)
+        return ApplySqueezeExcitation()([inputs, excited])
+
+    def conv_block_v2(self, inputs, filter_size, output_channels, bn_scale=False):
+        conv = tf.keras.layers.Conv2D(output_channels, filter_size, use_bias=False, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, data_format='channels_last')(inputs)
+        return tf.keras.layers.Activation('relu')(self.batch_norm_v2(conv, scale=bn_scale))
+
+    def residual_block_v2(self, inputs, channels):
+        conv1 = tf.keras.layers.Conv2D(channels, 3, use_bias=False, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, data_format='channels_last')(inputs)
+        out1 = tf.keras.layers.Activation('relu')(self.batch_norm_v2(conv1, scale=False))
+        conv2 = tf.keras.layers.Conv2D(channels, 3, use_bias=False, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, data_format='channels_last')(out1)
+        out2 = self.squeeze_excitation_v2(self.batch_norm_v2(conv2, scale=True), channels)
+        return tf.keras.layers.Activation('relu')(tf.keras.layers.add([inputs, out2]))
+
+    def construct_with_stops(self, inputs, num_sections, from_top=True):
 
         tot_sections = self.RESIDUAL_BLOCKS + 4
         if from_top:
             num_sections = tot_sections - num_sections
-        #section_count = 0 or less is no stops
         section_count = 1
 
         flow_p = self.conv_block_v2(inputs, filter_size=3, output_channels=self.RESIDUAL_FILTERS, bn_scale=True)
@@ -803,7 +779,6 @@ class TFProcess:
             printWithDate(f"Adding stop at depth: {section_count}")
 
         for _ in range(0, self.RESIDUAL_BLOCKS):
-
             section_count += 1
             flow_p = self.residual_block_v2(flow_p, self.RESIDUAL_FILTERS)
             if section_count == num_sections:
@@ -817,7 +792,7 @@ class TFProcess:
             printWithDate(f"Adding stop at depth: {section_count}")
 
         section_count += 1
-        conv_pol2 = tf.keras.layers.Conv2D(80, 3, use_bias=True, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, bias_regularizer=self.l2reg, data_format='channels_first')(conv_pol)
+        conv_pol2 = tf.keras.layers.Conv2D(80, 3, use_bias=True, padding='same', kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, bias_regularizer=self.l2reg, data_format='channels_last')(conv_pol)
         if section_count == num_sections:
             conv_pol2 = tf.keras.layers.Lambda(lambda x: tf.keras.backend.stop_gradient(x))(conv_pol2)
             printWithDate(f"Adding stop at depth: {section_count}")
@@ -837,6 +812,5 @@ class TFProcess:
         h_conv_val_flat = tf.keras.layers.Flatten()(conv_val)
         h_fc2 = tf.keras.layers.Dense(128, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, activation='relu')(h_conv_val_flat)
         h_fc3 = tf.keras.layers.Dense(3, kernel_initializer='glorot_normal', kernel_regularizer=self.l2reg, bias_regularizer=self.l2reg)(h_fc2)
-
 
         return h_fc1, h_fc3

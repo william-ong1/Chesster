@@ -3,7 +3,7 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
-    asar: true,
+    asar: false,
     // Forge automatically appends .ico or .icns based on the OS.
     // Do not include the file extension here.
     icon: './app/ChessterLogo' 

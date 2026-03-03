@@ -219,3 +219,5 @@ maia-individual/runinfos
 .docker*
 .setup_complete
 leelaz_opencl_tuning
+
+out/

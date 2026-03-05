@@ -15,7 +15,7 @@ const INDIVIDUAL_MODELS_DIR = path.join(MODELS_DIR, 'individual');
 const DATA_DIR = path.join(ROOT, 'data', 'processed');
 const SCRIPTS_DIR = path.join(ROOT, 'scripts');
 
-const MAIA_ELOS = [1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900];
+const MAIA_ELOS = [1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2200];
 
 const SETUP_FLAG = path.join(ROOT, '.setup_complete');
 

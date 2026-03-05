@@ -216,6 +216,7 @@ coverage/
 data/
 maia-individual/runs
 maia-individual/runinfos
+maia-individual/models/session/config
 .docker*
 .setup_complete
 leelaz_opencl_tuning

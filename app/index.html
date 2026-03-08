@@ -109,16 +109,30 @@
             <div class="elo-result" id="eloResult"></div>
           </div>
 
+          <div class="field quick-test-wrap">
+            <label class="quick-test-label">
+              <input type="checkbox" id="quickTestCheckbox" />
+              <span>Quick train</span>
+            </label>
+            <span class="field__hint">Fast training; imitation quality may be poor.</span>
+          </div>
+
           <button class="btn btn--primary" id="startTrainBtn" disabled>
             <span class="btn__icon">⚗</span> Begin Training
           </button>
 
           <!-- Training progress bar (hidden until training starts) -->
           <div class="progress-wrap" id="progressWrap" style="display:none">
+            <div class="progress-header">
+              <span class="progress-step-detail" id="progressStepDetail"></span>
+              <span class="progress-meta">
+                <span class="progress-pct" id="progressPct">0%</span>
+                <span class="progress-eta" id="progressEta"></span>
+              </span>
+            </div>
             <div class="progress-track">
               <div class="progress-bar" id="progressBar"></div>
             </div>
-            <span class="progress-pct" id="progressPct">0%</span>
           </div>
         </div>
 
@@ -144,7 +158,9 @@
         <div class="status-banner__spinner"></div>
         <div class="status-banner__content">
           <div class="status-banner__step" id="bannerStep">Preparing...</div>
+          <div class="status-banner__detail" id="bannerDetail"></div>
           <div class="status-banner__msg" id="bannerMsg">Please wait</div>
+          <div class="status-banner__eta" id="bannerEta"></div>
         </div>
       </div>
     </section>

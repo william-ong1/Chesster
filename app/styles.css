@@ -466,15 +466,53 @@ body {
 
 .btn--ghost:disabled { opacity: 0.3; cursor: not-allowed; }
 
+.quick-test-wrap {
+  margin-top: 4px;
+}
+
+.quick-test-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.quick-test-wrap .field__hint {
+  display: block;
+  margin-top: 4px;
+  margin-left: 0;
+}
+
 /* ── Training progress bar ──────────────────────────────────────────────────── */
 .progress-wrap {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-header {
+  display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progress-step-detail {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.progress-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .progress-track {
-  flex: 1;
+  width: 100%;
   height: 6px;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -491,12 +529,28 @@ body {
   box-shadow: 0 0 8px var(--purple-glow);
 }
 
+.progress-bar.progress-bar--active {
+  animation: progress-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
 .progress-pct {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-muted);
-  min-width: 32px;
+  min-width: 36px;
   text-align: right;
+}
+
+.progress-eta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--purple-light);
+  min-width: 80px;
 }
 
 /* ── Terminal ───────────────────────────────────────────────────────────────── */
@@ -609,19 +663,38 @@ body {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+.status-banner__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
 .status-banner__step {
   font-family: var(--font-heading);
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--purple-light);
-  margin-bottom: 2px;
+}
+
+.status-banner__detail {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
 }
 
 .status-banner__msg {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--text-muted);
+}
+
+.status-banner__eta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--purple-light);
+  margin-top: 2px;
 }
 
 /* ── Setup overlay progress bar ─────────────────────────────────────────────── */

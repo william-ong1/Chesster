@@ -49,5 +49,5 @@ File a bug report by creating an issue on our Github page or by emailing s99s42m
 
 ## 5. Known Bugs
 - The app fails to build on certain Windows devices.
-- Occasionally, the initial load engine doesn’t work and times out after in 8 seconds.
+- Occasionally, the initial load engine doesn't work and times out after in 8 seconds.
 - Usually, attempting to build/load again will resolve these errors temporarily

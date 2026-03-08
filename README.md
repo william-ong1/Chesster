@@ -3,10 +3,10 @@
 ## Gamma Release
 
 ## User Documentation
-[User Guide](USER_DOCUMENTATION.md)
+[User Guide](docs/USER_DOCUMENTATION.md)
 
 ## Developer Documentation
-[Developer Guide](DEVELOPER_DOCUMENTATION.md)
+[Developer Guide](docs/DEVELOPER_DOCUMENTATION.md)
 ## Overview
 
 Allows users to upload their past chess data and then trains a chess bot with this data such that it learns to mimic their playstyle. The user can then play against this bot when they want. 

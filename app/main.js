@@ -1,43 +1,39 @@
 'use strict';
 
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
-const path   = require('path');
-const fs     = require('fs');
-const { spawn, execSync } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+const { spawn } = require('child_process');
+const {
+  makePaths,
+  closestMaiaModel,
+  getBinPath,
+  getPythonBin,
+  dockerAvailable,
+  ensureDirectories,
+  chmodBinaries,
+  checkSystem,
+  listModels,
+} = require('./functions.js');
 
-// ─── Paths ────────────────────────────────────────────────────────────────────
+// Project root (one level up from app/)
+const ROOT = path.join(__dirname, '..');
+const paths = makePaths(ROOT);
+const {
+  BIN_DIR,
+  MAIA_DIR,
+  MODELS_DIR,
+  INDIVIDUAL_MODELS_DIR,
+  DATA_DIR,
+  SCRIPTS_DIR,
+  SETUP_FLAG,
+} = paths;
 
-const ROOT     = __dirname;
-const BIN_DIR  = path.join(ROOT, 'bin');
-const MAIA_DIR = path.join(ROOT, 'maia-individual');
-const MODELS_DIR = path.join(ROOT, 'models');
-const INDIVIDUAL_MODELS_DIR = path.join(MODELS_DIR, 'individual');
-const DATA_DIR = path.join(ROOT, 'data', 'processed');
-const SCRIPTS_DIR = path.join(ROOT, 'scripts');
-
-const MAIA_ELOS = [1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2200];
-
-const SETUP_FLAG = path.join(ROOT, '.setup_complete');
-
-// Detect platform and use appropriate Docker image
-const PLATFORM = process.platform === 'darwin' && process.arch === 'arm64' 
-  ? 'arm64' 
-  : 'amd64';
-const IMAGE_NAME = `chess-mimic-training-${PLATFORM}`;
-const IMAGE_FLAG = path.join(ROOT, `.docker_image_built_${PLATFORM}`);
-
-function dockerAvailable() {
-  try {
-    execSync('docker info', { stdio: 'ignore' });
-    return true;
-  } catch (_) {
-    return false;
-  }
-}
+const IMAGE_FLAG = path.join(ROOT, `.docker_image_built_${process.platform === 'darwin' && process.arch === 'arm64' ? 'arm64' : 'amd64'}`);
+const IMAGE_NAME = `chess-mimic-training-${process.platform === 'darwin' && process.arch === 'arm64' ? 'arm64' : 'amd64'}`;
+const PLATFORM = process.platform === 'darwin' && process.arch === 'arm64' ? 'arm64' : 'amd64';
 
 // ─── Setup progress helper ────────────────────────────────────────────────────
-// Sends both a human-readable message and a 0–100 percent for the progress bar.
-// type: 'status' (shown in the status line) | 'log' (shown in terminal only)
 
 function sendSetupProgress(win, message, percent = null, type = 'status') {
   win.webContents.send('setup:progress', { message, percent, type });
@@ -49,7 +45,6 @@ async function runFirstTimeSetup(win) {
     return;
   }
 
-  // Check Docker first (quick)
   sendSetupProgress(win, 'Checking Docker...', 5);
   if (!dockerAvailable()) {
     if (process.platform === 'linux') {
@@ -72,24 +67,20 @@ async function runFirstTimeSetup(win) {
       });
       sendSetupProgress(win, 'Docker installed successfully.', 30);
     } else {
-      // Mac or Windows — can't auto-install, direct user to download
       win.webContents.send('setup:docker-needed');
       return;
     }
   }
   sendSetupProgress(win, 'Docker found.', 40);
 
-  // Backend install is not needed - it's installed in Docker during image build
-  // Trigger OpenCL tuning so first move isn't slow
   sendSetupProgress(win, 'Calibrating chess engine (one-time, ~1-2 minutes)...', 50);
 
-  const lc0Path = getBinPath('lc0');
+  const lc0Path = getBinPath('lc0', BIN_DIR);
   const firstModel = fs.existsSync(MODELS_DIR)
     ? fs.readdirSync(MODELS_DIR).find(f => /^maia-\d+\.pb\.gz$/.test(f))
     : null;
 
   if (!lc0Path || !firstModel) {
-    // No lc0 or no model yet — skip tuning, finish setup
     sendSetupProgress(win, 'Setup complete! Add Maia models (.pb.gz files) to models/ folder.', 100);
     fs.writeFileSync(SETUP_FLAG, 'done');
     win.webContents.send('setup:done');
@@ -137,84 +128,6 @@ async function runFirstTimeSetup(win) {
   });
 }
 
-/*function closestMaiaModel(elo) {
-  const n = parseInt(elo, 10);
-  const closest = MAIA_ELOS.reduce((a, b) =>
-    Math.abs(b - n) < Math.abs(a - n) ? b : a
-  );
-  return {
-    elo: closest,
-    filename: `maia-${closest}.pb.gz`,
-    path: path.join(MODELS_DIR, `maia-${closest}.pb.gz`)
-  };
-}*/
-
-function closestMaiaModel(elo) {
-  return {
-    elo: 1900,
-    filename: `maia-1900.pb.gz`,
-    path: path.join(MODELS_DIR, `maia-1900.pb.gz`)
-  };
-}
-
-function getBinPath(name) {
-  const local = path.join(BIN_DIR, name);
-  if (fs.existsSync(local)) return local;
-  try {
-    return execSync(`which ${name}`, { encoding: 'utf-8' }).trim();
-  } catch (_) { return null; }
-}
-
-function getPythonBin() {
-  for (const py of ['python3', 'python']) {
-    try { execSync(`which ${py}`, { encoding: 'utf-8' }); return py; } catch (_) {}
-  }
-  return 'python3';
-}
-
-function envWithBin() {
-  return { ...process.env, PATH: `${BIN_DIR}:${process.env.PATH}` };
-}
-
-// ─── First-run setup ──────────────────────────────────────────────────────────
-
-function firstRunSetup() {
-  [INDIVIDUAL_MODELS_DIR, DATA_DIR].forEach(d => {
-    if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
-  });
-  if (fs.existsSync(BIN_DIR)) {
-    fs.readdirSync(BIN_DIR).forEach(f => {
-      try { fs.chmodSync(path.join(BIN_DIR, f), 0o755); } catch (_) {}
-    });
-  }
-}
-
-// ─── System check ─────────────────────────────────────────────────────────────
-
-function checkSystem() {
-  const results = {};
-  for (const bin of ['lc0', 'pgn-extract', 'trainingdata-tool']) {
-    const p = getBinPath(bin);
-    results[bin] = { ok: !!p, path: p || 'not found' };
-  }
-  const py = getPythonBin();
-  try {
-    const v = execSync(`${py} --version`, { encoding: 'utf-8' }).trim();
-    results.python3 = { ok: true, path: v };
-  } catch (_) {
-    results.python3 = { ok: false, path: 'not found' };
-  }
-  results.maiaIndividual = {
-    ok: fs.existsSync(path.join(MAIA_DIR, '1-data_generation', '9-pgn_to_training_data.sh')),
-    path: MAIA_DIR
-  };
-  const models = fs.existsSync(MODELS_DIR)
-    ? fs.readdirSync(MODELS_DIR).filter(f => /^maia-\d+\.pb\.gz$/.test(f))
-    : [];
-  results.baseModels = { ok: models.length > 0, path: models.join(', ') || 'none found' };
-  return results;
-}
-
 function buildDockerImage(win) {
   return new Promise((resolve, reject) => {
     if (fs.existsSync(IMAGE_FLAG)) { resolve(); return; }
@@ -222,9 +135,9 @@ function buildDockerImage(win) {
     win.webContents.send('setup:progress',
       { message: `Building Docker training image for ${PLATFORM} — 10-20 minutes on first run...`, percent: null, type: 'status' });
 
-    const dockerfileArg = PLATFORM === 'arm64' 
-      ? ['-f', 'Dockerfile.arm64']
-      : ['-f', 'Dockerfile.amd64'];
+    const dockerfileArg = PLATFORM === 'arm64'
+      ? ['-f', 'docker/Dockerfile.arm64']
+      : ['-f', 'docker/Dockerfile.amd64'];
 
     const proc = spawn('docker', [
       'build',
@@ -254,20 +167,14 @@ function buildDockerImage(win) {
   });
 }
 
+// ─── First-run setup ──────────────────────────────────────────────────────────
+
+function firstRunSetup() {
+  ensureDirectories([INDIVIDUAL_MODELS_DIR, DATA_DIR]);
+  chmodBinaries(BIN_DIR);
+}
+
 // ─── Training pipeline ────────────────────────────────────────────────────────
-//
-// Progress bar breakdown across 4 steps:
-//   clean  →  0 – 15 %
-//   data   → 15 – 55 %
-//   config → 55 – 65 %
-//   train  → 65 – 98 %
-//   done   → 100 %
-//
-// Each `training:progress` payload: { step, message, percent, type }
-//   step    – 'clean' | 'data' | 'config' | 'train' | 'done'
-//   message – human-readable log line
-//   percent – 0-100 overall progress (null = no update to bar)
-//   type    – 'status' (update headline) | 'log' (terminal-only line)
 
 const STEP_RANGES = {
   clean:  [0,  15],
@@ -279,7 +186,6 @@ const STEP_RANGES = {
 
 function runTrainingPipeline(event, { pgnPath, username, userElo }) {
   return new Promise(async (resolve, reject) => {
-    // interpolate within a step's range (frac 0.0–1.0)
     const stepPercent = (step, frac = 0) => {
       const [lo, hi] = STEP_RANGES[step] || [0, 0];
       return Math.round(lo + (hi - lo) * Math.min(1, Math.max(0, frac)));
@@ -290,15 +196,14 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
       event.sender.send('training:progress', { step, message, percent, type });
     };
 
-    // status line + progress bar update
     const status = (step, message, frac = 0) => send(step, message, frac, 'status');
 
-    const model      = closestMaiaModel(userElo);
-    const sessionId  = Date.now();
-    const outputDir  = path.join(DATA_DIR, `session_${sessionId}`);
+    const model = closestMaiaModel(userElo, MODELS_DIR);
+    const sessionId = Date.now();
+    const outputDir = path.join(DATA_DIR, `session_${sessionId}`);
     const cleanedPgn = path.join(outputDir, 'cleaned.pgn');
     const configPath = path.join(outputDir, 'config.yaml');
-    const py         = getPythonBin();
+    const py = getPythonBin(ROOT);
 
     fs.mkdirSync(outputDir, { recursive: true });
 
@@ -320,7 +225,6 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
       ));
     }
 
-    // ── Step 1: Clean PGN ──────────────────────────────────────────────────
     status('clean', `Cleaning PGN for maia-individual compatibility...`, 0);
 
     const step1 = spawn(py, [
@@ -337,7 +241,6 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
       if (code !== 0) return reject(new Error(`PGN cleaning failed.`));
       status('clean', step1Out.trim() || 'PGN cleaned successfully.', 1);
 
-      // ── Step 2: Generate training data ──────────────────────────────────
       status('data', `Extracting games for "${username}" using Maia ${model.elo}...`, 0);
 
       const step2 = spawn('docker', [
@@ -351,9 +254,8 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         '/session/cleaned.pgn', '/session', username
       ]);
 
-      // Try to loosely estimate data-generation progress from line count
       let dataLines = 0;
-      const DATA_LINES_EST = 200; // rough expected output lines
+      const DATA_LINES_EST = 200;
 
       step2.stdout.on('data', d => {
         dataLines += d.toString().split('\n').filter(l => l.trim()).length;
@@ -370,7 +272,6 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         if (code2 !== 0) return reject(new Error('Training data generation failed.'));
         status('data', 'Training data generated successfully.', 1);
 
-        // ── Step 3: Build config ───────────────────────────────────────────
         status('config', 'Building training config...', 0);
 
         const templatePath = path.join(MAIA_DIR, '2-training', 'final_config.yaml');
@@ -396,7 +297,6 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         fs.writeFileSync(configPath, config);
         status('config', `Config written. Using base model: maia-${model.elo}`, 1);
 
-        // ── Step 4: Run training ───────────────────────────────────────────
         status('train', 'Starting neural network training. This may take a while...', 0);
 
         const step3 = spawn('docker', [
@@ -404,22 +304,17 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
           '-e', 'PYTHONUNBUFFERED=1',
           '-v', `${MAIA_DIR}:/maia-individual`,
           '-v', `${outputDir}:/session`,
-          //'-v', `${MODELS_DIR}:/models`,
           '-w', '/maia-individual',
           IMAGE_NAME,
           'conda', 'run', '--no-capture-output', '-n', 'transfer_chess',
           'python', '-u', '2-training/train_transfer.py', '/session/config.yaml'
         ]);
 
-        // Parse epoch/step info from training output to drive the progress bar
-        // Looks for patterns like "Epoch 3/20" or "step 45/200"
         let trainFrac = 0;
 
         const parseTrainFrac = (line) => {
-          // "Epoch X/Y" style
           let m = line.match(/[Ee]poch\s+(\d+)\s*\/\s*(\d+)/);
           if (m) return Math.min(0.97, parseInt(m[1]) / parseInt(m[2]));
-          // "step X/Y" style
           m = line.match(/[Ss]tep\s+(\d+)\s*\/\s*(\d+)/);
           if (m) return Math.min(0.97, parseInt(m[1]) / parseInt(m[2]));
           return null;
@@ -443,7 +338,6 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         step3.on('close', code3 => {
           if (code3 !== 0) return reject(new Error('Training script failed.'));
 
-          // Find output model in final_models/
           const finalModelsDir = path.join(MAIA_DIR, 'final_models');
           let outputModel = null;
           if (fs.existsSync(finalModelsDir)) {
@@ -504,11 +398,11 @@ function engineReadUntil(pred, timeout = 10000) {
 async function loadEngine(weightsPath) {
   if (engineProc) { engineProc.kill(); engineProc = null; engineReady = false; }
 
-  const lc0 = getBinPath('lc0');
+  const lc0 = getBinPath('lc0', BIN_DIR);
   if (!lc0) throw new Error('lc0 binary not found.');
 
   engineBuffer = '';
-  engineQueue  = [];
+  engineQueue = [];
 
   engineProc = spawn(lc0, ['-w', weightsPath], {
     stdio: ['pipe', 'pipe', 'pipe']
@@ -527,7 +421,7 @@ async function loadEngine(weightsPath) {
   engineProc.stderr.on('data', d => {
     engineStderr += d.toString();
     console.error('[lc0 stderr]', d.toString().trim());
-  }); 
+  });
   engineProc.on('close', () => { engineProc = null; engineReady = false; });
 
   engineSend('uci');
@@ -549,7 +443,7 @@ async function getEngineMove(fen) {
 // ─── IPC Handlers ─────────────────────────────────────────────────────────────
 
 function registerHandlers() {
-  ipcMain.handle('system:check', async () => checkSystem());
+  ipcMain.handle('system:check', async () => checkSystem(paths));
 
   ipcMain.handle('dialog:open-pgn', async () => {
     const r = await dialog.showOpenDialog({
@@ -559,33 +453,10 @@ function registerHandlers() {
     return r.canceled ? null : r.filePaths[0];
   });
 
-  ipcMain.handle('models:list', async () => {
-    let lst = [];
-    let lst2 = [];
-    if (fs.existsSync(INDIVIDUAL_MODELS_DIR)){
-      lst = fs.readdirSync(INDIVIDUAL_MODELS_DIR)
-        .filter(f => f.endsWith('.pb.gz'))
-        .map(f => ({
-          name: f,
-          path: path.join(INDIVIDUAL_MODELS_DIR, f),
-          mtime: fs.statSync(path.join(INDIVIDUAL_MODELS_DIR, f)).mtime
-        }))
-        .sort((a, b) => b.mtime - a.mtime);
-    }
-    lst2 = fs.readdirSync(MODELS_DIR)
-      .filter(f => f.endsWith('.pb.gz'))
-      .map(f => ({
-        name: f,
-        path: path.join(MODELS_DIR, f),
-        mtime: fs.statSync(path.join(MODELS_DIR, f)).mtime
-      }))
-      .sort((a, b) => b.mtime - a.mtime);
-    lst.push(...lst2);
-    return lst;
-  });
+  ipcMain.handle('models:list', async () => listModels(MODELS_DIR, INDIVIDUAL_MODELS_DIR));
 
   ipcMain.handle('models:check', async (_, { elo }) => {
-    const m = closestMaiaModel(elo);
+    const m = closestMaiaModel(elo, MODELS_DIR);
     return { ...m, exists: fs.existsSync(m.path) };
   });
 
@@ -636,10 +507,10 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'app', 'preload.js')
+      preload: path.join(__dirname, 'preload.js')
     }
   });
-  win.loadFile(path.join(__dirname, 'app', 'index.html'));
+  win.loadFile(path.join(__dirname, 'index.html'));
   win.webContents.on('did-finish-load', () => {
     runFirstTimeSetup(win).catch(console.error);
   });

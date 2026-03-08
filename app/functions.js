@@ -56,9 +56,13 @@ function getBinPath(name, binDir) {
 
 /** Finds the best available Python interpreter (prefers project .venv). */
 function getPythonBin(root) {
-  const venvPy  = path.join(root, '.venv', 'bin', 'python');
-  const venvPy3 = path.join(root, '.venv', 'bin', 'python3');
-  if (fs.existsSync(venvPy))  return venvPy;
+  const isWin = process.platform === 'win32';
+  const scriptsDir = isWin ? 'Scripts' : 'bin';
+  const pyName = isWin ? 'python.exe' : 'python';
+  const py3Name = isWin ? 'python.exe' : 'python3';
+  const venvPy = path.join(root, '.venv', scriptsDir, pyName);
+  const venvPy3 = path.join(root, '.venv', scriptsDir, py3Name);
+  if (fs.existsSync(venvPy)) return venvPy;
   if (fs.existsSync(venvPy3)) return venvPy3;
   for (const py of ['python3', 'python']) {
     try { execSync(`which ${py}`, { encoding: 'utf-8' }); return py; } catch (_) {}

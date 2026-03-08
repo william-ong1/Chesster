@@ -33,9 +33,11 @@ function makePaths(root) {
 /** Finds the nearest supported Maia ELO and returns { elo, filename, path }. */
 function closestMaiaModel(elo, modelsDir) {
   const n = parseInt(elo, 10);
-  const closest = MAIA_ELOS.reduce((a, b) =>
-    Math.abs(b - n) < Math.abs(a - n) ? b : a
-  );
+  // const closest = MAIA_ELOS.reduce((a, b) =>
+  //   Math.abs(b - n) < Math.abs(a - n) ? b : a
+  // );
+
+  const closest = 1900;
   return {
     elo: closest,
     filename: `maia-${closest}.pb.gz`,

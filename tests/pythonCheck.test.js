@@ -7,38 +7,52 @@ const path = require('path');
 jest.mock('fs');
 jest.mock('child_process');
 
+/** Mirror implementation path logic so tests pass on both Unix and Windows. */
+function venvPaths(root) {
+  const isWin = process.platform === 'win32';
+  const scriptsDir = isWin ? 'Scripts' : 'bin';
+  const pyName = isWin ? 'python.exe' : 'python';
+  const py3Name = isWin ? 'python.exe' : 'python3';
+  return {
+    venvPy: path.join(root, '.venv', scriptsDir, pyName),
+    venvPy3: path.join(root, '.venv', scriptsDir, py3Name),
+  };
+}
+
 describe('getPythonBin', () => {
   const mockRoot = '/test/project';
-  
+
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
   });
 
   test('returns venv python when it exists', () => {
-    fs.existsSync.mockImplementation((p) => 
-      p === path.join(mockRoot, '.venv', 'bin', 'python')
-    );
+    const { venvPy } = venvPaths(mockRoot);
+    fs.existsSync.mockImplementation((p) => p === venvPy);
 
     const result = getPythonBin(mockRoot);
-    
-    expect(result).toBe(path.join(mockRoot, '.venv', 'bin', 'python'));
-    expect(fs.existsSync).toHaveBeenCalledWith(
-      path.join(mockRoot, '.venv', 'bin', 'python')
-    );
+
+    expect(result).toBe(venvPy);
+    expect(fs.existsSync).toHaveBeenCalledWith(venvPy);
   });
 
   test('returns venv python3 when python does not exist but python3 does', () => {
-    fs.existsSync.mockImplementation((p) => 
-      p === path.join(mockRoot, '.venv', 'bin', 'python3')
-    );
+    const { venvPy, venvPy3 } = venvPaths(mockRoot);
+    // On Windows venv has only Scripts/python.exe, so venvPy === venvPy3; verify we return it when present.
+    if (venvPy === venvPy3) {
+      fs.existsSync.mockImplementation((p) => p === venvPy);
+      const result = getPythonBin(mockRoot);
+      expect(result).toBe(venvPy);
+      return;
+    }
+    fs.existsSync.mockImplementation((p) => p !== venvPy && p === venvPy3);
 
     const result = getPythonBin(mockRoot);
-    
-    expect(result).toBe(path.join(mockRoot, '.venv', 'bin', 'python3'));
-    expect(fs.existsSync).toHaveBeenCalledWith(
-      path.join(mockRoot, '.venv', 'bin', 'python3')
-    );
+
+    expect(result).toBe(venvPy3);
+    expect(fs.existsSync).toHaveBeenCalledWith(venvPy);
+    expect(fs.existsSync).toHaveBeenCalledWith(venvPy3);
   });
 
   test('returns system python3 when venv does not exist and python3 is available', () => {
@@ -49,7 +63,7 @@ describe('getPythonBin', () => {
     });
 
     const result = getPythonBin(mockRoot);
-    
+
     expect(result).toBe('python3');
     expect(execSync).toHaveBeenCalledWith('which python3', { encoding: 'utf-8' });
   });
@@ -63,7 +77,7 @@ describe('getPythonBin', () => {
     });
 
     const result = getPythonBin(mockRoot);
-    
+
     expect(result).toBe('python');
     expect(execSync).toHaveBeenCalledWith('which python3', { encoding: 'utf-8' });
     expect(execSync).toHaveBeenCalledWith('which python', { encoding: 'utf-8' });
@@ -76,7 +90,7 @@ describe('getPythonBin', () => {
     });
 
     const result = getPythonBin(mockRoot);
-    
+
     expect(result).toBe('python3');
   });
 
@@ -85,19 +99,18 @@ describe('getPythonBin', () => {
     fs.existsSync.mockReturnValue(true);
 
     const result = getPythonBin(mockRoot);
-    
-    // Should return the first one checked (python, not python3)
-    expect(result).toBe(path.join(mockRoot, '.venv', 'bin', 'python'));
+
+    const { venvPy } = venvPaths(mockRoot);
+    expect(result).toBe(venvPy);
   });
 
   test('handles different root paths correctly', () => {
     const customRoot = '/custom/path';
-    fs.existsSync.mockImplementation((p) => 
-      p === path.join(customRoot, '.venv', 'bin', 'python')
-    );
+    const { venvPy } = venvPaths(customRoot);
+    fs.existsSync.mockImplementation((p) => p === venvPy);
 
     const result = getPythonBin(customRoot);
-    
-    expect(result).toBe(path.join(customRoot, '.venv', 'bin', 'python'));
+
+    expect(result).toBe(venvPy);
   });
 });

@@ -198,7 +198,16 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
 
     const status = (step, message, frac = 0) => send(step, message, frac, 'status');
 
-    const model = closestMaiaModel(userElo, MODELS_DIR);
+    // const model = closestMaiaModel(userElo, MODELS_DIR);
+
+    // hard-coded since othe MAIA models have missing checkpts
+    const closest = 1900;
+    const model = {
+      elo: closest,
+      filename: `maia-${closest}.pb.gz`,
+      path: path.join(modelsDir, `maia-${closest}.pb.gz`)
+    };
+
     const sessionId = Date.now();
     const outputDir = path.join(DATA_DIR, `session_${sessionId}`);
     const cleanedPgn = path.join(outputDir, 'cleaned.pgn');

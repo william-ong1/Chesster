@@ -9,7 +9,7 @@
     "build:appimage": "electron-builder --linux AppImage",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "lint": "gts lint",
+    "lint": "eslint app/ tests/ forge.config.js",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish"
@@ -39,6 +39,7 @@
     "@electron-forge/plugin-fuses": "^7.11.1",
     "@electron/fuses": "^1.8.0",
     "electron": "^29.0.0",
+    "eslint": "^8.57.1",
     "gts": "^6.0.2",
     "jest": "^29.7.0",
     "typescript": "^5.7.0"

@@ -11,7 +11,7 @@ Then run (first make sure node.js is installed)
 npm install && npm run start
 ```
 The app will run.
-To edit the main application logic, edit main.js and the scripts in maia-individual. To edit the UI, look at renderer.js, index.html, and styles.css.
+To edit the main application logic, edit app/main.js and the scripts in maia-individual. To edit the UI, look at renderer.js, index.html, and styles.css.
 
 ## Our Repository Structure
 
@@ -19,11 +19,13 @@ To edit the main application logic, edit main.js and the scripts in maia-individ
 /
 ├── .github/            # CI/CD workflows
 ├── app/                # Main application logic (API routes, game logic)
+├── docker/             # Dockerfiles for training (Dockerfile, Dockerfile.amd64, Dockerfile.arm64)
+├── docs/               # User and developer documentation
 ├── models/             # Stores trained models
 ├── maia-individual/    # Custom model training, evaluation, and base maia models
 ├── Tests/              # Unit and integration tests for backend logic
 ├── scripts/            # To assist with data cleaning and other utilities
-├── StatusReports/      # Project documentation, progress and status reports
+├── status-reports/      # Project documentation, progress and status reports
 ├── README.md           # Description on the application and how to build/test it
 ```
 The source code is in app/.

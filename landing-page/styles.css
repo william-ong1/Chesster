@@ -162,6 +162,40 @@ transform:translateY(-5px);
 box-shadow:0 10px 25px rgba(0,0,0,.5);
 }
 
+#documentation{
+background:#1e0e3f;
+text-align:center;
+padding:80px 20px;
+}
+
+.doc-button-wrapper{
+margin-top:30px;
+}
+
+.doc-button{
+display:inline-flex;
+align-items:center;
+gap:10px;
+padding:20px 36px;
+border-radius:10px;
+background:#2a0f4d;
+border:2px solid #9b5de5;
+color:#d9b3ff;
+font-weight:600;
+font-size:18px;
+text-decoration:none;
+transition:.3s;
+}
+
+.doc-button i{
+font-size:22px;
+}
+
+.doc-button:hover{
+box-shadow:0 0 15px #c77dff,0 0 25px #d9b3ff;
+transform:translateY(-3px);
+}
+
 #downloads{
 background:linear-gradient(135deg,#1b0c38,#2a0f4d);
 text-align:center;

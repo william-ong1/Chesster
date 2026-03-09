@@ -404,7 +404,7 @@ body {
 
 .field__hint {
   font-size: 11px;
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-style: italic;
 }
 

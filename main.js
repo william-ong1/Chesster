@@ -261,10 +261,11 @@ function buildDockerImage(win) {
 //   data   → 15 – 55 %
 //   config → 55 – 65 %
 //   train  → 65 – 98 %
+//   eval   → 98 – 99 %
 //   done   → 100 %
 //
 // Each `training:progress` payload: { step, message, percent, type }
-//   step    – 'clean' | 'data' | 'config' | 'train' | 'done'
+//   step    – 'clean' | 'data' | 'config' | 'train' | 'eval' | 'done'
 //   message – human-readable log line
 //   percent – 0-100 overall progress (null = no update to bar)
 //   type    – 'status' (update headline) | 'log' (terminal-only line)
@@ -274,8 +275,35 @@ const STEP_RANGES = {
   data:   [15, 55],
   config: [55, 65],
   train:  [65, 98],
+  eval:   [98, 99],
   done:   [100, 100],
 };
+
+/** Recursively find most recent .pb.gz under dir, or dirs with config.yaml (model dirs). */
+function findLatestModel(finalModelsDir) {
+  const candidates = [];
+  function walk(d) {
+    if (!fs.existsSync(d)) return;
+    for (const name of fs.readdirSync(d)) {
+      const full = path.join(d, name);
+      const st = fs.statSync(full);
+      if (st.isDirectory()) {
+        if (fs.existsSync(path.join(full, 'config.yaml'))) {
+          const pb = fs.readdirSync(full).find(f => f.endsWith('.pb.gz'));
+          if (pb) candidates.push({ path: full, mtime: fs.statSync(path.join(full, pb)).mtimeMs });
+        }
+        walk(full);
+      } else if (name.endsWith('.pb.gz')) {
+        candidates.push({ path: full, mtime: st.mtimeMs });
+      }
+    }
+  }
+  walk(finalModelsDir);
+  if (candidates.length === 0) return null;
+  candidates.sort((a, b) => b.mtime - a.mtime);
+  const best = candidates[0];
+  return best.path.endsWith('.pb.gz') ? path.dirname(best.path) : best.path;
+}
 
 function runTrainingPipeline(event, { pgnPath, username, userElo }) {
   return new Promise(async (resolve, reject) => {
@@ -443,28 +471,135 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         step3.on('close', code3 => {
           if (code3 !== 0) return reject(new Error('Training script failed.'));
 
-          // Find output model in final_models/
+          // Find output model in final_models/ (nested: session/config/ or flat .pb.gz)
           const finalModelsDir = path.join(MAIA_DIR, 'final_models');
           let outputModel = null;
+          let trainedModelDir = null;
           if (fs.existsSync(finalModelsDir)) {
-            const files = fs.readdirSync(finalModelsDir)
-              .filter(f => f.endsWith('.pb.gz'))
-              .map(f => ({ f, t: fs.statSync(path.join(finalModelsDir, f)).mtimeMs }))
-              .sort((a, b) => b.t - a.t);
-            if (files.length > 0) {
-              const src = path.join(finalModelsDir, files[0].f);
-              outputModel = path.join(INDIVIDUAL_MODELS_DIR, `${username}_${sessionId}.pb.gz`);
-              fs.copyFileSync(src, outputModel);
+            trainedModelDir = findLatestModel(finalModelsDir);
+            if (trainedModelDir) {
+              const pbFiles = fs.readdirSync(trainedModelDir).filter(f => f.endsWith('.pb.gz'));
+              if (pbFiles.length > 0) {
+                const src = path.join(trainedModelDir, pbFiles[0]);
+                outputModel = path.join(INDIVIDUAL_MODELS_DIR, `${username}_${sessionId}.pb.gz`);
+                fs.copyFileSync(src, outputModel);
+              }
             }
           }
 
-          event.sender.send('training:progress', {
-            step: 'done',
-            message: `Training complete!${outputModel ? ` Model saved to models/individual/` : ''}`,
-            percent: 100,
-            type: 'status'
-          });
-          resolve({ outputModel });
+          const runEvaluation = () => {
+            status('eval', 'Running model evaluation...', 0);
+
+            const playerDir = path.join(outputDir, username);
+            const pgnsDir = path.join(playerDir, 'pgns');
+            const validateWhite = path.join(pgnsDir, 'validate_white.pgn');
+            if (!trainedModelDir || !fs.existsSync(validateWhite)) {
+              finishTraining(outputModel, null);
+              return;
+            }
+
+            const evalDir = path.join(outputDir, 'eval');
+            fs.mkdirSync(evalDir, { recursive: true });
+            const evalCsv = path.join(evalDir, 'validate_white.csv.bz2');
+            const evalOut = path.join(evalDir, 'predictions_white.csv.bz2');
+
+            // Step 1: Convert PGN to CSV
+            const stepEval1 = spawn('docker', [
+              'run', '--rm',
+              '-v', `${MAIA_DIR}:/maia-individual`,
+              '-v', `${outputDir}:/session`,
+              '-w', '/maia-individual/3-analysis',
+              IMAGE_NAME,
+              'conda', 'run', '--no-capture-output', '-n', 'transfer_chess',
+              'python', 'pgn_to_eval_csv.py',
+              `/session/${username}/pgns/validate_white.pgn`,
+              '/session/eval/validate_white.csv.bz2'
+            ]);
+
+            let evalLog = '';
+            stepEval1.stdout.on('data', d => { evalLog += d.toString(); });
+            stepEval1.stderr.on('data', d => {
+              const lines = d.toString().split('\n').filter(l => l.trim());
+              lines.forEach(l => send('eval', l, 0.2, 'log'));
+            });
+
+            stepEval1.on('close', codeE1 => {
+              if (codeE1 !== 0) {
+                finishTraining(outputModel, null);
+                return;
+              }
+              status('eval', 'Evaluating model on validation set...', 0.4);
+
+              // Step 2: Run prediction_generator (path inside container)
+              const relModel = path.relative(MAIA_DIR, trainedModelDir).replace(/\\/g, '/');
+              const modelPathInDocker = `/maia-individual/${relModel}`;
+              const stepEval2 = spawn('docker', [
+                'run', '--rm',
+                '-v', `${MAIA_DIR}:/maia-individual`,
+                '-v', `${outputDir}:/session`,
+                '-w', '/maia-individual/3-analysis',
+                IMAGE_NAME,
+                'conda', 'run', '--no-capture-output', '-n', 'transfer_chess',
+                'python', 'prediction_generator.py',
+                '--target_player', username,
+                modelPathInDocker,
+                '/session/eval/validate_white.csv.bz2',
+                '/session/eval/predictions_white.csv.bz2'
+              ]);
+
+              stepEval2.stdout.on('data', d => { evalLog += d.toString(); });
+              stepEval2.stderr.on('data', d => {
+                const lines = d.toString().split('\n').filter(l => l.trim());
+                lines.forEach(l => send('eval', l, 0.7, 'log'));
+              });
+
+              stepEval2.on('close', codeE2 => {
+                if (codeE2 !== 0) {
+                  finishTraining(outputModel, null);
+                  return;
+                }
+                status('eval', 'Computing accuracy...', 0.9);
+
+                // Step 3: Get accuracy
+                const stepEval3 = spawn('docker', [
+                  'run', '--rm',
+                  '-v', `${MAIA_DIR}:/maia-individual`,
+                  '-v', `${outputDir}:/session`,
+                  '-w', '/maia-individual/3-analysis',
+                  IMAGE_NAME,
+                  'conda', 'run', '--no-capture-output', '-n', 'transfer_chess',
+                  'python', 'get_accuracy.py',
+                  '/session/eval/predictions_white.csv.bz2'
+                ]);
+
+                let accuracyOut = '';
+                stepEval3.stdout.on('data', d => { accuracyOut += d.toString(); });
+                stepEval3.stderr.on('data', d => { accuracyOut += d.toString(); });
+
+                stepEval3.on('close', () => {
+                  const match = accuracyOut.match(/(\d+\.?\d*)%/);
+                  const accuracy = match ? match[1] : null;
+                  finishTraining(outputModel, accuracy);
+                });
+              });
+            });
+          };
+
+          const finishTraining = (model, evalAccuracy) => {
+            let msg = `Training complete!${outputModel ? ` Model saved to models/individual/` : ''}`;
+            if (evalAccuracy != null) {
+              msg += ` Validation accuracy: ${evalAccuracy}%`;
+            }
+            event.sender.send('training:progress', {
+              step: 'done',
+              message: msg,
+              percent: 100,
+              type: 'status'
+            });
+            resolve({ outputModel: model, evalAccuracy: evalAccuracy != null ? parseFloat(evalAccuracy) : null });
+          };
+
+          runEvaluation();
         });
       });
     });

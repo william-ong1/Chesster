@@ -586,13 +586,12 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
           };
 
           const finishTraining = (model, evalAccuracy) => {
-            let msg = `Training complete!${outputModel ? ` Model saved to models/individual/` : ''}`;
             if (evalAccuracy != null) {
-              msg += ` Validation accuracy: ${evalAccuracy}%`;
+              console.log(`[Chesster] Model validation accuracy: ${evalAccuracy}%`);
             }
             event.sender.send('training:progress', {
               step: 'done',
-              message: msg,
+              message: `Training complete!${outputModel ? ` Model saved to models/individual/` : ''}`,
               percent: 100,
               type: 'status'
             });

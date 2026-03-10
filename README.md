@@ -36,10 +36,11 @@ Allows users to upload their past chess data and then trains a chess bot with th
   Board states for each user are saved in local storagein a database on the backend so that each bot can be trained on a dataset unique to each user.
 
 - **Style Learning:**
-  Chesster analyzes and mimics one’s playstyle patterns such as opening plays, common moves, move preferences, and game progression habits. In normal mode, training can take upwards of 1 day depending on hardware. Use *Quick Train* mode to train a less accurate model in 20-25 minutes.
+  Chesster analyzes and mimics one’s playstyle patterns such as opening plays, common moves, move preferences, and game progression habits. The training is dependent on the elo the user inputs. In normal mode, training can take upwards of 1 day depending on hardware. Use *Quick Train* mode to train a less accurate model in 20-25 minutes.
 
 - **Training Output & Model Evaluation:**
   View the progress of the bot you're training. Also displays the policy and value accuracy of the bot during training.
+
 
 - **Play Against a Bot:**
   Users can choose to play against their personalized chess bot or a pre-trained model!

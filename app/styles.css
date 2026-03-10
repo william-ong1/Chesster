@@ -55,6 +55,16 @@ body {
   -webkit-app-region: no-drag;
 }
 
+.title-drag-region {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: max(28px, env(titlebar-area-height, 28px));
+  z-index: 100;
+  -webkit-app-region: drag;
+}
+
 /* ── Ambient background ─────────────────────────────────────────────────────── */
 .ambient {
   position: fixed;

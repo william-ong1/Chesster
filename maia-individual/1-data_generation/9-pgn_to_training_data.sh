@@ -3,12 +3,16 @@ set -e
 
 #args input_path output_dir player
 
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+maia_root="$(cd "$script_dir/.." && pwd)"
+
 player_file=${1}
 p_dir=${2}/${3}
 p_name=${3}
 
-train_frac=90
+train_frac=80
 val_frac=10
+test_frac=10
 
 split_dir=$p_dir/split
 
@@ -20,11 +24,12 @@ echo "${p_name} to ${p_dir}"
 python split_by_player.py $player_file $p_name $split_dir/games
 
 for c in "white" "black"; do
-    python pgn_fractional_split.py $split_dir/games_$c.pgn.bz2 $split_dir/train_$c.pgn.bz2 $split_dir/validate_$c.pgn.bz2 --ratios $train_frac $val_frac
+    python pgn_fractional_split.py $split_dir/games_$c.pgn.bz2 $split_dir/train_$c.pgn.bz2 $split_dir/validate_$c.pgn.bz2 $split_dir/test_$c.pgn.bz2 --ratios $train_frac $val_frac $test_frac
 
     cd $p_dir
     mkdir -p pgns
-    for s in "train" "validate"; do
+    mkdir -p csvs
+    for s in "train" "validate" "test"; do
         mkdir -p $s
         mkdir -p $s/$c
 
@@ -38,7 +43,11 @@ for c in "white" "black"; do
         #using tool from:
         #https://github.com/DanielUranga/trainingdata-tool
         #screen -S "${p_name}-${c}-${s}" -dm bash -c "cd ${s}/${c}; trainingdata-tool -v ../../pgns/${s}_${c}.pgn"
-        (cd ${s}/${c} && trainingdata-tool -v ../../pgns/${s}_${c}.pgn)
+        if [ "$s" != "test" ]; then
+            (cd ${s}/${c} && trainingdata-tool -v ../../pgns/${s}_${c}.pgn)
+        else
+            python "$maia_root/backend/pgn_to_csv_cli.py" "$split_dir/${s}_${c}.pgn.bz2" "$p_dir/csvs/${s}_${c}.csv.bz2"
+        fi
     done
     cd -
 done

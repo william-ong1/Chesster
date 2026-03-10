@@ -205,7 +205,7 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
     const model = {
       elo: closest,
       filename: `maia-${closest}.pb.gz`,
-      path: path.join(modelsDir, `maia-${closest}.pb.gz`)
+      path: path.join(MODELS_DIR, `maia-${closest}.pb.gz`)
     };
 
     const sessionId = Date.now();
@@ -344,20 +344,71 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
           });
         });
 
-        step3.on('close', code3 => {
+        step3.on('close', async (code3) => {
           if (code3 !== 0) return reject(new Error('Training script failed.'));
 
           const finalModelsDir = path.join(MAIA_DIR, 'final_models');
           let outputModel = null;
+          let latestModelPath = null;
           if (fs.existsSync(finalModelsDir)) {
-            const files = fs.readdirSync(finalModelsDir)
-              .filter(f => f.endsWith('.pb.gz'))
-              .map(f => ({ f, t: fs.statSync(path.join(finalModelsDir, f)).mtimeMs }))
+            const findPbGz = (dir) => {
+              const results = [];
+              const entries = fs.readdirSync(dir, { withFileTypes: true });
+              for (const e of entries) {
+                const full = path.join(dir, e.name);
+                if (e.isDirectory()) results.push(...findPbGz(full));
+                else if (e.name.endsWith('.pb.gz')) results.push(full);
+              }
+              return results;
+            };
+            const files = findPbGz(finalModelsDir)
+              .map(p => ({ path: p, t: fs.statSync(p).mtimeMs }))
               .sort((a, b) => b.t - a.t);
             if (files.length > 0) {
-              const src = path.join(finalModelsDir, files[0].f);
+              const src = files[0].path;
               outputModel = path.join(INDIVIDUAL_MODELS_DIR, `${username}_${sessionId}.pb.gz`);
+              latestModelPath = src;
               fs.copyFileSync(src, outputModel);
+            }
+          }
+
+          // Run evaluation on test set if available
+          const playerDir = path.join(outputDir, username);
+          const testWhiteCsv = path.join(playerDir, 'csvs', 'test_white.csv.bz2');
+          const testBlackCsv = path.join(playerDir, 'csvs', 'test_black.csv.bz2');
+          const hasTestSet = fs.existsSync(testWhiteCsv) || fs.existsSync(testBlackCsv);
+
+          if (latestModelPath && hasTestSet) {
+            status('train', 'Running evaluation on test set...', 0.98);
+            try {
+              const evalProc = spawn('docker', [
+                'run', '--rm',
+                '-v', `${MAIA_DIR}:/maia-individual`,
+                '-v', `${outputDir}:/session`,
+                '-w', '/maia-individual',
+                IMAGE_NAME,
+                'conda', 'run', '--no-capture-output', '-n', 'transfer_chess',
+                'python', '-u', '3-analysis/run_eval_and_print.py',
+                path.join('/maia-individual', 'final_models', path.relative(finalModelsDir, latestModelPath)).replace(/\\/g, '/'),
+                '/session',
+                username,
+              ], { cwd: ROOT });
+
+              evalProc.stdout.on('data', (d) => {
+                const txt = d.toString();
+                console.log(txt.trim());
+                send('train', txt.trim(), 0.99);
+              });
+              evalProc.stderr.on('data', (d) => {
+                console.error(d.toString().trim());
+              });
+
+              await new Promise((res, rej) => {
+                evalProc.on('close', (code) => (code === 0 ? res() : rej(new Error(`Evaluation exited with code ${code}`))));
+              });
+            } catch (err) {
+              console.warn('[Eval] Evaluation failed:', err.message);
+              send('train', `Evaluation skipped: ${err.message}`, 0.99);
             }
           }
 

@@ -184,19 +184,19 @@ const STEP_RANGES = {
   done:   [100, 100],
 };
 
-function runTrainingPipeline(event, { pgnPath, username, userElo }) {
+function runTrainingPipeline(event, { pgnPath, username, userElo, quickTest }) {
   return new Promise(async (resolve, reject) => {
     const stepPercent = (step, frac = 0) => {
       const [lo, hi] = STEP_RANGES[step] || [0, 0];
       return Math.round(lo + (hi - lo) * Math.min(1, Math.max(0, frac)));
     };
 
-    const send = (step, message, frac = null, type = 'log') => {
+    const send = (step, message, frac = null, type = 'log', extra = {}) => {
       const percent = frac !== null ? stepPercent(step, frac) : null;
-      event.sender.send('training:progress', { step, message, percent, type });
+      event.sender.send('training:progress', { step, message, percent, type, ...extra });
     };
 
-    const status = (step, message, frac = 0) => send(step, message, frac, 'status');
+    const status = (step, message, frac = 0, extra = {}) => send(step, message, frac, 'status', extra);
 
     // const model = closestMaiaModel(userElo, MODELS_DIR);
 
@@ -205,7 +205,7 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
     const model = {
       elo: closest,
       filename: `maia-${closest}.pb.gz`,
-      path: path.join(modelsDir, `maia-${closest}.pb.gz`)
+      path: path.join(MODELS_DIR, `maia-${closest}.pb.gz`)
     };
 
     const sessionId = Date.now();
@@ -234,7 +234,7 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
       ));
     }
 
-    status('clean', `Cleaning PGN for maia-individual compatibility...`, 0);
+    status('clean', 'Cleaning PGN for maia-individual compatibility...', 0, { stepDetail: 'Parsing and validating PGN...' });
 
     const step1 = spawn(py, [
       path.join(SCRIPTS_DIR, 'clean_pgn.py'),
@@ -243,14 +243,25 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
     ]);
 
     let step1Out = '';
+    let cleanHeartbeat = setInterval(() => {
+      event.sender.send('training:progress', {
+        step: 'clean',
+        message: 'Still cleaning PGN...',
+        percent: stepPercent('clean', 0.3),
+        type: 'status',
+        stepDetail: 'Processing...',
+        heartbeat: true
+      });
+    }, 3000);
     step1.stdout.on('data', d => { step1Out += d.toString(); });
     step1.stderr.on('data', d => send('clean', d.toString().trim(), 0.5));
 
     step1.on('close', code => {
+      clearInterval(cleanHeartbeat);
       if (code !== 0) return reject(new Error(`PGN cleaning failed.`));
       status('clean', step1Out.trim() || 'PGN cleaned successfully.', 1);
 
-      status('data', `Extracting games for "${username}" using Maia ${model.elo}...`, 0);
+      status('data', `Extracting games for "${username}" using Maia ${model.elo}...`, 0, { stepDetail: 'Initializing...' });
 
       const step2 = spawn('docker', [
         'run', '--rm',
@@ -264,22 +275,37 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
       ]);
 
       let dataLines = 0;
-      const DATA_LINES_EST = 200;
+      const DATA_LINES_EST = 500;
+      let dataHeartbeat = setInterval(() => {
+        event.sender.send('training:progress', {
+          step: 'data',
+          message: 'Still generating training data...',
+          percent: stepPercent('data', Math.min(0.9, dataLines / DATA_LINES_EST) || 0.1),
+          type: 'status',
+          stepDetail: dataLines > 0 ? `${dataLines} lines processed` : 'Starting...',
+          heartbeat: true
+        });
+      }, 4000);
 
       step2.stdout.on('data', d => {
         dataLines += d.toString().split('\n').filter(l => l.trim()).length;
         d.toString().split('\n').filter(l => l.trim()).forEach(l =>
-          send('data', l, Math.min(0.95, dataLines / DATA_LINES_EST)));
+          send('data', l, Math.min(0.95, dataLines / DATA_LINES_EST), 'log', {
+            stepDetail: `Step 2 — ${Math.round(100 * Math.min(0.95, dataLines / DATA_LINES_EST))}%`
+          }));
       });
       step2.stderr.on('data', d => {
         dataLines += d.toString().split('\n').filter(l => l.trim()).length;
         d.toString().split('\n').filter(l => l.trim()).forEach(l =>
-          send('data', l, Math.min(0.95, dataLines / DATA_LINES_EST)));
+          send('data', l, Math.min(0.95, dataLines / DATA_LINES_EST), 'log', {
+            stepDetail: `Step 2 — ${Math.round(100 * Math.min(0.95, dataLines / DATA_LINES_EST))}%`
+          }));
       });
 
       step2.on('close', code2 => {
+        clearInterval(dataHeartbeat);
         if (code2 !== 0) return reject(new Error('Training data generation failed.'));
-        status('data', 'Training data generated successfully.', 1);
+        status('data', 'Training data generated successfully.', 1, { stepDetail: 'Step 2 complete' });
 
         status('config', 'Building training config...', 0);
 
@@ -303,10 +329,36 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
           `name: '${username}'`
         );
 
-        fs.writeFileSync(configPath, config);
-        status('config', `Config written. Using base model: maia-${model.elo}`, 1);
+        if (quickTest) {
+          // Ultra-fast \"quick train\" run for UI testing only
+          config = config.replace(/total_steps:\s*\d+/, 'total_steps: 25');
+          config = config.replace(/train_avg_report_steps:\s*\d+/, 'train_avg_report_steps: 1');
+          config = config.replace(/test_steps:\s*\d+/, 'test_steps: 5');
+          config = config.replace(/checkpoint_steps:\s*\d+/, 'checkpoint_steps: 10');
+          config = config.replace(
+            /lr_boundaries:\s*\n\s*-\s*\d+\s*\n\s*-\s*\d+\s*\n\s*-\s*\d+/,
+            'lr_boundaries:\n        - 5\n        - 10\n        - 15'
+          );
+        }
 
-        status('train', 'Starting neural network training. This may take a while...', 0);
+        fs.writeFileSync(configPath, config);
+
+        let totalSteps = 150000;
+        let batchSize = 256;
+        try {
+          const cfg = fs.readFileSync(configPath, 'utf-8');
+          const tsMatch = cfg.match(/total_steps:\s*(\d+)/);
+          const bsMatch = cfg.match(/batch_size:\s*(\d+)/);
+          if (tsMatch) totalSteps = parseInt(tsMatch[1], 10);
+          if (bsMatch) batchSize = parseInt(bsMatch[1], 10);
+        } catch (_) {}
+
+        status('config', `Config written. Using base model: maia-${model.elo}`, 1, { stepDetail: 'Config ready' });
+
+        status('train', 'Starting neural network training...', 0, {
+          stepDetail: `0 / ${totalSteps.toLocaleString()} steps`,
+          totalSteps
+        });
 
         const step3 = spawn('docker', [
           'run', '--rm',
@@ -320,42 +372,119 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
         ]);
 
         let trainFrac = 0;
+        let currentStepNum = 0;
+        let lastPosPerSec = 0;
+        let lastTrainUpdate = Date.now();
+        let trainHeartbeat = null;
 
-        const parseTrainFrac = (line) => {
+        const parseTrainProgress = (line) => {
+          // Epoch X / Y (if ever used)
           let m = line.match(/[Ee]poch\s+(\d+)\s*\/\s*(\d+)/);
-          if (m) return Math.min(0.97, parseInt(m[1]) / parseInt(m[2]));
+          if (m) {
+            return { frac: Math.min(0.97, parseInt(m[1]) / parseInt(m[2])), stepNum: parseInt(m[1]), total: parseInt(m[2]), posPerSec: null };
+          }
+          // Step X / Y
           m = line.match(/[Ss]tep\s+(\d+)\s*\/\s*(\d+)/);
-          if (m) return Math.min(0.97, parseInt(m[1]) / parseInt(m[2]));
+          if (m) {
+            return { frac: Math.min(0.97, parseInt(m[1]) / parseInt(m[2])), stepNum: parseInt(m[1]), total: parseInt(m[2]), posPerSec: null };
+          }
+          // Actual tfprocess format: "2025-03-08 12:34:56 step 50, lr=0.01 ... (123.4 pos/s)"
+          m = line.match(/[Ss]tep\s+(\d+)\s*[,:\s]/);
+          if (m) {
+            const stepNum = parseInt(m[1], 10);
+            const frac = totalSteps > 0 ? Math.min(0.97, stepNum / totalSteps) : 0;
+            let posPerSec = null;
+            const posMatch = line.match(/\((\d+(?:\.\d*)?)\s*pos\/s\)/);
+            if (posMatch) posPerSec = parseFloat(posMatch[1]);
+            return { frac, stepNum, total: totalSteps, posPerSec };
+          }
           return null;
         };
 
+        const sendTrainProgress = (stepNum, frac, posPerSec, line) => {
+          currentStepNum = stepNum;
+          if (posPerSec > 0) lastPosPerSec = posPerSec;
+          trainFrac = frac;
+          lastTrainUpdate = Date.now();
+
+          let etaSeconds = null;
+          if (posPerSec > 0 && batchSize > 0 && totalSteps > stepNum) {
+            const stepsPerSec = posPerSec / batchSize;
+            etaSeconds = Math.round((totalSteps - stepNum) / stepsPerSec);
+          } else if (lastPosPerSec > 0 && batchSize > 0 && totalSteps > stepNum) {
+            const stepsPerSec = lastPosPerSec / batchSize;
+            etaSeconds = Math.round((totalSteps - stepNum) / stepsPerSec);
+          }
+
+          const stepDetail = `${stepNum.toLocaleString()} / ${totalSteps.toLocaleString()} steps`;
+          send('train', line, frac, 'log', {
+            stepDetail,
+            etaSeconds,
+            currentStep: stepNum,
+            totalSteps,
+            heartbeat: false
+          });
+        };
+
+        trainHeartbeat = setInterval(() => {
+          const elapsed = (Date.now() - lastTrainUpdate) / 1000;
+          if (elapsed > 8 && currentStepNum > 0) {
+            event.sender.send('training:progress', {
+              step: 'train',
+              message: 'Training in progress...',
+              percent: stepPercent('train', trainFrac),
+              type: 'status',
+              stepDetail: `${currentStepNum.toLocaleString()} / ${totalSteps.toLocaleString()} steps`,
+              etaSeconds: lastPosPerSec > 0 && batchSize > 0
+                ? Math.round((totalSteps - currentStepNum) / (lastPosPerSec / batchSize))
+                : null,
+              heartbeat: true
+            });
+          }
+        }, 5000);
+
         step3.stdout.on('data', d => {
           d.toString().split('\n').filter(l => l.trim()).forEach(l => {
-            const f = parseTrainFrac(l);
-            if (f !== null) trainFrac = f;
-            send('train', l, trainFrac);
+            const parsed = parseTrainProgress(l);
+            if (parsed) {
+              sendTrainProgress(parsed.stepNum, parsed.frac, parsed.posPerSec, l);
+            } else {
+              send('train', l, trainFrac);
+            }
           });
         });
         step3.stderr.on('data', d => {
           d.toString().split('\n').filter(l => l.trim()).forEach(l => {
-            const f = parseTrainFrac(l);
-            if (f !== null) trainFrac = f;
-            send('train', l, trainFrac);
+            const parsed = parseTrainProgress(l);
+            if (parsed) {
+              sendTrainProgress(parsed.stepNum, parsed.frac, parsed.posPerSec, l);
+            } else {
+              send('train', l, trainFrac);
+            }
           });
         });
 
         step3.on('close', code3 => {
+          if (trainHeartbeat) clearInterval(trainHeartbeat);
           if (code3 !== 0) return reject(new Error('Training script failed.'));
 
           const finalModelsDir = path.join(MAIA_DIR, 'final_models');
           let outputModel = null;
           if (fs.existsSync(finalModelsDir)) {
-            const files = fs.readdirSync(finalModelsDir)
-              .filter(f => f.endsWith('.pb.gz'))
-              .map(f => ({ f, t: fs.statSync(path.join(finalModelsDir, f)).mtimeMs }))
+            const findPbGz = (dir) => {
+              const results = [];
+              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                const full = path.join(dir, entry.name);
+                if (entry.isDirectory()) results.push(...findPbGz(full));
+                else if (entry.name.endsWith('.pb.gz')) results.push(full);
+              }
+              return results;
+            };
+            const allPbGz = findPbGz(finalModelsDir)
+              .map(p => ({ path: p, t: fs.statSync(p).mtimeMs }))
               .sort((a, b) => b.t - a.t);
-            if (files.length > 0) {
-              const src = path.join(finalModelsDir, files[0].f);
+            if (allPbGz.length > 0) {
+              const src = allPbGz[0].path;
               outputModel = path.join(INDIVIDUAL_MODELS_DIR, `${username}_${sessionId}.pb.gz`);
               fs.copyFileSync(src, outputModel);
             }
@@ -365,7 +494,9 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
             step: 'done',
             message: `Training complete!${outputModel ? ` Model saved to models/individual/` : ''}`,
             percent: 100,
-            type: 'status'
+            type: 'status',
+            stepDetail: 'Complete',
+            etaSeconds: 0
           });
           resolve({ outputModel });
         });
@@ -469,8 +600,8 @@ function registerHandlers() {
     return { ...m, exists: fs.existsSync(m.path) };
   });
 
-  ipcMain.handle('training:start', async (event, { pgnPath, username, userElo }) => {
-    runTrainingPipeline(event, { pgnPath, username, userElo })
+  ipcMain.handle('training:start', async (event, { pgnPath, username, userElo, quickTest }) => {
+    runTrainingPipeline(event, { pgnPath, username, userElo, quickTest })
       .catch(err => event.sender.send('training:error', { message: err.message }));
     return { ok: true };
   });

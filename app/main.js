@@ -198,7 +198,6 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
 
     const status = (step, message, frac = 0) => send(step, message, frac, 'status');
 
-    // const model = closestMaiaModel(userElo, MODELS_DIR);
 
     // hard-coded since othe MAIA models have missing checkpts
     const closest = 1900;
@@ -378,6 +377,13 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
           const testBlackCsv = path.join(playerDir, 'csvs', 'test_black.csv.bz2');
           const hasTestSet = fs.existsSync(testWhiteCsv) || fs.existsSync(testBlackCsv);
 
+          if (!hasTestSet) {
+            console.log('[Eval] Skipping: no test CSVs at', testWhiteCsv, 'or', testBlackCsv);
+          }
+          if (!latestModelPath) {
+            console.log('[Eval] Skipping: no trained model found in final_models');
+          }
+
           if (latestModelPath && hasTestSet) {
             status('train', 'Running evaluation on test set...', 0.98);
             try {
@@ -404,7 +410,16 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
               });
 
               await new Promise((res, rej) => {
-                evalProc.on('close', (code) => (code === 0 ? res() : rej(new Error(`Evaluation exited with code ${code}`))));
+                evalProc.on(
+                  'close',
+                  (code) => {
+                    if (code === 0) {
+                      res();
+                    } else {
+                      rej(new Error(`Evaluation exited with code ${code}`));
+                    }
+                  }
+                );
               });
             } catch (err) {
               console.warn('[Eval] Evaluation failed:', err.message);

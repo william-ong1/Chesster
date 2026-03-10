@@ -2,10 +2,10 @@
 
 ## Documentation
 ### User Documentation
-[User Guide](https://docs.google.com/document/d/1fhgFQ0q_iIjsCposVSkGihsz5ofvjDJe07hAGC5pVm0/edit?tab=t.0)
+[User Documentation](https://docs.google.com/document/d/1fhgFQ0q_iIjsCposVSkGihsz5ofvjDJe07hAGC5pVm0/edit?tab=t.0)
 
 ### Developer Documentation
-[Developer Guide](https://docs.google.com/document/d/14J1EzREBiGWFm7s0mDv4Xl-arWvJFn0pm5AYJfUlh_0/edit?tab=t.0#heading=h.l1ejxsbujjuj)
+[Developer Documentation](https://docs.google.com/document/d/14J1EzREBiGWFm7s0mDv4Xl-arWvJFn0pm5AYJfUlh_0/edit?tab=t.0#heading=h.l1ejxsbujjuj)
 
 ### Living Document
 [Chesster Document](https://docs.google.com/document/d/1vwO41rhAHU9qlyoL9fNLt6wjTwUivhy5ou2r9YIWVBE/edit?tab=t.0#heading=h.1ruhqhxj255p)
@@ -19,12 +19,36 @@ Allows users to upload their past chess data and then trains a chess bot with th
 ---
 
 ## Goals
-
 - Learn and replicate individual player playstyles
 - Enable users to play against a bot modeled after themselves
 - Help users identify weaknesses and mistakes they make
 
 ---
+
+## Completed Features and Functionality
+- **PGN Upload:**
+  The user uploads a PGN file containing their chess games.
+
+- **PGN Cleaning and Game Processing:**
+  Our system removes incomplete or invalid games, including format standardization. Games are then converted into a structured format for our training.
+
+- **Local Data Storage:**
+  Board states for each user are saved in local storagein a database on the backend so that each bot can be trained on a dataset unique to each user.
+
+- **Style Learning:**
+  Chesster analyzes and mimics one’s playstyle patterns such as opening plays, common moves, move preferences, and game progression habits. In normal mode, training can take upwards of 1 day depending on hardware. Use *Quick Train* mode to train a less accurate model in 20-25 minutes.
+
+- **Training Output & Model Evaluation:**
+  View the progress of the bot you're training. Also displays the policy and value accuracy of the bot during training.
+
+- **Play Against a Bot:**
+  Users can choose to play against their personalized chess bot or a pre-trained model!
+
+- **Cross-Platform:**
+  Chesster was built using Docker and Electron, and runs on Windows, MacOS, and Linux machines.
+
+- **Accessibility:**
+  Each page of the app has semantic labels, uses proper heading structure, and can be navigated with a Screen Reader using only keyboard commands.
 
 ## How It Works
 
@@ -57,8 +81,8 @@ AI was used for configuration files and UI formatting for this project. We also 
 ---
 
 ## Release Tags
-**Beta Release Tag:** beta-release
+**Final Release Tag:** final-release
 
 **Gamma Release Tag:** gamma-release-late
 
-**Final Release Tag:** final-release
+**Beta Release Tag:** beta-release

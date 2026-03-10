@@ -58,5 +58,7 @@ AI was used for configuration files and UI formatting for this project. We also 
 
 ## Release Tags
 **Beta Release Tag:** beta-release
+
 **Gamma Release Tag:** gamma-release-late
+
 **Final Release Tag:** final-release

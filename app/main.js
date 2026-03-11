@@ -535,41 +535,67 @@ function engineReadUntil(pred, timeout = 10000) {
   });
 }
 
-async function loadEngine(weightsPath) {
-  if (engineProc) { engineProc.kill(); engineProc = null; engineReady = false; }
+const ENGINE_LOAD_MAX_RETRIES = 3;
+const ENGINE_LOAD_RETRY_DELAY_MS = 500;
 
+async function loadEngine(weightsPath) {
   const lc0 = getBinPath('lc0', BIN_DIR);
   if (!lc0) throw new Error('lc0 binary not found.');
 
-  engineBuffer = '';
-  engineQueue = [];
-
-  engineProc = spawn(lc0, ['-w', weightsPath], {
-    stdio: ['pipe', 'pipe', 'pipe']
-  });
-
-  engineProc.stdout.on('data', chunk => {
-    engineBuffer += chunk.toString();
-    const lines = engineBuffer.split('\n');
-    engineBuffer = lines.pop();
-    for (const line of lines) {
-      const t = line.trim();
-      if (t && engineQueue.length) engineQueue.shift()(t);
+  let lastErr;
+  for (let attempt = 1; attempt <= ENGINE_LOAD_MAX_RETRIES; attempt++) {
+    if (engineProc) {
+      engineProc.kill();
+      engineProc = null;
+      engineReady = false;
     }
-  });
+    engineBuffer = '';
+    engineQueue = [];
+    engineStderr = '';
 
-  engineProc.stderr.on('data', d => {
-    engineStderr += d.toString();
-    console.error('[lc0 stderr]', d.toString().trim());
-  });
-  engineProc.on('close', () => { engineProc = null; engineReady = false; });
+    engineProc = spawn(lc0, ['-w', weightsPath], {
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
 
-  engineSend('uci');
-  await engineReadUntil(l => l === 'uciok', 10000);
-  engineSend('setoption name Nodes value 1');
-  engineSend('isready');
-  await engineReadUntil(l => l === 'readyok', 5000);
-  engineReady = true;
+    engineProc.stdout.on('data', chunk => {
+      engineBuffer += chunk.toString();
+      const lines = engineBuffer.split('\n');
+      engineBuffer = lines.pop();
+      for (const line of lines) {
+        const t = line.trim();
+        if (t && engineQueue.length) engineQueue.shift()(t);
+      }
+    });
+
+    engineProc.stderr.on('data', d => {
+      engineStderr += d.toString();
+      console.error('[lc0 stderr]', d.toString().trim());
+    });
+    engineProc.on('close', () => { engineProc = null; engineReady = false; });
+
+    try {
+      engineSend('uci');
+      await engineReadUntil(l => l === 'uciok', 10000);
+      engineSend('setoption name Nodes value 1');
+      engineSend('isready');
+      await engineReadUntil(l => l === 'readyok', 5000);
+      engineReady = true;
+      return;
+    } catch (err) {
+      lastErr = err;
+      if (engineProc) {
+        engineProc.kill();
+        engineProc = null;
+        engineReady = false;
+      }
+      if (attempt < ENGINE_LOAD_MAX_RETRIES) {
+        await new Promise(r => setTimeout(r, ENGINE_LOAD_RETRY_DELAY_MS));
+      } else {
+        throw lastErr;
+      }
+    }
+  }
+  throw lastErr;
 }
 
 async function getEngineMove(fen) {

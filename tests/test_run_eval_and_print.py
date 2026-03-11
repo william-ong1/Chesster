@@ -1,5 +1,5 @@
-"""Tests for run_eval_and_print.py (maia-individual/3-analysis) evaluation logic."""
-# pylint: disable=redefined-outer-name
+"""Tests for run_eval_and_print (maia 3-analysis) evaluation logic."""
+# pylint: disable=redefined-outer-name,line-too-long,wrong-import-position
 
 import bz2
 import csv
@@ -60,7 +60,7 @@ class TestRunEvalAndPrint(TestCase):
             csv_path.write_bytes(b"dummy")
             # Only white - so we only process white and don't need eval_black
 
-            # Pre-create eval output (as if prediction_generator had run)
+            # Pre-create eval output (as if prediction_generator ran)
             eval_data = create_eval_csv([True, True, True, False])
             (session_dir / "eval_white.csv.bz2").write_bytes(eval_data)
 
@@ -91,9 +91,8 @@ class TestRunEvalAndPrint(TestCase):
             (session_dir / username / "csvs" / "test_black.csv.bz2"
              ).write_bytes(b"dummy")
 
-            (session_dir / "eval_white.csv.bz2").write_bytes(
-                create_eval_csv([True, False, True, False])
-            )
+            white_data = create_eval_csv([True, False, True, False])
+            (session_dir / "eval_white.csv.bz2").write_bytes(white_data)
             (session_dir / "eval_black.csv.bz2").write_bytes(
                 create_eval_csv([True, True, True])
             )
@@ -114,7 +113,7 @@ class TestRunEvalAndPrint(TestCase):
             self.assertIn("Overall test accuracy: 71.43%", out)
 
     def test_skips_missing_test_csv(self):
-        """When no test CSVs exist, prints skip message to stderr."""
+        """When no test CSVs exist, prints skip to stderr."""
         with tempfile.TemporaryDirectory() as tmp:
             session_dir = Path(tmp)
             username = "nobody"

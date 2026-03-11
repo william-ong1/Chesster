@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Convert PGN file to CSV for prediction_generator evaluation."""
+# pylint: disable=wrong-import-position
 
 import argparse
 import bz2
@@ -7,14 +8,17 @@ import os
 import sys
 
 # Ensure backend is importable when run from 1-data_generation
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_here = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(_here))
 
 import backend
 from backend.pgn_to_csv import gameToCSVlines, full_csv_header
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert PGN to CSV for evaluation')
+    parser = argparse.ArgumentParser(
+        description='Convert PGN to CSV for evaluation'
+    )
     parser.add_argument('input', help='Input PGN file (.pgn or .pgn.bz2)')
     parser.add_argument('output', help='Output CSV file (.csv or .csv.bz2)')
     args = parser.parse_args()
@@ -35,8 +39,8 @@ def main():
                 for line in lines:
                     f.write(line + '\n')
                 count += 1
-            except Exception as e:
-                backend.printWithDate(f"Skipping game: {e}")
+            except Exception as exc:  # pylint: disable=broad-except
+                backend.printWithDate(f"Skipping game: {exc}")
                 continue
     backend.printWithDate(f"Wrote {count} games to {args.output}")
 

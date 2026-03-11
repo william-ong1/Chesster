@@ -127,7 +127,12 @@ def clean_pgn(input_path, output_path, min_games=0):
     return len(games)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
+    class _ExitCodeOneArgumentParser(argparse.ArgumentParser):
+        def error(self, message):
+            self.print_usage(sys.stderr)
+            self.exit(1, f"{self.prog}: error: {message}\n")
+
+    parser = _ExitCodeOneArgumentParser(
         description="Preprocess a PGN for maia-individual compatibility."
     )
     parser.add_argument("input_path", help="input PGN path")

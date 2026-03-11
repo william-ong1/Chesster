@@ -7,17 +7,19 @@ Usage: python clean_pgn.py input.pgn output.pgn
 """
 import re
 import sys
+import argparse
 
 def clean_pgn(input_path, output_path, min_games=0):
     """
     Cleans a PGN file and writes the cleaned output.
 
-    If min_games > 0, raises ValueError when fewer than min_games games are found.
+    If min_games > 0, raises ValueError when fewer than min_games games
+    are found.
     Returns the number of cleaned games written.
     """
     try:
-        with open(input_path, "r", encoding="utf-8") as file:
-            content = file.read()
+        with open(input_path, "r", encoding="utf-8") as in_file:
+            content = in_file.read()
     except FileNotFoundError:
         print(f"Error: The file {input_path} was not found.")
         return 0
@@ -41,8 +43,8 @@ def clean_pgn(input_path, output_path, min_games=0):
                 "Your PGN has 0 games (file is empty)."
             )
         try:
-            with open(output_path, "w", encoding="utf-8") as f:
-                f.write("")
+            with open(output_path, "w", encoding="utf-8") as out_file:
+                out_file.write("")
         except FileNotFoundError:
             print(f"Error: The file {output_path} was not found.")
             return 0
@@ -96,19 +98,18 @@ def clean_pgn(input_path, output_path, min_games=0):
             if headers and moves:
                 games.append("\n".join(headers) + "\n\n" + moves + "\n")
 
-    fixed = games
-    if min_games and min_games > 0 and len(fixed) < min_games:
+    if min_games and min_games > 0 and len(games) < min_games:
         raise ValueError(
             f"At least {min_games} games are required. "
-            f"Your PGN has {len(fixed)} game(s)."
+            f"Your PGN has {len(games)} game(s)."
         )
 
-    result = "\n".join(fixed)
+    result = "\n".join(games)
     result = re.sub(r"\n{2,}", "\n\n", result)
 
     try:
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(result)
+        with open(output_path, "w", encoding="utf-8") as out_file:
+            out_file.write(result)
     except FileNotFoundError:
         print(f"Error: The file {output_path} was not found.")
         return 0
@@ -122,17 +123,15 @@ def clean_pgn(input_path, output_path, min_games=0):
         print(f"An unexpected error occurred: {err}")
         return 0
 
-    print(f"Cleaned {len(fixed)} games -> {output_path}")
-    return len(fixed)
+    print(f"Cleaned {len(games)} games -> {output_path}")
+    return len(games)
 
 if __name__ == "__main__":
-    import argparse
-
     parser = argparse.ArgumentParser(
         description="Preprocess a PGN for maia-individual compatibility."
     )
-    parser.add_argument("input", help="input PGN path")
-    parser.add_argument("output", help="output PGN path")
+    parser.add_argument("input_path", help="input PGN path")
+    parser.add_argument("output_path", help="output PGN path")
     parser.add_argument(
         "--min-games",
         type=int,
@@ -142,7 +141,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        clean_pgn(args.input, args.output, min_games=args.min_games)
+        clean_pgn(args.input_path, args.output_path, min_games=args.min_games)
     except ValueError as err:
         print(f"Error: {err}", file=sys.stderr)
         sys.exit(1)

@@ -238,6 +238,7 @@ function runTrainingPipeline(event, { pgnPath, username, userElo, quickTest }) {
 
     const step1 = spawn(py, [
       path.join(SCRIPTS_DIR, 'clean_pgn.py'),
+      '--min-games', '10',
       pgnPath,
       cleanedPgn
     ]);

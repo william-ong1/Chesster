@@ -82,7 +82,7 @@ AI was used for configuration files and UI formatting for this project. We also 
 ---
 
 ## Release Tags
-**Final Release Tag:** final-release
+**Final Release Tag:** final-release-code
 
 **Gamma Release Tag:** gamma-release-late
 

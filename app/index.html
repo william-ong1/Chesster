@@ -46,15 +46,15 @@
 
     <div class="sidebar__nav">
       <button class="nav-btn nav-btn--active" data-view="train">
-        <span class="nav-btn__icon">⚗</span>
+        <span class="nav-btn__icon" aria-hidden="true">⚗</span>
         <span class="nav-btn__label">Train</span>
       </button>
       <button class="nav-btn" data-view="play">
-        <span class="nav-btn__icon">♟</span>
+        <span class="nav-btn__icon" aria-hidden="true">♟</span>
         <span class="nav-btn__label">Play</span>
       </button>
       <button class="nav-btn" data-view="system">
-        <span class="nav-btn__icon">◈</span>
+        <span class="nav-btn__icon" aria-hidden="true">◈</span>
         <span class="nav-btn__label">System</span>
       </button>
     </div>
@@ -78,38 +78,38 @@
         <!-- Left: inputs -->
         <div class="train-inputs">
           <!-- PGN Upload -->
-          <div class="card" id="dropZone">
+          <section class="card" id="dropZone" aria-label="Upload PGN File">
             <div class="card__inner drop-area" id="dropArea">
-              <div class="drop-icon">⬆</div>
+              <div class="drop-icon" aria-hidden="true">⬆</div>
               <div class="drop-title">Drop PGN file here</div>
               <div class="drop-sub">or <button class="link-btn" id="browseBtn">browse files</button></div>
-              <input type="file" id="fileInput" accept=".pgn" style="display:none" />
+              <input type="file" id="fileInput" accept=".pgn" style="display:none" aria-live="polite"/>
             </div>
             <div class="pgn-selected" id="pgnSelected" style="display:none">
-              <span class="pgn-icon">♟</span>
+              <span class="pgn-icon" aria-hidden="true">♟</span>
               <div class="pgn-info">
                 <div class="pgn-name" id="pgnName">—</div>
                 <div class="pgn-path" id="pgnPath">—</div>
               </div>
-              <button class="icon-btn" id="clearPgnBtn">✕</button>
+              <button class="icon-btn" id="clearPgnBtn" aria-label="Remove PGN File" aria-live="polite">✕</button>
             </div>
-          </div>
+          </section>
 
           <!-- Username -->
-          <div class="field">
+          <section class="field" aria-label="Enter Chess Username">
             <label class="field__label" for="usernameInput">Chess Username</label>
             <input class="field__input" id="usernameInput" type="text"
-              placeholder="e.g. MagnusCarlsen" autocomplete="off" spellcheck="false" />
+              placeholder="e.g. MagnusCarlsen" autocomplete="off" spellcheck="false"/>
             <span class="field__hint">Must match exactly as it appears in your PGN file</span>
-          </div>
+          </section>
 
           <!-- ELO -->
-          <div class="field">
+          <section class="field" aria-label="Enter Chess Rating">
             <label class="field__label" for="eloInput">Your Rating</label>
             <input class="field__input" id="eloInput" type="number"
               placeholder="e.g. 1450" min="100" max="3000" />
             <div class="elo-result" id="eloResult"></div>
-          </div>
+          </section>
 
           <div class="field quick-test-wrap">
             <label class="quick-test-label">
@@ -120,51 +120,51 @@
           </div>
 
           <button class="btn btn--primary" id="startTrainBtn" disabled>
-            <span class="btn__icon">⚗</span> Begin Training
+            <span class="btn__icon" aria-hidden="true">⚗</span> Begin Training
           </button>
 
           <!-- Training progress bar (hidden until training starts) -->
-          <div class="progress-wrap" id="progressWrap" style="display:none">
+          <section class="progress-wrap" id="progressWrap" style="display:none" aria-label="Training Progress">
             <div class="progress-header">
               <span class="progress-step-detail" id="progressStepDetail"></span>
               <span class="progress-meta">
-                <span class="progress-pct" id="progressPct">0%</span>
+                <span class="progress-pct" id="progressPct" aria-live="polite">0%</span>
                 <span class="progress-eta" id="progressEta"></span>
               </span>
             </div>
-            <div class="progress-track">
+            <div class="progress-track" aria-hidden="true">
               <div class="progress-bar" id="progressBar"></div>
             </div>
-          </div>
+          </section>
         </div>
 
         <!-- Right: terminal output -->
-        <div class="card terminal-card">
+        <section class="card terminal-card" aria-label="Training Output Terminal">
           <div class="terminal-header">
-            <span class="terminal-dot terminal-dot--red"></span>
-            <span class="terminal-dot terminal-dot--yellow"></span>
-            <span class="terminal-dot terminal-dot--green"></span>
-            <span class="terminal-title">Training Output</span>
-            <button class="terminal-copy-btn" id="terminalCopyBtn">Copy</button>
+            <span class="terminal-dot terminal-dot--red" aria-hidden="true"></span>
+            <span class="terminal-dot terminal-dot--yellow" aria-hidden="true"></span>
+            <span class="terminal-dot terminal-dot--green" aria-hidden="true"></span>
+            <h2 class="terminal-title">Training Output</h2>
+            <button class="terminal-copy-btn" id="terminalCopyBtn" aria-live="polite">Copy</button>
             <!-- Collapse / expand toggle -->
             <button class="terminal-toggle" id="terminalToggle">▶ Show terminal</button>
           </div>
           <div class="terminal-body" id="terminalBody">
             <div class="terminal-placeholder">Output will appear here when training begins...</div>
           </div>
-        </div>
+        </section>
       </div>
 
       <!-- Training status banner -->
-      <div class="status-banner" id="trainingBanner" style="display:none">
-        <div class="status-banner__spinner"></div>
+      <section class="status-banner" id="trainingBanner" style="display:none" aria-label="Training Status">
+        <div class="status-banner__spinner" aria-hidden="true"></div>
         <div class="status-banner__content">
-          <div class="status-banner__step" id="bannerStep">Preparing...</div>
+          <p class="status-banner__step" id="bannerStep">Preparing...</p>
           <div class="status-banner__detail" id="bannerDetail"></div>
-          <div class="status-banner__msg" id="bannerMsg">Please wait</div>
+          <p class="status-banner__msg" id="bannerMsg">Please wait</p>
           <div class="status-banner__eta" id="bannerEta"></div>
         </div>
-      </div>
+      </section>
     </section>
 
     <!-- ── PLAY VIEW ──────────────────────────────────────────────── -->
@@ -177,14 +177,14 @@
       <div class="play-layout">
         <!-- Controls -->
         <div class="play-sidebar">
-          <div class="card">
+          <section class="card" aria-label="Model Selection and Game Controls">
             <div class="field">
               <label class="field__label">Trained Model</label>
               <select class="field__input" id="modelSelect">
                 <option value="">select a model</option>
               </select>
             </div>
-            <br>
+            <br aria-hidden="true">
             <div class="field">
               <label class="field__label">Play As</label>
               <div class="side-toggle">
@@ -196,42 +196,42 @@
                 </button>
               </div>
             </div>
-            <br>
+            <br aria-hidden="true">
             <button class="btn btn--primary" id="loadEngineBtn">
               Load Engine
             </button>
             <button class="btn btn--ghost" id="newGameBtn" disabled>
               New Game
             </button>
-            <button class="btn btn--ghost" id="flipBoardBtn">
+            <button class="btn btn--ghost" id="flipBoardBtn" aria-label="Flip Board">
               ⇅ Flip Board
             </button>
-          </div>
+          </section>
 
           <!-- Move log -->
-          <div class="card move-log-card">
-            <div class="move-log-header">Move Log</div>
+          <section class="card move-log-card" aria-labelledby="moveLogHeader">
+            <p class="move-log-header" id="moveLogHeader">Move Log</p>
             <div class="move-log" id="moveLog"></div>
-          </div>
+          </section>
 
           <!-- Game status -->
           <div class="game-status" id="gameStatus"></div>
         </div>
 
         <!-- Chess board -->
-        <div class="board-container">
+        <section class="board-container" aria-label="Chess Board">
           <div class="board-wrap">
             <div class="board-coords board-coords--files" id="fileCoords"></div>
             <div class="board-coords board-coords--ranks" id="rankCoords"></div>
             <div class="board" id="chessBoard"></div>
           </div>
-        </div>
+        </section>
       </div>
 
       <!-- Promotion dialog -->
       <div class="promotion-overlay" id="promotionOverlay" style="display:none">
         <div class="promotion-dialog">
-          <div class="promotion-title">Choose promotion piece</div>
+          <p class="promotion-title">Choose promotion piece</p>
           <div class="promotion-pieces" id="promotionPieces"></div>
         </div>
       </div>
@@ -245,7 +245,7 @@
       </div>
 
       <div class="system-grid" id="systemGrid">
-        <div class="check-placeholder">Running diagnostics...</div>
+        <p class="check-placeholder">Running diagnostics...</p>
       </div>
 
       <button class="btn btn--ghost" id="recheckBtn" style="margin-top:24px">

@@ -11,6 +11,8 @@
 </head>
 <body>
 
+<div class="title-drag-region" aria-hidden="true"></div>
+
 <div class="setup-overlay" id="setupOverlay">
   <div class="setup-dialog">
     <div class="sidebar__crown" style="font-size:48px;text-align:center"><img src="ChessterLogo.png" alt="" /></div>
@@ -109,16 +111,30 @@
             <div class="elo-result" id="eloResult"></div>
           </section>
 
+          <div class="field quick-test-wrap">
+            <label class="quick-test-label">
+              <input type="checkbox" id="quickTestCheckbox" />
+              <span>Quick train</span>
+            </label>
+            <span class="field__hint">Fast training; imitation quality may be poor.</span>
+          </div>
+
           <button class="btn btn--primary" id="startTrainBtn" disabled>
             <span class="btn__icon" aria-hidden="true">⚗</span> Begin Training
           </button>
 
           <!-- Training progress bar (hidden until training starts) -->
           <section class="progress-wrap" id="progressWrap" style="display:none" aria-label="Training Progress">
+            <div class="progress-header">
+              <span class="progress-step-detail" id="progressStepDetail"></span>
+              <span class="progress-meta">
+                <span class="progress-pct" id="progressPct" aria-live="polite">0%</span>
+                <span class="progress-eta" id="progressEta"></span>
+              </span>
+            </div>
             <div class="progress-track" aria-hidden="true">
               <div class="progress-bar" id="progressBar"></div>
             </div>
-            <span class="progress-pct" id="progressPct" aria-live="polite">0%</span>
           </section>
         </div>
 
@@ -144,7 +160,9 @@
         <div class="status-banner__spinner" aria-hidden="true"></div>
         <div class="status-banner__content">
           <p class="status-banner__step" id="bannerStep">Preparing...</p>
+          <div class="status-banner__detail" id="bannerDetail"></div>
           <p class="status-banner__msg" id="bannerMsg">Please wait</p>
+          <div class="status-banner__eta" id="bannerEta"></div>
         </div>
       </section>
     </section>

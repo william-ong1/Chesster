@@ -144,13 +144,29 @@ function updateTrainBtn() {
 
 // ─── Progress bar ─────────────────────────────────────────────────────────────
 
-function setProgressBar(percent) {
+function formatEta(seconds) {
+  if (seconds == null || seconds <= 0) return '';
+  if (seconds < 60) return `~${seconds}s remaining`;
+  if (seconds < 3600) return `~${Math.round(seconds / 60)} min remaining`;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.round((seconds % 3600) / 60);
+  if (m === 0) return `~${h} hr${h > 1 ? 's' : ''} remaining`;
+  return `~${h}h ${m}m remaining`;
+}
+
+function setProgressBar(percent, options = {}) {
   const bar = document.getElementById('progressBar');
   const pct = document.getElementById('progressPct');
+  const stepDetail = document.getElementById('progressStepDetail');
+  const etaEl = document.getElementById('progressEta');
   if (!bar) return;
   const clamped = Math.max(0, Math.min(100, percent));
   bar.style.width = `${clamped}%`;
   if (pct) pct.textContent = `${clamped}%`;
+  if (stepDetail && options.stepDetail != null) stepDetail.textContent = options.stepDetail;
+  if (etaEl) etaEl.textContent = formatEta(options.etaSeconds);
+  if (options.heartbeat && bar) bar.classList.add('progress-bar--active');
+  else if (bar) bar.classList.remove('progress-bar--active');
 }
 
 function showProgressBar(visible) {
@@ -190,30 +206,33 @@ function showProgressBar(visible) {
 
 document.getElementById('startTrainBtn').addEventListener('click', async () => {
   const username = document.getElementById('usernameInput').value.trim();
-  const userElo = parseInt(document.getElementById('eloInput').value, 10);
+  const userElo  = parseInt(document.getElementById('eloInput').value, 10);
+  const quickTest = document.getElementById('quickTestCheckbox').checked;
 
   isTraining = true;
   updateTrainBtn();
   clearTerminal();
   showProgressBar(true);
-  setProgressBar(0);
+  setProgressBar(0, { stepDetail: 'Initializing...', etaSeconds: null });
+  document.getElementById('progressStepDetail').textContent = 'Initializing...';
+  document.getElementById('progressEta').textContent = '';
 
   document.getElementById('trainingBanner').style.display = 'flex';
 
   window.api.removeListeners();
 
-  window.api.onProgress(({step, message, percent, type}) => {
-    // Always update the terminal with every line
-    appendTerminal(step, message);
+  window.api.onProgress(({ step, message, percent, type, stepDetail, etaSeconds, heartbeat }) => {
+    // Update terminal with log lines, skip heartbeat/keep-alive messages
+    if (!heartbeat) appendTerminal(step, message);
 
     // Only update banner headline for 'status' type messages
-    if (type === 'status' || type == null) {
-      updateBanner(step, message);
+    if (type === 'status' || type == null || heartbeat) {
+      updateBanner(step, message, { stepDetail, etaSeconds });
     }
 
     // Update progress bar whenever a percent value is provided
     if (percent !== null && percent !== undefined) {
-      setProgressBar(percent);
+      setProgressBar(percent, { stepDetail, etaSeconds, heartbeat });
     }
   });
 
@@ -225,10 +244,10 @@ document.getElementById('startTrainBtn').addEventListener('click', async () => {
     showProgressBar(false);
   });
 
-  await window.api.startTraining({pgnPath: selectedPgnPath, username, userElo});
+  await window.api.startTraining({ pgnPath: selectedPgnPath, username, userElo, quickTest });
 });
 
-function updateBanner(step, message) {
+function updateBanner(step, message, options = {}) {
   const stepLabels = {
     clean: 'Step 1 — Cleaning PGN',
     data: 'Step 2 — Generating Training Data',
@@ -240,10 +259,22 @@ function updateBanner(step, message) {
   document.getElementById('bannerStep').textContent = stepLabels[step] || step;
   document.getElementById('bannerMsg').textContent = message.slice(0, 120);
 
+  const detailEl = document.getElementById('bannerDetail');
+  const etaEl = document.getElementById('bannerEta');
+  if (detailEl) detailEl.textContent = options.stepDetail || '';
+  if (etaEl) etaEl.textContent = formatEta(options.etaSeconds);
+  if (options.stepDetail || options.etaSeconds) {
+    detailEl.style.display = '';
+    etaEl.style.display = '';
+  } else {
+    detailEl.style.display = 'none';
+    etaEl.style.display = 'none';
+  }
+
   if (step === 'done') {
     isTraining = false;
     updateTrainBtn();
-    setProgressBar(100);
+    setProgressBar(100, { stepDetail: 'Complete', etaSeconds: 0 });
     setTimeout(() => {
       document.getElementById('trainingBanner').style.display = 'none';
       showProgressBar(false);

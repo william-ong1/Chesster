@@ -129,8 +129,10 @@ def clean_pgn(input_path, output_path, min_games=0):
 if __name__ == "__main__":
     class _ExitCodeOneArgumentParser(argparse.ArgumentParser):
         def error(self, message):
-            self.print_usage(sys.stderr)
-            self.exit(1, f"{self.prog}: error: {message}\n")
+            print("Usage:", file=sys.stdout)
+            self.print_usage(sys.stdout)
+            print(f"{self.prog}: error: {message}", file=sys.stderr)
+            raise SystemExit(1)
 
     parser = _ExitCodeOneArgumentParser(
         description="Preprocess a PGN for maia-individual compatibility."

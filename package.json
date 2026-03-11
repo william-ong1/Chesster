@@ -87,5 +87,8 @@
   "bugs": {
     "url": "https://github.com/william-ong1/Chesster/issues"
   },
-  "homepage": "https://github.com/william-ong1/Chesster#readme"
+  "homepage": "https://github.com/william-ong1/Chesster#readme",
+  "directories": {
+    "doc": "docs"
+  }
 }

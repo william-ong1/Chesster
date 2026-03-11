@@ -3,21 +3,31 @@
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let selectedPgnPath = null;
-let isTraining      = false;
-let engineLoaded    = false;
-let playerSide      = 'white';
-let boardFlipped    = false;
-let game            = null;
-let selectedSquare  = null;
-let legalMoves      = [];
-let lastMove        = null;
-let engineThinking  = false;
+let isTraining = false;
+let engineLoaded = false;
+let playerSide = 'white';
+let boardFlipped = false;
+let game = null;
+let selectedSquare = null;
+let legalMoves = [];
+let lastMove = null;
+let engineThinking = false;
 
 // ─── Chess piece unicode ───────────────────────────────────────────────────────
 
 const PIECES = {
-  wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
-  bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟'
+  wK: '♔',
+  wQ: '♕',
+  wR: '♖',
+  wB: '♗',
+  wN: '♘',
+  wP: '♙',
+  bK: '♚',
+  bQ: '♛',
+  bR: '♜',
+  bB: '♝',
+  bN: '♞',
+  bP: '♟',
 };
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
@@ -25,32 +35,41 @@ const PIECES = {
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const view = btn.dataset.view;
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-btn--active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('view--active'));
+    document
+      .querySelectorAll('.nav-btn')
+      .forEach(b => b.classList.remove('nav-btn--active'));
+    document
+      .querySelectorAll('.view')
+      .forEach(v => v.classList.remove('view--active'));
     btn.classList.add('nav-btn--active');
     document.getElementById(`view-${view}`).classList.add('view--active');
     if (view === 'system') runSystemCheck();
-    if (view === 'play')   refreshModelList();
+    if (view === 'play') refreshModelList();
   });
 });
 
 // ─── Train View ───────────────────────────────────────────────────────────────
 
 // PGN drag-drop
-const dropArea  = document.getElementById('dropArea');
+const dropArea = document.getElementById('dropArea');
 const fileInput = document.getElementById('fileInput');
 
-document.getElementById('browseBtn').addEventListener('click', () => fileInput.click());
+document
+  .getElementById('browseBtn')
+  .addEventListener('click', () => fileInput.click());
 
 fileInput.addEventListener('change', () => {
-  if (fileInput.files[0]) setPgn(fileInput.files[0].path || fileInput.files[0].name);
+  if (fileInput.files[0])
+    setPgn(fileInput.files[0].path || fileInput.files[0].name);
 });
 
 dropArea.addEventListener('dragover', e => {
   e.preventDefault();
   dropArea.classList.add('drop-area--over');
 });
-dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drop-area--over'));
+dropArea.addEventListener('dragleave', () =>
+  dropArea.classList.remove('drop-area--over'),
+);
 dropArea.addEventListener('drop', e => {
   e.preventDefault();
   dropArea.classList.remove('drop-area--over');
@@ -67,7 +86,7 @@ dropArea.addEventListener('click', async e => {
 function setPgn(p) {
   selectedPgnPath = p;
   const name = p.split('/').pop().split('\\').pop();
-  document.getElementById('dropArea').style.display    = 'none';
+  document.getElementById('dropArea').style.display = 'none';
   document.getElementById('pgnSelected').style.display = 'flex';
   document.getElementById('pgnName').textContent = name;
   document.getElementById('pgnPath').textContent = p;
@@ -77,7 +96,7 @@ function setPgn(p) {
 document.getElementById('clearPgnBtn').addEventListener('click', () => {
   selectedPgnPath = null;
   fileInput.value = '';
-  document.getElementById('dropArea').style.display    = 'flex';
+  document.getElementById('dropArea').style.display = 'flex';
   document.getElementById('pgnSelected').style.display = 'none';
   updateTrainBtn();
 });
@@ -86,31 +105,41 @@ document.getElementById('clearPgnBtn').addEventListener('click', () => {
 const MAIA_ELOS = [1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900];
 
 function closestElo(n) {
-  return MAIA_ELOS.reduce((a, b) => Math.abs(b - n) < Math.abs(a - n) ? b : a);
+  return MAIA_ELOS.reduce((a, b) =>
+    Math.abs(b - n) < Math.abs(a - n) ? b : a,
+  );
 }
 
 document.getElementById('eloInput').addEventListener('input', async () => {
   const val = parseInt(document.getElementById('eloInput').value, 10);
-  const el  = document.getElementById('eloResult');
+  const el = document.getElementById('eloResult');
   if (!val || val < 100 || val > 3000) {
     el.textContent = '';
     updateTrainBtn();
     return;
   }
-  const closest  = closestElo(val);
-  const { exists } = await window.api.checkModel(val);
-  el.textContent  = `→ maia-${closest}.pb.gz ${exists ? '✓' : '✗ (not found in models/)'}`;
-  el.style.color  = exists ? '#a78bfa' : '#f87171';
+  const closest = closestElo(val);
+  const {exists} = await window.api.checkModel(val);
+  el.textContent = `→ maia-${closest}.pb.gz ${exists ? '✓' : '✗ (not found in models/)'}`;
+  el.style.color = exists ? '#a78bfa' : '#f87171';
   updateTrainBtn();
 });
 
-document.getElementById('usernameInput').addEventListener('input', updateTrainBtn);
+document
+  .getElementById('usernameInput')
+  .addEventListener('input', updateTrainBtn);
 
 function updateTrainBtn() {
   const hasFile = !!selectedPgnPath;
-  const hasUser = document.getElementById('usernameInput').value.trim().length > 0;
-  const hasElo  = parseInt(document.getElementById('eloInput').value, 10) >= 100;
-  document.getElementById('startTrainBtn').disabled = !(hasFile && hasUser && hasElo && !isTraining);
+  const hasUser =
+    document.getElementById('usernameInput').value.trim().length > 0;
+  const hasElo = parseInt(document.getElementById('eloInput').value, 10) >= 100;
+  document.getElementById('startTrainBtn').disabled = !(
+    hasFile &&
+    hasUser &&
+    hasElo &&
+    !isTraining
+  );
 }
 
 // ─── Progress bar ─────────────────────────────────────────────────────────────
@@ -149,17 +178,27 @@ function showProgressBar(visible) {
 
 (function initTerminalToggle() {
   const toggle = document.getElementById('terminalToggle');
-  const body   = document.getElementById('terminalBody');
+  const body = document.getElementById('terminalBody');
+  const showTerminalLabel = 'Show Terminal';
+  const hideTerminalLabel = 'Hide Terminal';
   if (!toggle || !body) return;
 
   // Start collapsed
   body.classList.add('terminal-body--collapsed');
-  toggle.textContent = '▶ Show terminal';
+  toggle.textContent = `▶ ${showTerminalLabel}`;
+  toggle.ariaLabel = showTerminalLabel; // Accessibility: exclude icon from label
+  toggle.ariaExpanded = 'false'; // Default for screen reader accessibility
 
   toggle.addEventListener('click', () => {
     const collapsed = body.classList.toggle('terminal-body--collapsed');
-    toggle.textContent = collapsed ? '▶ Show terminal' : '▼ Hide terminal';
+    toggle.textContent = collapsed
+      ? `▶ ${showTerminalLabel}`
+      : `▼ ${hideTerminalLabel}`;
     if (!collapsed) body.scrollTop = body.scrollHeight; // scroll to bottom when opening
+
+    // Accessibility
+    toggle.ariaLabel = collapsed ? showTerminalLabel : hideTerminalLabel;
+    toggle.ariaExpanded = collapsed ? 'false' : 'true';
   });
 })();
 
@@ -197,7 +236,7 @@ document.getElementById('startTrainBtn').addEventListener('click', async () => {
     }
   });
 
-  window.api.onError(({ message }) => {
+  window.api.onError(({message}) => {
     appendTerminal('error', message);
     updateBanner('error', 'Training failed');
     isTraining = false;
@@ -210,15 +249,15 @@ document.getElementById('startTrainBtn').addEventListener('click', async () => {
 
 function updateBanner(step, message, options = {}) {
   const stepLabels = {
-    clean:  'Step 1 — Cleaning PGN',
-    data:   'Step 2 — Generating Training Data',
+    clean: 'Step 1 — Cleaning PGN',
+    data: 'Step 2 — Generating Training Data',
     config: 'Step 2b — Building Config',
-    train:  'Step 3 — Training Neural Network',
-    done:   'Complete',
-    error:  'Error'
+    train: 'Step 3 — Training Neural Network',
+    done: 'Complete',
+    error: 'Error',
   };
   document.getElementById('bannerStep').textContent = stepLabels[step] || step;
-  document.getElementById('bannerMsg').textContent  = message.slice(0, 120);
+  document.getElementById('bannerMsg').textContent = message.slice(0, 120);
 
   const detailEl = document.getElementById('bannerDetail');
   const etaEl = document.getElementById('bannerEta');
@@ -266,14 +305,20 @@ function appendTerminal(step, message) {
 }
 
 document.getElementById('terminalCopyBtn').addEventListener('click', () => {
+  const btn = document.getElementById('terminalCopyBtn');
+  // btn.ariaLive = 'polite'; // Accessibility: Announce copy action to screen readers
   const body = document.getElementById('terminalBody');
   const text = Array.from(body.querySelectorAll('.terminal-line'))
     .map(el => el.textContent)
     .join('\n');
   navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('terminalCopyBtn');
+    // const btn = document.getElementById('terminalCopyBtn');
+    btn.ariaLive = 'polite';
     btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.ariaLive = 'off'; // Accessibility: don't announce when resetting the button text
+    }, 2000);
   });
 });
 
@@ -285,21 +330,29 @@ async function refreshModelList() {
   select.innerHTML = '<option value="">select a model</option>';
   models.forEach(m => {
     const opt = document.createElement('option');
-    opt.value       = m.path;
+    opt.value = m.path;
     opt.textContent = m.name;
     select.appendChild(opt);
   });
 }
 
 // Side selection
-document.getElementById('playWhiteBtn').addEventListener('click', () => setSide('white'));
-document.getElementById('playBlackBtn').addEventListener('click', () => setSide('black'));
+document
+  .getElementById('playWhiteBtn')
+  .addEventListener('click', () => setSide('white'));
+document
+  .getElementById('playBlackBtn')
+  .addEventListener('click', () => setSide('black'));
 
 function setSide(side) {
   playerSide = side;
   boardFlipped = side === 'black';
-  document.getElementById('playWhiteBtn').classList.toggle('side-btn--active', side === 'white');
-  document.getElementById('playBlackBtn').classList.toggle('side-btn--active', side === 'black');
+  document
+    .getElementById('playWhiteBtn')
+    .classList.toggle('side-btn--active', side === 'white');
+  document
+    .getElementById('playBlackBtn')
+    .classList.toggle('side-btn--active', side === 'black');
   if (game) renderBoard();
 }
 
@@ -310,7 +363,7 @@ document.getElementById('loadEngineBtn').addEventListener('click', async () => {
 
   const btn = document.getElementById('loadEngineBtn');
   btn.textContent = 'Loading...';
-  btn.disabled    = true;
+  btn.disabled = true;
 
   // Unload previous engine first
   await window.api.unloadEngine();
@@ -323,11 +376,13 @@ document.getElementById('loadEngineBtn').addEventListener('click', async () => {
     engineLoaded = true;
     btn.textContent = '✓ Engine Loaded';
     document.getElementById('newGameBtn').disabled = false;
-    document.getElementById('gameStatus').textContent = 'Engine ready. Start a new game.';
+    document.getElementById('gameStatus').textContent =
+      'Engine ready. Start a new game.';
   } else {
     btn.textContent = 'Load Engine';
-    btn.disabled    = false;
-    document.getElementById('gameStatus').textContent = `Error: ${result.error}`;
+    btn.disabled = false;
+    document.getElementById('gameStatus').textContent =
+      `Error: ${result.error}`;
   }
 });
 
@@ -336,7 +391,7 @@ document.getElementById('modelSelect').addEventListener('change', () => {
   engineLoaded = false;
   const btn = document.getElementById('loadEngineBtn');
   btn.textContent = 'Load Engine';
-  btn.disabled    = false;
+  btn.disabled = false;
   document.getElementById('newGameBtn').disabled = true;
   document.getElementById('gameStatus').textContent = '';
   window.api.unloadEngine();
@@ -344,11 +399,11 @@ document.getElementById('modelSelect').addEventListener('change', () => {
 
 // New game
 document.getElementById('newGameBtn').addEventListener('click', () => {
-  game          = new Chess();
+  game = new Chess();
   selectedSquare = null;
-  legalMoves    = [];
-  lastMove      = null;
-  boardFlipped  = playerSide === 'black';
+  legalMoves = [];
+  lastMove = null;
+  boardFlipped = playerSide === 'black';
 
   document.getElementById('moveLog').innerHTML = '';
   document.getElementById('gameStatus').textContent = '';
@@ -375,14 +430,18 @@ function renderBoard() {
   const board = document.getElementById('chessBoard');
   board.innerHTML = '';
 
-  const ranks = boardFlipped ? [0,1,2,3,4,5,6,7] : [7,6,5,4,3,2,1,0];
-  const files = boardFlipped ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+  const ranks = boardFlipped
+    ? [0, 1, 2, 3, 4, 5, 6, 7]
+    : [7, 6, 5, 4, 3, 2, 1, 0];
+  const files = boardFlipped
+    ? [7, 6, 5, 4, 3, 2, 1, 0]
+    : [0, 1, 2, 3, 4, 5, 6, 7];
 
   for (const rank of ranks) {
     for (const file of files) {
-      const sq    = squareName(file, rank);
+      const sq = squareName(file, rank);
       const isLight = (file + rank) % 2 !== 0;
-      const div   = document.createElement('div');
+      const div = document.createElement('div');
 
       div.className = `square square--${isLight ? 'light' : 'dark'}`;
       div.dataset.sq = sq;
@@ -392,7 +451,7 @@ function renderBoard() {
 
       if (lastMove) {
         if (lastMove.from === sq) div.classList.add('square--last-move-from');
-        if (lastMove.to   === sq) div.classList.add('square--last-move-to');
+        if (lastMove.to === sq) div.classList.add('square--last-move-to');
       }
 
       // Legal move dots
@@ -430,10 +489,10 @@ function squareName(file, rank) {
 }
 
 function findKing(color) {
-  for (const rank of ['1','2','3','4','5','6','7','8']) {
-    for (const file of ['a','b','c','d','e','f','g','h']) {
+  for (const rank of ['1', '2', '3', '4', '5', '6', '7', '8']) {
+    for (const file of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
       const sq = file + rank;
-      const p  = game.get(sq);
+      const p = game.get(sq);
       if (p && p.type === 'k' && p.color === color) return sq;
     }
   }
@@ -443,17 +502,21 @@ function findKing(color) {
 function renderEmptyBoard() {
   // Render starting position visually but non-interactive
   const tempGame = new Chess();
-  const board    = document.getElementById('chessBoard');
+  const board = document.getElementById('chessBoard');
   board.innerHTML = '';
 
-  const ranks = boardFlipped ? [0,1,2,3,4,5,6,7] : [7,6,5,4,3,2,1,0];
-  const files = boardFlipped ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+  const ranks = boardFlipped
+    ? [0, 1, 2, 3, 4, 5, 6, 7]
+    : [7, 6, 5, 4, 3, 2, 1, 0];
+  const files = boardFlipped
+    ? [7, 6, 5, 4, 3, 2, 1, 0]
+    : [0, 1, 2, 3, 4, 5, 6, 7];
 
   for (const rank of ranks) {
     for (const file of files) {
-      const sq      = squareName(file, rank);
+      const sq = squareName(file, rank);
       const isLight = (file + rank) % 2 !== 0;
-      const div     = document.createElement('div');
+      const div = document.createElement('div');
       div.className = `square square--${isLight ? 'light' : 'dark'}`;
       div.dataset.sq = sq;
 
@@ -485,10 +548,11 @@ function showNoGameTooltip(targetEl) {
   if (tooltipTimeout) clearTimeout(tooltipTimeout);
 
   const tip = document.createElement('div');
-  tip.className   = 'board-tooltip';
-  tip.textContent = game && game.game_over()
-    ? 'Game over — start a new game'
-    : 'No game is active — press New Game';
+  tip.className = 'board-tooltip';
+  tip.textContent =
+    game && game.game_over()
+      ? 'Game over — start a new game'
+      : 'No game is active — press New Game';
 
   targetEl.appendChild(tip);
   tooltipTimeout = setTimeout(() => tip.remove(), 2000);
@@ -496,11 +560,11 @@ function showNoGameTooltip(targetEl) {
 
 function renderCoords() {
   const files = boardFlipped
-    ? ['h','g','f','e','d','c','b','a']
-    : ['a','b','c','d','e','f','g','h'];
+    ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
+    : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   const ranks = boardFlipped
-    ? ['1','2','3','4','5','6','7','8']
-    : ['8','7','6','5','4','3','2','1'];
+    ? ['1', '2', '3', '4', '5', '6', '7', '8']
+    : ['8', '7', '6', '5', '4', '3', '2', '1'];
 
   const fileEl = document.getElementById('fileCoords');
   const rankEl = document.getElementById('rankCoords');
@@ -509,8 +573,14 @@ function renderCoords() {
 }
 
 function onSquareClick(sq) {
-  if (!game) { showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`)); return; }
-  if (game.game_over()) { showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`)); return; }
+  if (!game) {
+    showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`));
+    return;
+  }
+  if (game.game_over()) {
+    showNoGameTooltip(document.querySelector(`[data-sq="${sq}"]`));
+    return;
+  }
   if (engineThinking) return;
   const isPlayerTurn =
     (game.turn() === 'w' && playerSide === 'white') ||
@@ -539,7 +609,7 @@ function onSquareClick(sq) {
 }
 
 function getLegalMovesForSquare(sq) {
-  return game.moves({ square: sq, verbose: true }).map(m => m.to);
+  return game.moves({square: sq, verbose: true}).map(m => m.to);
 }
 
 function attemptMove(from, to) {
@@ -548,7 +618,10 @@ function attemptMove(from, to) {
   // Check for promotion
   if (piece && piece.type === 'p') {
     const toRank = parseInt(to[1], 10);
-    if ((piece.color === 'w' && toRank === 8) || (piece.color === 'b' && toRank === 1)) {
+    if (
+      (piece.color === 'w' && toRank === 8) ||
+      (piece.color === 'b' && toRank === 1)
+    ) {
       showPromotion(from, to);
       return;
     }
@@ -558,15 +631,15 @@ function attemptMove(from, to) {
 }
 
 function applyMove(from, to, promotion = null) {
-  const moveObj = { from, to };
+  const moveObj = {from, to};
   if (promotion) moveObj.promotion = promotion;
 
   const result = game.move(moveObj);
   if (!result) return;
 
-  lastMove      = { from, to };
+  lastMove = {from, to};
   selectedSquare = null;
-  legalMoves    = [];
+  legalMoves = [];
 
   addMoveToLog(result);
   renderBoard();
@@ -588,7 +661,8 @@ async function doEngineMove() {
   engineThinking = false;
 
   if (result.error) {
-    document.getElementById('gameStatus').textContent = `Engine error: ${result.error}`;
+    document.getElementById('gameStatus').textContent =
+      `Engine error: ${result.error}`;
     return;
   }
 
@@ -596,13 +670,13 @@ async function doEngineMove() {
   if (!move || move === '(none)') return;
 
   const from = move.slice(0, 2);
-  const to   = move.slice(2, 4);
+  const to = move.slice(2, 4);
   const promo = move.length > 4 ? move[4] : null;
 
-  const applied = game.move({ from, to, promotion: promo || undefined });
+  const applied = game.move({from, to, promotion: promo || undefined});
   if (!applied) return;
 
-  lastMove = { from, to };
+  lastMove = {from, to};
   addMoveToLog(applied);
   renderBoard();
   checkGameOver();
@@ -618,17 +692,17 @@ function addMoveToLog(move) {
 
   if (move.color === 'w') {
     const numEl = document.createElement('span');
-    numEl.className   = 'move-log__num';
+    numEl.className = 'move-log__num';
     numEl.textContent = `${num}.`;
 
     const wEl = document.createElement('span');
-    wEl.className   = 'move-log__move move-log__move--current';
+    wEl.className = 'move-log__move move-log__move--current';
     wEl.textContent = move.san;
 
     // Placeholder for black's move
     const bEl = document.createElement('span');
-    bEl.className   = 'move-log__move';
-    bEl.id          = `move-b-${num}`;
+    bEl.className = 'move-log__move';
+    bEl.id = `move-b-${num}`;
     bEl.textContent = '';
 
     log.appendChild(numEl);
@@ -657,7 +731,8 @@ function checkGameOver() {
   } else if (game.in_check()) {
     status.textContent = '⚠ Check!';
   } else {
-    status.textContent = game.turn() === 'w' ? 'White to move' : 'Black to move';
+    status.textContent =
+      game.turn() === 'w' ? 'White to move' : 'Black to move';
   }
 }
 
@@ -669,21 +744,21 @@ function showPromotion(from, to) {
   const color = game.turn();
 
   const pieces = [
-    { type: 'q', label: color === 'w' ? '♕' : '♛' },
-    { type: 'r', label: color === 'w' ? '♖' : '♜' },
-    { type: 'b', label: color === 'w' ? '♗' : '♝' },
-    { type: 'n', label: color === 'w' ? '♘' : '♞' },
+    {type: 'q', label: color === 'w' ? '♕' : '♛'},
+    {type: 'r', label: color === 'w' ? '♖' : '♜'},
+    {type: 'b', label: color === 'w' ? '♗' : '♝'},
+    {type: 'n', label: color === 'w' ? '♘' : '♞'},
   ];
 
   container.innerHTML = '';
-  pieces.forEach(({ type, label }) => {
+  pieces.forEach(({type, label}) => {
     const div = document.createElement('div');
-    div.className   = 'promotion-piece';
+    div.className = 'promotion-piece';
     div.textContent = label;
     div.addEventListener('click', () => {
       overlay.style.display = 'none';
       selectedSquare = null;
-      legalMoves     = [];
+      legalMoves = [];
       applyMove(from, to, type);
     });
     container.appendChild(div);
@@ -696,23 +771,24 @@ function showPromotion(from, to) {
 
 async function runSystemCheck() {
   const grid = document.getElementById('systemGrid');
-  grid.innerHTML = '<div class="check-placeholder">Running diagnostics...</div>';
+  grid.innerHTML =
+    '<div class="check-placeholder">Running diagnostics...</div>';
 
   const checks = await window.api.checkSystem();
   grid.innerHTML = '';
 
   const labels = {
-    lc0:            'lc0 Engine (v0.23.x)',
-    docker:         'Docker',
-    dockerImage:    'Docker Training Image',
-    python3:        'Python 3',
+    lc0: 'lc0 Engine (v0.23.x)',
+    docker: 'Docker',
+    dockerImage: 'Docker Training Image',
+    python3: 'Python 3',
     maiaIndividual: 'maia-individual repo',
-    baseModels:     'Base Maia Models'
+    baseModels: 'Base Maia Models',
   };
 
   let allOk = true;
 
-  Object.entries(checks).forEach(([key, { ok, path: p }]) => {
+  Object.entries(checks).forEach(([key, {ok, path: p}]) => {
     if (!ok) allOk = false;
     const card = document.createElement('div');
     card.className = `check-card check-card--${ok ? 'ok' : 'fail'}`;
@@ -742,7 +818,7 @@ async function init() {
   await refreshModelList();
 
   // Setup overlay — now receives structured { message, percent, type }
-  window.api.onSetupProgress(({ message, percent, type }) => {
+  window.api.onSetupProgress(({message, percent, type}) => {
     // Always update the text
     document.getElementById('setupMsg').textContent = message;
 
@@ -754,7 +830,9 @@ async function init() {
   });
 
   window.api.onSetupDone(() => {
-    document.getElementById('setupOverlay').classList.add('setup-overlay--hidden');
+    document
+      .getElementById('setupOverlay')
+      .classList.add('setup-overlay--hidden');
   });
 
   window.api.onSetupError(msg => {
@@ -767,9 +845,11 @@ async function init() {
       'Docker is required but is not installed.';
     const link = document.getElementById('setupDockerLink');
     link.style.display = 'block';
-    link.addEventListener('click', (e) => {
+    link.addEventListener('click', e => {
       e.preventDefault();
-      window.api.openExternal('https://www.docker.com/products/docker-desktop/');
+      window.api.openExternal(
+        'https://www.docker.com/products/docker-desktop/',
+      );
     });
   });
 

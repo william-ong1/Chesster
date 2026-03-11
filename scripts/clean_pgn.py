@@ -29,10 +29,11 @@ def clean_pgn(input_path, output_path):
     content = content.replace("\r\n", "\n").replace("\r", "\n")
     content = content.strip()
     if not content:
-        print(f"Cleaned 0 games (file is empty) -> {output_path}")
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write("")
-        return
+        print(
+            "Error: At least 10 games are required. Your PGN has 0 games (file is empty).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     # Split games by double newline or [Event header
     raw_chunks = re.split(r"\n{2,}", content)
@@ -73,6 +74,15 @@ def clean_pgn(input_path, output_path):
                 games.append("\n".join(headers) + "\n\n" + moves + "\n")
 
     fixed = games
+
+    MIN_GAMES = 10
+    if len(fixed) < MIN_GAMES:
+        print(
+            f"Error: At least {MIN_GAMES} games are required. "
+            f"Your PGN has {len(fixed)} game(s).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     result = "\n".join(fixed)
     result = re.sub(r"\n{2,}", "\n\n", result)

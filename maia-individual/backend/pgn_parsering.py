@@ -30,41 +30,25 @@ class GamesFile(object):
     def __next__(self):
         ret = {}
         lines = ''
-
-        # Skip blank lines between games
-        while True:
-            l = self.f.readline()
-            if not l:
-                raise StopIteration
+        for l in self.f:
             self.i += 1
-            if len(l) >= 2:
-                break
-
-        # Parse headers until blank line
-        while True:
             lines += l
-            try:
-                k, v, _ = l.split('"')
-            except ValueError:
-                if l == 'null\n':
-                    pass
-                else:
-                    raise
-            else:
-                ret[k[1:-1]] = v
-
-            l = self.f.readline()
-            if not l:
-                raise StopIteration
-            self.i += 1
             if len(l) < 2:
-                if len(ret) < 2:
+                if len(ret) >= 2:
+                    break
+                else:
                     raise RuntimeError(l)
-                # Blank line between headers and movetext
-                lines += l
-                break
-
-        # Read full movetext until next blank line (Chess.com PGNs split moves over many lines)
+            else:
+                try:
+                    k, v, _ = l.split('"')
+                except ValueError:
+                    if l == 'null\n':
+                        pass
+                    else:
+                        raise
+                else:
+                    ret[k[1:-1]] = v
+        # Read full movetext until next blank line (was: only 2 readlines; Chess.com splits over many lines)
         while True:
             nl = self.f.readline()
             if not nl:
@@ -73,7 +57,6 @@ class GamesFile(object):
             if len(nl) < 2:
                 break
             lines += nl
-
         if len(lines) < 1:
             raise StopIteration
         return ret, lines

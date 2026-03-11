@@ -1,12 +1,11 @@
 # Chesster
 
-## Gamma Release
-
 ## User Documentation
-[User Guide](docs/USER_DOCUMENTATION.md)
+[User Guide](https://docs.google.com/document/d/1fhgFQ0q_iIjsCposVSkGihsz5ofvjDJe07hAGC5pVm0/edit?tab=t.0)
 
 ## Developer Documentation
-[Developer Guide](docs/DEVELOPER_DOCUMENTATION.md)
+[Developer Guide](https://docs.google.com/document/d/14J1EzREBiGWFm7s0mDv4Xl-arWvJFn0pm5AYJfUlh_0/edit?tab=t.0#heading=h.l1ejxsbujjuj)
+
 ## Overview
 
 Allows users to upload their past chess data and then trains a chess bot with this data such that it learns to mimic their playstyle. The user can then play against this bot when they want. 

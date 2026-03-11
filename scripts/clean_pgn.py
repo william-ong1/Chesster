@@ -21,16 +21,18 @@ def clean_pgn(input_path, output_path):
             f"Unable to access the file {input_path}."
         )
         return
-    except OSError as e:
-        print(f"An unexpected error occurred: {e}")
+    except OSError as err:
+        print(f"An unexpected error occurred: {err}")
         return
 
     # Normalize line endings so \r\n and \r don't break game splitting
     content = content.replace("\r\n", "\n").replace("\r", "\n")
     content = content.strip()
+    min_games = 10
     if not content:
         print(
-            "Error: At least 10 games are required. Your PGN has 0 games (file is empty).",
+            "Error: At least 10 games are required. "
+            "Your PGN has 0 games (file is empty).",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -44,11 +46,11 @@ def clean_pgn(input_path, output_path):
             continue
         lines = chunk.split("\n")
         headers = [
-            l.strip() for l in lines if l.strip().startswith("[")
+            ln.strip() for ln in lines if ln.strip().startswith("[")
         ]
         moves = " ".join(
-            l.strip() for l in lines
-            if l.strip() and not l.strip().startswith("[")
+            ln.strip() for ln in lines
+            if ln.strip() and not ln.strip().startswith("[")
         )
         if headers and moves:
             games.append("\n".join(headers) + "\n\n" + moves + "\n")
@@ -62,23 +64,21 @@ def clean_pgn(input_path, output_path):
                 continue
             lines = chunk.split("\n")
             headers = [
-                l.strip() for l in lines
-                if l.strip().startswith("[")
+                ln.strip() for ln in lines
+                if ln.strip().startswith("[")
             ]
             moves = " ".join(
-                l.strip() for l in lines
-                if l.strip()
-                and not l.strip().startswith("[")
+                ln.strip() for ln in lines
+                if ln.strip()
+                and not ln.strip().startswith("[")
             )
             if headers and moves:
                 games.append("\n".join(headers) + "\n\n" + moves + "\n")
 
     fixed = games
-
-    MIN_GAMES = 10
-    if len(fixed) < MIN_GAMES:
+    if len(fixed) < min_games:
         print(
-            f"Error: At least {MIN_GAMES} games are required. "
+            f"Error: At least {min_games} games are required. "
             f"Your PGN has {len(fixed)} game(s).",
             file=sys.stderr,
         )
@@ -99,8 +99,8 @@ def clean_pgn(input_path, output_path):
             f"Unable to access the file {output_path}."
         )
         return
-    except OSError as e:
-        print(f"An unexpected error occurred: {e}")
+    except OSError as err:
+        print(f"An unexpected error occurred: {err}")
         return
 
     print(f"Cleaned {len(fixed)} games -> {output_path}")

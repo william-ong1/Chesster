@@ -44,6 +44,8 @@ class GamesFile(object):
                 except ValueError:
                     if l == 'null\n':
                         pass
+                    elif len(ret) >= 2:
+                        break  # no " in line: missing blank before movetext (e.g. cleaned.pgn)
                     else:
                         raise
                 else:

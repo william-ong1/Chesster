@@ -1,4 +1,4 @@
-"""Tests for maia-individual/3-analysis/run_eval_and_print.py evaluation logic."""
+"""Tests for run_eval_and_print.py (maia-individual/3-analysis) evaluation logic."""
 # pylint: disable=redefined-outer-name
 
 import bz2
@@ -16,15 +16,20 @@ from unittest import mock, TestCase
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Add maia-individual/3-analysis to path so we can import run_eval_and_print
-MAIA_ANALYSIS = Path(__file__).resolve().parent.parent / "maia-individual" / "3-analysis"
-sys.path.insert(0, str(MAIA_ANALYSIS))
+_MAIA_ANALYSIS = (
+    Path(__file__).resolve().parent.parent / "maia-individual" / "3-analysis"
+)
+sys.path.insert(0, str(_MAIA_ANALYSIS))
+
+from run_eval_and_print import main as run_eval_main  # noqa: E402
 
 
 def create_eval_csv(model_correct_values):
     """Create a bz2 CSV matching prediction_generator output format."""
     headers = [
-        "game_id", "move_ply", "player_move", "model_move", "model_v", "model_correct",
-        "model_name", "model_display_name", "player_name", "rl_depth", "top_p", "act_p",
+        "game_id", "move_ply", "player_move", "model_move", "model_v",
+        "model_correct", "model_name", "model_display_name", "player_name",
+        "rl_depth", "top_p", "act_p",
     ]
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=headers, extrasaction="ignore")
@@ -51,7 +56,8 @@ class TestRunEvalAndPrint(TestCase):
             session_dir = Path(tmp)
             username = "test_player"
             (session_dir / username / "csvs").mkdir(parents=True)
-            (session_dir / username / "csvs" / "test_white.csv.bz2").write_bytes(b"dummy")
+            csv_path = session_dir / username / "csvs" / "test_white.csv.bz2"
+            csv_path.write_bytes(b"dummy")
             # Only white - so we only process white and don't need eval_black
 
             # Pre-create eval output (as if prediction_generator had run)
@@ -59,16 +65,15 @@ class TestRunEvalAndPrint(TestCase):
             (session_dir / "eval_white.csv.bz2").write_bytes(eval_data)
 
             with mock.patch("subprocess.run", return_value=mock.Mock(returncode=0)):
-                from run_eval_and_print import main
-
                 with mock.patch(
                     "sys.argv",
-                    ["run_eval_and_print.py", "/fake/model", str(session_dir), username],
+                    ["run_eval_and_print.py", "/fake/model",
+                     str(session_dir), username],
                 ):
                     buf = io.StringIO()
                     err_buf = io.StringIO()
                     with redirect_stdout(buf), redirect_stderr(err_buf):
-                        main()
+                        run_eval_main()
                     out = buf.getvalue()
 
             self.assertIn("Test accuracy (white): 75.00%", out)
@@ -81,8 +86,10 @@ class TestRunEvalAndPrint(TestCase):
             session_dir = Path(tmp)
             username = "test_player"
             (session_dir / username / "csvs").mkdir(parents=True)
-            (session_dir / username / "csvs" / "test_white.csv.bz2").write_bytes(b"dummy")
-            (session_dir / username / "csvs" / "test_black.csv.bz2").write_bytes(b"dummy")
+            (session_dir / username / "csvs" / "test_white.csv.bz2"
+             ).write_bytes(b"dummy")
+            (session_dir / username / "csvs" / "test_black.csv.bz2"
+             ).write_bytes(b"dummy")
 
             (session_dir / "eval_white.csv.bz2").write_bytes(
                 create_eval_csv([True, False, True, False])
@@ -92,15 +99,14 @@ class TestRunEvalAndPrint(TestCase):
             )
 
             with mock.patch("subprocess.run", return_value=mock.Mock(returncode=0)):
-                from run_eval_and_print import main
-
                 with mock.patch(
                     "sys.argv",
-                    ["run_eval_and_print.py", "/fake/model", str(session_dir), username],
+                    ["run_eval_and_print.py", "/fake/model",
+                     str(session_dir), username],
                 ):
                     buf = io.StringIO()
                     with redirect_stdout(buf):
-                        main()
+                        run_eval_main()
                     out = buf.getvalue()
 
             self.assertIn("Test accuracy (white): 50.00%", out)
@@ -115,15 +121,14 @@ class TestRunEvalAndPrint(TestCase):
             (session_dir / username / "csvs").mkdir(parents=True)
 
             with mock.patch("subprocess.run", return_value=mock.Mock(returncode=0)):
-                from run_eval_and_print import main
-
                 with mock.patch(
                     "sys.argv",
-                    ["run_eval_and_print.py", "/fake/model", str(session_dir), username],
+                    ["run_eval_and_print.py", "/fake/model",
+                     str(session_dir), username],
                 ):
                     buf = io.StringIO()
                     with redirect_stderr(buf):
-                        main()
+                        run_eval_main()
                     err = buf.getvalue()
 
             self.assertTrue("Skipping" in err or "No test CSVs" in err)

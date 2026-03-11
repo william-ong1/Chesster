@@ -326,6 +326,12 @@ body {
   color: var(--text-muted);
 }
 
+.drop-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
 .link-btn {
   background: none;
   border: none;

@@ -15,6 +15,7 @@ const {
   checkSystem,
   listModels,
 } = require('./functions.js');
+const { runEvaluationAfterTraining } = require('./runEvaluation.js');
 
 // Project root (one level up from app/)
 const ROOT = path.join(__dirname, '..');
@@ -371,61 +372,19 @@ function runTrainingPipeline(event, { pgnPath, username, userElo }) {
             }
           }
 
-          // Run evaluation on test set if available
-          const playerDir = path.join(outputDir, username);
-          const testWhiteCsv = path.join(playerDir, 'csvs', 'test_white.csv.bz2');
-          const testBlackCsv = path.join(playerDir, 'csvs', 'test_black.csv.bz2');
-          const hasTestSet = fs.existsSync(testWhiteCsv) || fs.existsSync(testBlackCsv);
-
-          if (!hasTestSet) {
-            console.log('[Eval] Skipping: no test CSVs at', testWhiteCsv, 'or', testBlackCsv);
-          }
-          if (!latestModelPath) {
-            console.log('[Eval] Skipping: no trained model found in final_models');
-          }
-
-          if (latestModelPath && hasTestSet) {
-            status('train', 'Running evaluation on test set...', 0.98);
-            try {
-              const evalProc = spawn('docker', [
-                'run', '--rm',
-                '-v', `${MAIA_DIR}:/maia-individual`,
-                '-v', `${outputDir}:/session`,
-                '-w', '/maia-individual',
-                IMAGE_NAME,
-                'conda', 'run', '--no-capture-output', '-n', 'transfer_chess',
-                'python', '-u', '3-analysis/run_eval_and_print.py',
-                path.join('/maia-individual', 'final_models', path.relative(finalModelsDir, latestModelPath)).replace(/\\/g, '/'),
-                '/session',
-                username,
-              ], { cwd: ROOT });
-
-              evalProc.stdout.on('data', (d) => {
-                const txt = d.toString();
-                console.log(txt.trim());
-                send('train', txt.trim(), 0.99);
-              });
-              evalProc.stderr.on('data', (d) => {
-                console.error(d.toString().trim());
-              });
-
-              await new Promise((res, rej) => {
-                evalProc.on(
-                  'close',
-                  (code) => {
-                    if (code === 0) {
-                      res();
-                    } else {
-                      rej(new Error(`Evaluation exited with code ${code}`));
-                    }
-                  }
-                );
-              });
-            } catch (err) {
-              console.warn('[Eval] Evaluation failed:', err.message);
-              send('train', `Evaluation skipped: ${err.message}`, 0.99);
+          // Run evaluation on test set (prediction_generator) and print results to console
+          await runEvaluationAfterTraining(
+            {
+              outputDir,
+              username,
+              latestModelPath,
+              finalModelsDir,
+              maiaDir: MAIA_DIR,
+              imageName: IMAGE_NAME,
+              root: ROOT,
+              send: (step, msg, frac, type) => send(step, msg, frac, type),
             }
-          }
+          );
 
           event.sender.send('training:progress', {
             step: 'done',
